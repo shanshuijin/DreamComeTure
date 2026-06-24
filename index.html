@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>梦角字卡聊天</title>
 <style>
 /* ============ Custom Font ============ */
@@ -36,7 +36,7 @@ button { cursor:pointer; border:none; font-family:inherit; }
 input, textarea, select { font-family:inherit; outline:none; }
 
 /* ============ App Shell ============ */
-#app { display:flex; height:100vh; height:100dvh; width:100vw; position:relative; overflow:hidden; }
+#app { display:flex; height:100dvh; width:100vw; position:relative; overflow:hidden; }
 
 /* ============ Chat View ============ */
 .chat-view { flex:1; display:flex; flex-direction:column; min-width:0; background:var(--bg); position:relative; overflow:hidden; }
@@ -243,6 +243,47 @@ input, textarea, select { font-family:inherit; outline:none; }
     inset -2px -2px 6px rgba(255,255,255,0.35),
     0 1px 0 rgba(255,255,255,0.3);
 }
+.btn-photo { font-size:20px; }
+
+/* Chat message image */
+.msg-photo { margin-top:6px; max-width:200px; border-radius:var(--radius-sm); overflow:hidden; }
+.msg-photo img { width:100%; height:auto; display:block; }
+
+/* ============ Red Dot Badge ============ */
+.dot {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.btn-menu-wrap { position: relative; display: inline-block; }
+
+.dot-v1 {
+  width: 9px;
+  height: 9px;
+  background: radial-gradient(
+    circle at 35% 30%,
+    rgba(255, 120, 100, 0.95),
+    rgba(220, 50, 60, 0.85)
+  );
+  box-shadow:
+    0 0 6px  rgba(255, 70, 80, 0.45),
+    0 0 14px rgba(255, 60, 70, 0.20),
+    0 1px 2px rgba(0, 0, 0, 0.25);
+}
+
+/* panel menu item dot anchor */
+.menu-dot-anchor {
+  position: relative;
+  width: 28px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+}
+.menu-dot-anchor .dot { top: 0px; right: -2px; }
 
 /* ============ Menu Overlay (for side panel) ============ */
 .menu-overlay {
@@ -253,7 +294,7 @@ input, textarea, select { font-family:inherit; outline:none; }
 
 /* ============ Side Panel (right slide-in, frosted glass) ============ */
 .side-panel {
-  position:fixed; top:0; right:0; width:min(280px,75vw); height:100%; height:100dvh;
+  position:fixed; top:0; right:0; width:min(280px,75vw); height:100%;
   z-index:10;
   background:rgba(255,255,255,0.62);
   backdrop-filter:blur(24px) saturate(150%);
@@ -490,9 +531,24 @@ input, textarea, select { font-family:inherit; outline:none; }
 .avatar-preview {
   width:52px; height:52px; border-radius:50%; background:var(--accent-light);
   margin:6px auto; display:flex; align-items:center; justify-content:center;
-  font-size:28px; overflow:hidden;
+  font-size:28px; overflow:hidden; cursor:pointer; transition:all 0.15s;
+  position:relative;
 }
+.avatar-preview:hover { opacity:0.8; }
+.avatar-preview::after {
+  content:'📷'; position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  background:rgba(0,0,0,0.35); color:#fff; font-size:14px;
+  opacity:0; transition:opacity 0.15s; border-radius:50%;
+}
+.avatar-preview:hover::after { opacity:1; }
 .avatar-preview img { width:100%; height:100%; object-fit:cover; }
+.avatar-actions { display:flex; align-items:center; gap:6px; justify-content:center; margin-top:4px; }
+.btn-avatar-del {
+  font-size:11px; padding:3px 10px; border-radius:12px;
+  background:var(--bg-warm); color:var(--text-muted); cursor:pointer;
+  border:1px solid var(--border); transition:all 0.12s;
+}
+.btn-avatar-del:hover { background:#ffebee; color:var(--danger); border-color:#ffc9c9; }
 
 /* ============ Moments (朋友圈) ============ */
 .moments-page { display:flex; flex-direction:column; height:100%; }
@@ -600,6 +656,37 @@ input, textarea, select { font-family:inherit; outline:none; }
   display:flex; align-items:center; gap:6px; padding:8px 14px; margin-top:8px;
   border-radius:var(--radius-sm); background:#e8e0d8; color:#b0a090;
   font-size:13px; cursor:not-allowed;
+}
+
+/* publish photo row */
+.pm-photo-row { display:flex; align-items:center; gap:8px; margin-top:8px; }
+.pm-add-photo {
+  display:flex; align-items:center; gap:6px; padding:8px 14px;
+  border-radius:var(--radius-sm); background:var(--bg-warm);
+  color:var(--text-secondary); font-size:13px; cursor:pointer;
+  border:1px solid var(--border); transition:all 0.15s;
+}
+.pm-add-photo:hover { background:var(--accent-light); border-color:var(--accent); color:var(--accent); }
+.pm-photo-hint { font-size:11px; color:var(--text-muted); }
+.pm-preview { display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; }
+.pm-preview .pm-thumb {
+  width:64px; height:64px; border-radius:var(--radius-sm); overflow:hidden;
+  position:relative; border:1px solid var(--border);
+}
+.pm-preview .pm-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+.pm-preview .pm-thumb .pm-thumb-del {
+  position:absolute; top:2px; right:2px; width:18px; height:18px;
+  border-radius:50%; background:rgba(0,0,0,0.5); color:#fff;
+  font-size:10px; display:flex; align-items:center; justify-content:center;
+  cursor:pointer; border:none; line-height:1;
+}
+
+/* multi-photo layout in moments */
+.mi-photos {
+  display:flex; gap:4px; flex-wrap:wrap; margin-bottom:8px;
+}
+.mi-photos .mi-photo {
+  width:calc(33.3% - 3px); max-width:none;
 }
 
 /* ============ Diary (日记) ============ */
@@ -1270,7 +1357,10 @@ input, textarea, select { font-family:inherit; outline:none; }
       <div class="header-right">
         <button class="btn-review" id="btnReview" title="锐评">💥</button>
         <button class="btn-search" id="btnSearch" title="搜索">🔍</button>
-        <button class="btn-menu" id="btnMenu" title="菜单">☰</button>
+        <div class="btn-menu-wrap">
+          <button class="btn-menu" id="btnMenu" title="菜单">☰</button>
+          <span class="dot dot-v1" id="menuBtnDot" style="display:none"></span>
+        </div>
       </div>
     </div>
     <div class="messages-area" id="messagesArea">
@@ -1278,8 +1368,10 @@ input, textarea, select { font-family:inherit; outline:none; }
     </div>
     <div class="chat-input">
       <textarea id="msgInput" rows="1" placeholder="输入消息…" maxlength="500"></textarea>
+      <button class="btn-send btn-photo" id="btnPhoto" title="发送图片">📷</button>
       <button class="btn-send" id="btnSend" title="发送">➤</button>
     </div>
+    <input type="file" id="chatFileInput" accept="image/*" style="display:none">
   </div>
 
   <!-- Menu Overlay (for side panel) -->
@@ -1301,12 +1393,15 @@ input, textarea, select { font-family:inherit; outline:none; }
       </button>
       <button class="menu-btn" data-view="moments">
         <span class="menu-icon">🫂</span> 朋友圈 <span class="menu-arrow">›</span>
+        <span class="menu-dot-anchor"><span class="dot dot-v1" data-dot-view="moments" style="display:none"></span></span>
       </button>
       <button class="menu-btn" data-view="diary">
         <span class="menu-icon">📔</span> 日记 <span class="menu-arrow">›</span>
+        <span class="menu-dot-anchor"><span class="dot dot-v1" data-dot-view="diary" style="display:none"></span></span>
       </button>
       <button class="menu-btn" data-view="checkin">
         <span class="menu-icon">📌</span> 打卡 <span class="menu-arrow">›</span>
+        <span class="menu-dot-anchor"><span class="dot dot-v1" data-dot-view="checkin" style="display:none"></span></span>
       </button>
       <button class="menu-btn" data-view="period">
         <span class="menu-icon">📅</span> 经期记录 <span class="menu-arrow">›</span>
@@ -1362,10 +1457,52 @@ input, textarea, select { font-family:inherit; outline:none; }
 // 梦角字卡聊天网站 v3
 // ============================================================
 
+// 自动清理最旧的含图片消息/动态来释放 localStorage 空间
+function _freeStorageQuota() {
+  try {
+    var messages = JSON.parse(localStorage.getItem('mcard_messages')) || [];
+    var moments = JSON.parse(localStorage.getItem('mcard_moments')) || [];
+    // 收集所有含图片的条目，按时间戳排序（最旧在前）
+    var items = [];
+    messages.forEach(function(m, i) {
+      if (m.imageData) items.push({ ts: m.timestamp || 0, key: 'mcard_messages', action: 'splice', idx: i });
+    });
+    moments.forEach(function(m, i) {
+      if (m.imageDataList && m.imageDataList.length > 0) items.push({ ts: m.timestamp || 0, key: 'mcard_moments', action: 'splice', idx: i });
+    });
+    items.sort(function(a, b) { return a.ts - b.ts; });
+    // 删除最旧的 3 条含图片数据
+    var removed = 0;
+    for (var k = 0; k < items.length && removed < 3; k++) {
+      var it = items[k];
+      if (it.key === 'mcard_messages' && messages[it.idx]) {
+        messages[it.idx].imageData = null; delete messages[it.idx].imageData; removed++;
+      } else if (it.key === 'mcard_moments' && moments[it.idx]) {
+        moments[it.idx].imageDataList = []; removed++;
+      }
+    }
+    if (removed > 0) {
+      localStorage.setItem('mcard_messages', JSON.stringify(messages));
+      localStorage.setItem('mcard_moments', JSON.stringify(moments));
+    }
+  } catch(e) { console.error('Quota cleanup failed:', e); }
+}
+
 // ============ Data Layer ============
 const STORE = {
   _read(k) { try{return JSON.parse(localStorage.getItem(k));}catch(e){return null;} },
-  _write(k,v) { localStorage.setItem(k,JSON.stringify(v)); },
+  _write(k,v) {
+    try { localStorage.setItem(k,JSON.stringify(v)); }
+    catch(e) {
+      if (e && (e.name === 'QuotaExceededError' || e.code === 22)) {
+        console.warn('localStorage quota exceeded, attempting cleanup...');
+        // 尝试清理最旧的含图片数据来腾空间
+        _freeStorageQuota();
+        try { localStorage.setItem(k,JSON.stringify(v)); }
+        catch(e2) { console.error('Storage still full after cleanup'); }
+      } else { console.error('Storage write error:', e); }
+    }
+  },
   get categories() { return this._read('mcard_categories'); },
   set categories(v) { this._write('mcard_categories', v); },
   get subcategories() { return this._read('mcard_subcategories'); },
@@ -1394,6 +1531,8 @@ const STORE = {
   set dreamEvents(v) { this._write('mcard_dream_events', v); },
   get lastActive() { try{const v=localStorage.getItem('mcard_last_active');return v?Number(v)||null:null;}catch(e){return null;} },
   set lastActive(v) { try{if(v===null)localStorage.removeItem('mcard_last_active');else localStorage.setItem('mcard_last_active',String(v));}catch(e){} },
+  get lastSeen() { return this._read('mcard_lastSeen') || {}; },
+  set lastSeen(v) { this._write('mcard_lastSeen', v); },
   get periods() { return this._read('mcard_periods'); },
   set periods(v) { this._write('mcard_periods', v); },
   get periodConfig() { return this._read('mcard_periodConfig'); },
@@ -1438,7 +1577,7 @@ function initDefaults() {
   }
   if (!STORE.cards) {
     STORE.cards = [
-      { id:'c1',  text:'加油！', categoryId:'cat1', subcategoryId:'sub1', weight:1 },
+      { id:'c1',  text:'加油！冲啊！', categoryId:'cat1', subcategoryId:'sub1', weight:1 },
       { id:'c2',  text:'我相信你！', categoryId:'cat1', subcategoryId:'sub1', weight:2 },
       { id:'c3',  text:'永不放弃！', categoryId:'cat1', subcategoryId:'sub1', weight:1 },
       { id:'c4',  text:'拼尽全力！', categoryId:'cat1', subcategoryId:'sub1', weight:1 },
@@ -1456,7 +1595,7 @@ function initDefaults() {
       { id:'c16', text:'啊啊啊', categoryId:'cat2', subcategoryId:'sub4', weight:1 },
       { id:'c17', text:'跳起来！', categoryId:'cat2', subcategoryId:'sub5', weight:1 },
       { id:'c18', text:'奔跑吧', categoryId:'cat2', subcategoryId:'sub5', weight:1 },
-      { id:'c19', text:'震惊！', categoryId:'cat2', subcategoryId:'sub5', weight:1 },
+      { id:'c19', text:'接住！', categoryId:'cat2', subcategoryId:'sub5', weight:1 },
       { id:'c20', text:'哈哈', categoryId:'cat3', subcategoryId:'sub6', weight:1 },
       { id:'c21', text:'嘿嘿', categoryId:'cat3', subcategoryId:'sub6', weight:1 },
       { id:'c22', text:'嘻嘻', categoryId:'cat3', subcategoryId:'sub6', weight:1 },
@@ -1477,6 +1616,7 @@ function initDefaults() {
       dreamReplyDecaySeq:[100,70,40,10,0],
       dreamReplyDecayOn:true,
       diaryGenHourMin:21, diaryGenHourMax:24,
+      diaryCardRangeMin:2, diaryCardRangeMax:6,
       diaryCommentProb:70, diaryCommentDelayMin:30, diaryCommentDelayMax:120,
       reviewCounterProb:20, reviewCardCount:3, reviewMode:'random',
       doodleProb:8,
@@ -1525,6 +1665,7 @@ function initDefaults() {
   if (!STORE.periods) STORE.periods = [];
   if (!STORE.periodConfig) STORE.periodConfig = { cycleLength: 28, periodDuration: 5 };
   if (!STORE.favorites) STORE.favorites = [];
+  if (!STORE.lastSeen) STORE.lastSeen = {};
 
   // Migrate old moments: likes from number → array (safe)
   try {
@@ -1595,6 +1736,8 @@ const state = {
   checkinAutoTimerId: null,   // setTimeout for auto checkin
   dreamEventTimers: {},       // "eventId_dateStr_index" → timeoutId
 };
+
+var _pmImages = []; // temporary photo array for moments publish modal
 
 // ============ Helpers ============
 function genId() { return Date.now().toString(36)+Math.random().toString(36).slice(2,8); }
@@ -1705,27 +1848,16 @@ function generateMessage(opts) {
 
 // ============ Doodle Generator ============
 function generateDoodle() {
-  // Mode 0: tarot placeholder — not implemented, fall back to normal text
-  // Mode 1: random letters
-  // Mode 2: random Chinese characters
+  // Mode 0: tarot placeholder — not implemented
+  // Mode 1: placeholder for future doodle types
+  // Mode 2: random Chinese characters (current default)
   var mode = Math.floor(Math.random() * 3);
-  if (mode === 0) return null; // placeholder, will generate normal text instead
-  if (mode === 1) return generateDoodleLetters();
+  if (mode === 0 || mode === 1) return null; // placeholder slots
   return generateDoodleChinese();
 }
 
 var DOODLE_COLORS = ['#e04040','#F8A050','#5b9bd5','#6cbf6c','#9b59b6','#e8923c','#2f8f8f'];
 var DOODLE_EMOJIS = ['❤️','✨','💕','🌟','💫','🎀','🌸','🍀','💖','☀️'];
-
-function generateDoodleLetters() {
-  var len = 6 + Math.floor(Math.random() * 7); // 6–12
-  var text = '';
-  for (var i = 0; i < len; i++) {
-    text += String.fromCharCode(97 + Math.floor(Math.random() * 26));
-  }
-  var color = DOODLE_COLORS[Math.floor(Math.random() * DOODLE_COLORS.length)];
-  return { mode: 1, text: text, color: color };
-}
 
 function generateDoodleChinese() {
   // Build Chinese character pool from all visible cards
@@ -1752,7 +1884,7 @@ function generateDoodleChinese() {
 }
 
 // ============ Core: Messages ============
-function addMessage(type,text,timestamp) {
+function addMessage(type,text,timestamp,imageData) {
   const messages=STORE.messages||[];
   const ts = timestamp || Date.now();
   var doodleData = null;
@@ -1762,6 +1894,7 @@ function addMessage(type,text,timestamp) {
   }
   const msg = {id:genId(), type, text, timestamp: ts};
   if (doodleData) msg.doodle = doodleData;
+  if (imageData) msg.imageData = imageData;
   // Recall decision for dream character messages only
   if (type === 'character') {
     const engCfg = (STORE.config||{}).dreamEngine || {};
@@ -1914,9 +2047,12 @@ function renderOneMessageHTML(m, idx) {
       <div class="msg-time">${time}</div></div>`;
   }
   const aiBox = (!isUser && m.text) ? '<div class="ai-box" data-ai-target="chat" data-idx="'+idx+'"></div>' : '';
+  const imgHtml = m.imageData
+    ? '<div class="msg-photo"><img src="' + m.imageData + '" alt="图片" loading="lazy"></div>'
+    : '';
   return `<div class="msg-row ${isUser?'user':'char'}" ${!isUser&&m.text?'data-msg-idx="'+idx+'"':''}>
     <div class="msg-avatar">${isUser?av.user:av.char}</div>
-    <div class="msg-bubble">${escapeHtml(m.text)}${aiBox}</div>
+    <div class="msg-bubble">${escapeHtml(m.text)}${imgHtml}${aiBox}</div>
     <div class="msg-time">${time}</div></div>`
     + (isUser?'<div class="read-tag">已读</div>':'');
 }
@@ -1984,9 +2120,7 @@ function drawDoodleCanvas(canvasId, doodle) {
   var color = doodle.color || '#e04040';
   var maxWidth = W - 20; // 10px margin each side
 
-  var fontFamily = doodle.mode === 2
-    ? '"MengJiaoShouXie", "HarmonyOS Sans SC", "PingFang SC", "Microsoft YaHei", -apple-system, sans-serif'
-    : '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+  var fontFamily = '"MengJiaoShouXie", "HarmonyOS Sans SC", "PingFang SC", "Microsoft YaHei", -apple-system, sans-serif';
 
   // Find font size that fits
   var fontSize = 52;
@@ -2018,8 +2152,71 @@ function renderHeader() {
   if(sub)sub.innerHTML=renderSubtitleHTML();
 }
 
+// ============ Red Dot System ============
+function getDotKey(viewId) {
+  if (viewId === 'moments') return 'moments';
+  if (viewId === 'diary') return 'diary';
+  if (viewId === 'checkin') return 'checkin';
+  return null;
+}
+
+function getNewestTimestamp(viewId) {
+  var latest = 0;
+  if (viewId === 'moments') {
+    var moments = STORE.moments || [];
+    moments.forEach(function(m) {
+      if (m.publisher === 'dream' && m.timestamp > latest) latest = m.timestamp;
+      (m.comments || []).forEach(function(c) {
+        if (c.commenter === 'dream' && m.publisher !== 'dream' && c.timestamp > latest) latest = c.timestamp;
+      });
+    });
+  } else if (viewId === 'diary') {
+    var diaries = STORE.diaries || [];
+    diaries.forEach(function(d) {
+      if (d.author === 'dream' && d.createdAt > latest) latest = d.createdAt;
+      (d.comments || []).forEach(function(c) {
+        if (c.author === 'dream' && d.author !== 'dream' && c.timestamp > latest) latest = c.timestamp;
+      });
+    });
+  } else if (viewId === 'checkin') {
+    var checkins = STORE.checkins || [];
+    checkins.forEach(function(c) {
+      if (c.role === 'dream' && c.timestamp > latest) latest = c.timestamp;
+    });
+  }
+  return latest;
+}
+
+function updateRedDots() {
+  var lastSeen = STORE.lastSeen || {};
+  var anyDot = false;
+  ['moments', 'diary', 'checkin'].forEach(function(viewId) {
+    var dotKey = getDotKey(viewId);
+    var newest = getNewestTimestamp(viewId);
+    var seen = lastSeen[dotKey] || 0;
+    var show = newest > seen;
+    // Panel item dot
+    var panelDot = document.querySelector('[data-dot-view="' + viewId + '"]');
+    if (panelDot) panelDot.style.display = show ? '' : 'none';
+    if (show) anyDot = true;
+  });
+  // Menu button dot
+  var menuDot = document.getElementById('menuBtnDot');
+  if (menuDot) menuDot.style.display = anyDot ? '' : 'none';
+}
+
+function markSeen(viewId) {
+  var dotKey = getDotKey(viewId);
+  if (!dotKey) return;
+  var lastSeen = STORE.lastSeen || {};
+  lastSeen[dotKey] = Date.now();
+  STORE.lastSeen = lastSeen;
+  updateRedDots();
+}
+
 // ============ Side Panel ============
 function openPanel() {
+  updateRedDots();
   state.panelOpen=true;
   document.getElementById('sidePanel').classList.add('open');
   document.getElementById('menuOverlay').classList.add('show');
@@ -2039,6 +2236,7 @@ function closePanel() {
 
 // ============ Fullscreen View ============
 function openFullscreen(viewId) {
+  markSeen(viewId); // clear red dot for this view
   closePanel(); // close bottom panel first
   state.fsOpen=true;
   state.fsView=viewId;
@@ -2074,6 +2272,7 @@ function closeFullscreen() {
   state.fsOpen=false;
   state.fsView=null;
   document.getElementById('fullscreenView').classList.remove('open');
+  updateRedDots();
 }
 
 // ============ Rendering: Card Manager ============
@@ -2283,14 +2482,16 @@ function renderSettings(container) {
     <div class="setting-group">
       <div class="sg-title">🧑 形象设置</div>
       <div class="avatar-preview" id="avatarPreview">${av?`<img src="${escapeHtml(av)}" onerror="this.parentElement.textContent='🏐'">`:'🏐'}</div>
+      <div class="avatar-actions"><button class="btn-avatar-del" id="btnCharAvDel" ${av?'':'style="display:none"'}>移除头像</button></div>
+      <input type="file" id="charAvInput" accept="image/*" style="display:none">
       <div class="setting-row"><label>昵称</label><input type="text" id="cfgName" value="${escapeHtml(cfg.characterName||'')}"></div>
-      <div class="setting-row"><label>头像URL</label><input type="text" id="cfgAvatar" value="${escapeHtml(av)}"></div>
     </div>
     <div class="setting-group">
       <div class="sg-title">👤 我的形象</div>
       <div class="avatar-preview" id="userAvatarPreview">${uav?`<img src="${escapeHtml(uav)}" onerror="this.parentElement.textContent='🐟'">`:'🐟'}</div>
+      <div class="avatar-actions"><button class="btn-avatar-del" id="btnUserAvDel" ${uav?'':'style="display:none"'}>移除头像</button></div>
+      <input type="file" id="userAvInput" accept="image/*" style="display:none">
       <div class="setting-row"><label>昵称</label><input type="text" id="cfgUserNickname" value="${escapeHtml(cfg.userNickname||'我')}" placeholder="我"></div>
-      <div class="setting-row"><label>头像URL</label><input type="text" id="cfgUserAvatar" value="${escapeHtml(uav)}"></div>
     </div>
     <div class="setting-group">
       <div class="sg-title">⏱️ 主动发言间隔（分钟）</div>
@@ -2359,6 +2560,7 @@ function renderSettings(container) {
     <div class="setting-group">
       <div class="sg-title">📔 梦角日记生成时段</div>
       <div class="setting-row"><label>起始时间</label><input type="number" id="cfgDGMin" value="${cfg.diaryGenHourMin!=null?cfg.diaryGenHourMin:21}" min="0" max="23" step="1"><label>结束时间</label><input type="number" id="cfgDGMax" value="${cfg.diaryGenHourMax!=null?cfg.diaryGenHourMax:24}" min="1" max="24" step="1"></div>
+      <div class="setting-row"><label>字卡最少</label><input type="number" id="cfgDCRMin" value="${cfg.diaryCardRangeMin!=null?cfg.diaryCardRangeMin:2}" min="0" max="20" step="1"><label>最多</label><input type="number" id="cfgDCRMax" value="${cfg.diaryCardRangeMax!=null?cfg.diaryCardRangeMax:6}" min="1" max="20" step="1"><label>张（不含高频词）</label></div>
     </div>
     <div class="setting-group">
       <div class="sg-title">💬 梦角批阅日记设置</div>
@@ -2498,10 +2700,34 @@ function bindSettingsEvents(container) {
   // AI 解读：textarea 也触发保存（input 选择器不会覆盖 textarea）
   if(promptArea)promptArea.addEventListener('change',()=>saveSettingsFromForm(container));
 
-  const avInp=container.querySelector('#cfgAvatar'), prev=container.querySelector('#avatarPreview');
-  if(avInp&&prev){avInp.addEventListener('input',function(){const v=this.value.trim();prev.innerHTML=v?`<img src="${escapeHtml(v)}" onerror="this.parentElement.textContent='🏐'">`:'🏐';});}
-  const uavInp=container.querySelector('#cfgUserAvatar'), uprev=container.querySelector('#userAvatarPreview');
-  if(uavInp&&uprev){uavInp.addEventListener('input',function(){const v=this.value.trim();uprev.innerHTML=v?`<img src="${escapeHtml(v)}" onerror="this.parentElement.textContent='🐟'">`:'🐟';});}
+  // Avatar upload: click preview → pick file → compress → save
+  function _setupAvatarUpload(previewId, inputId, delBtnId, cfgKey, emoji) {
+    var preview = container.querySelector('#'+previewId);
+    var input = container.querySelector('#'+inputId);
+    var delBtn = container.querySelector('#'+delBtnId);
+    if (!preview || !input) return;
+    preview.addEventListener('click', function() { input.click(); });
+    input.addEventListener('change', function() {
+      var file = this.files[0];
+      if (!file) return;
+      compressImage(file, 400, 0.65).then(function(dataUrl) {
+        preview.innerHTML = '<img src="'+dataUrl+'" onerror="this.parentElement.textContent=\''+emoji+'\'">';
+        if (delBtn) delBtn.style.display = '';
+        saveSettingsFromForm(container);
+      }).catch(function(e) { console.error('头像压缩失败:', e); });
+      this.value = '';
+    });
+    if (delBtn) {
+      delBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        preview.innerHTML = emoji;
+        delBtn.style.display = 'none';
+        saveSettingsFromForm(container);
+      });
+    }
+  }
+  _setupAvatarUpload('avatarPreview', 'charAvInput', 'btnCharAvDel', 'avatarUrl', '🏐');
+  _setupAvatarUpload('userAvatarPreview', 'userAvInput', 'btnUserAvDel', 'userAvatarUrl', '🐟');
   container.querySelectorAll('input').forEach(inp=>inp.addEventListener('change',()=>saveSettingsFromForm(container)));
   container.querySelectorAll('.prob-msg,.prob-card').forEach(inp=>inp.addEventListener('input',()=>updateProbSums(container)));
   container.querySelector('#btnClearChat').addEventListener('click',()=>{
@@ -2573,12 +2799,15 @@ function saveSettingsFromForm(container) {
   if(aiPromptEl)ai.systemPrompt=aiPromptEl.value.trim()||defaultAIInterpret().systemPrompt;
   cfg.aiInterpret=ai;
 
-  const nameEl=container.querySelector('#cfgName'), avEl=container.querySelector('#cfgAvatar'), uavEl=container.querySelector('#cfgUserAvatar'), unameEl=container.querySelector('#cfgUserNickname');
+  const nameEl=container.querySelector('#cfgName'), unameEl=container.querySelector('#cfgUserNickname');
   const amEl=container.querySelector('#cfgActiveMin'), axEl=container.querySelector('#cfgActiveMax');
   const pmEl=container.querySelector('#cfgPassiveMin'), pxEl=container.querySelector('#cfgPassiveMax');
   if(nameEl)cfg.characterName=nameEl.value.trim()||'梦角';
-  if(avEl)cfg.avatarUrl=avEl.value.trim();
-  if(uavEl)cfg.userAvatarUrl=uavEl.value.trim();
+  // Read avatar from preview <img> src (base64 dataURL)
+  var charAvImg=container.querySelector('#avatarPreview img');
+  cfg.avatarUrl = charAvImg ? charAvImg.src : '';
+  var userAvImg=container.querySelector('#userAvatarPreview img');
+  cfg.userAvatarUrl = userAvImg ? userAvImg.src : '';
   if(unameEl)cfg.userNickname=unameEl.value.trim()||'我';
   if(amEl)cfg.activeMin=parseFloat(amEl.value)||0.1;
   if(axEl)cfg.activeMax=parseFloat(axEl.value)||0.4;
@@ -2615,6 +2844,9 @@ function saveSettingsFromForm(container) {
   const dcpEl=container.querySelector('#cfgDCProb'), dcdmEl=container.querySelector('#cfgDCDMin'), dcdxEl=container.querySelector('#cfgDCDMax');
   if(dgmEl)cfg.diaryGenHourMin=parseInt(dgmEl.value)||21;
   if(dgxEl)cfg.diaryGenHourMax=parseInt(dgxEl.value)||24;
+  const dcrMinEl=container.querySelector('#cfgDCRMin'), dcrMaxEl=container.querySelector('#cfgDCRMax');
+  if(dcrMinEl)cfg.diaryCardRangeMin=parseInt(dcrMinEl.value)||2;
+  if(dcrMaxEl)cfg.diaryCardRangeMax=parseInt(dcrMaxEl.value)||6;
   if(dcpEl)cfg.diaryCommentProb=parseInt(dcpEl.value)||70;
   if(dcdmEl)cfg.diaryCommentDelayMin=parseInt(dcdmEl.value)||30;
   if(dcdxEl)cfg.diaryCommentDelayMax=parseInt(dcdxEl.value)||120;
@@ -2657,8 +2889,9 @@ function saveSettingsFromForm(container) {
     const minEl = container.querySelector('#cfgDEPD' + prefix + 'Min');
     const maxEl = container.querySelector('#cfgDEPD' + prefix + 'Max');
     if (!engCfg.perDay[id]) engCfg.perDay[id] = {};
-    if (minEl) engCfg.perDay[id].min = parseInt(minEl.value) == null ? defMin : (parseInt(minEl.value) || 0);
-    if (maxEl) engCfg.perDay[id].max = parseInt(maxEl.value) == null ? defMax : (parseInt(maxEl.value) || 0);
+    var mv = parseInt(minEl.value), Mv = parseInt(maxEl.value);
+    engCfg.perDay[id].min = (isNaN(mv) || mv < 1) ? defMin : mv;
+    engCfg.perDay[id].max = (isNaN(Mv) || Mv < 1) ? defMax : Mv;
   }
 
   // Dream post
@@ -2784,7 +3017,8 @@ function renderFeed() {
       <div class="mi-body">
         <div class="mi-name">${escapeHtml(pubName)}</div>
         <div class="mi-text">${escapeHtml(m.content)}</div>
-        ${m.imageUrl?`<div class="mi-photo"><img src="${escapeHtml(m.imageUrl)}" alt="配图" loading="lazy" onerror="this.parentElement.style.display='none'"></div>`:''}
+        ${m.imageDataList&&m.imageDataList.length>0?'<div class="mi-photos">'+m.imageDataList.map(function(u){return '<div class="mi-photo"><img src="'+u+'" alt="配图" loading="lazy"></div>';}).join('')+'</div>':''}
+        ${!m.imageDataList&&m.imageUrl?`<div class="mi-photo"><img src="${escapeHtml(m.imageUrl)}" alt="配图" loading="lazy" onerror="this.parentElement.style.display='none'"></div>`:''}
         <div class="mi-time">${timeStr}</div>
         <div class="mi-actions">
           <button class="mi-act mi-like-btn ${isLiked?'liked':''}" data-mid="${m.id}" data-action="like">
@@ -2875,18 +3109,58 @@ function showPublishModal() {
   showModal(`<h3>发表动态</h3>
     <div class="publish-modal">
       <textarea class="pm-textarea" id="pmText" placeholder="分享新鲜事…" maxlength="2000"></textarea>
-      <div class="pm-img-btn">🖼️ 图片功能开发中</div>
+      <div class="pm-photo-row">
+        <button class="pm-add-photo" id="pmAddPhoto" type="button">📷 添加图片</button>
+        <span class="pm-photo-hint">最多3张</span>
+      </div>
+      <input type="file" id="pmFileInput" accept="image/*" multiple style="display:none">
+      <div class="pm-preview" id="pmPreview"></div>
     </div>
     <div class="modal-btns">
       <button class="btn-cancel" onclick="hideModal()">取消</button>
       <button class="btn-primary" id="pmPublish">发表</button>
     </div>`);
 
+  // Photo selection for moments publish
+  _pmImages = [];
+  document.getElementById('pmAddPhoto').addEventListener('click',function(){
+    document.getElementById('pmFileInput').click();
+  });
+  document.getElementById('pmFileInput').addEventListener('change',function(){
+    var files = Array.from(this.files || []);
+    if (_pmImages.length + files.length > 3) { alert('最多只能添加3张图片'); this.value = ''; return; }
+    var pending = files.map(function(f) { return compressImage(f); });
+    Promise.all(pending).then(function(results) {
+      _pmImages = _pmImages.concat(results);
+      if (_pmImages.length > 3) _pmImages = _pmImages.slice(0, 3);
+      renderPmPreview();
+    }).catch(function(e) { console.error('图片压缩失败:', e); });
+    this.value = '';
+  });
+
+  function renderPmPreview() {
+    var prev = document.getElementById('pmPreview');
+    var hint = document.querySelector('.pm-photo-hint');
+    if (hint) hint.textContent = _pmImages.length > 0 ? '已选 '+_pmImages.length+'/3 张' : '最多3张';
+    if (!prev) return;
+    prev.innerHTML = _pmImages.map(function(u, i) {
+      return '<div class="pm-thumb"><img src="'+u+'" alt="预览"><button class="pm-thumb-del" data-idx="'+i+'" type="button">✕</button></div>';
+    }).join('');
+    prev.querySelectorAll('.pm-thumb-del').forEach(function(btn) {
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        _pmImages.splice(parseInt(this.dataset.idx), 1);
+        renderPmPreview();
+      });
+    });
+  }
+
   document.getElementById('pmPublish').addEventListener('click',()=>{
     const text=document.getElementById('pmText').value.trim();
-    if(!text){alert('请输入内容');return;}
+    if(!text&&_pmImages.length===0){alert('请输入内容或添加图片');return;}
     const moments=STORE.moments||[];
     const mid='mom_'+Date.now();
+    var imageDataList = _pmImages.slice();
     moments.push({
       id:mid,
       publisher:'user',
@@ -2894,10 +3168,12 @@ function showPublishModal() {
       timestamp:Date.now(),
       likes:[],
       comments:[],
+      imageDataList: imageDataList,
       imageUrl:'',
       dreamProcessed:false,
     });
     STORE.moments=moments;
+    _pmImages = [];
     hideModal();
     renderFeed();
     // Schedule delayed dream reaction to the new moment
@@ -3065,6 +3341,7 @@ function executeDreamReaction(mid) {
   }
   STORE.moments=moments;
   renderFeed();
+  if (rollComment < commentProb) setTimeout(updateRedDots, 300);
 }
 
 // ============ Dream Behavior Engine ============
@@ -3107,6 +3384,7 @@ registerEventType({
     moments.push({ id: momentId, publisher: 'dream', content, timestamp: ts, likes: [], comments: [], imageUrl, dreamProcessed: true });
     STORE.moments = moments;
     if (state.fsView === 'moments') renderFeed();
+    setTimeout(updateRedDots, 300);
   }
 });
 
@@ -3127,6 +3405,7 @@ registerEventType({
     const word = pool[Math.floor(Math.random() * pool.length)];
     STORE.lastCheckinWord = word;
     addCheckin('dream', word, overrides.timestamp);
+    setTimeout(updateRedDots, 300);
   }
 });
 
@@ -3170,6 +3449,7 @@ registerEventType({
     const comment = '梦角批阅：' + picked.join('，');
     userDiary.comments.push({ id: commentId, author: 'dream', content: comment, timestamp: ts });
     STORE.diaries = diaries;
+    setTimeout(updateRedDots, 300);
   }
 });
 
@@ -3184,13 +3464,17 @@ registerEventType({
     if (!checkWordCards()) return;
     const topWords = extractTopWords(dateStr, 2);
     const visible = getVisibleCards();
+    const cfg = STORE.config || {};
+    const cardMin = cfg.diaryCardRangeMin != null ? cfg.diaryCardRangeMin : 2;
+    const cardMax = cfg.diaryCardRangeMax != null ? cfg.diaryCardRangeMax : 6;
+    const nCards = Math.floor(randomBetween(cardMin, cardMax + 1));
     const cards = [];
-    for (let i = 0; i < 6; i++) { const c = weightedPick(visible); cards.push(c ? c.text : '...'); }
-    const tplIdx = Math.floor(Math.random() * DIARY_TEMPLATES.length);
-    const content = DIARY_TEMPLATES[tplIdx](topWords[0] || '今天', topWords[1] || '梦想', cards);
+    for (let i = 0; i < nCards; i++) { const c = weightedPick(visible); cards.push(c ? c.text : '...'); }
+    const content = generateDiaryContent(topWords[0] || '今天', topWords[1] || '梦想', cards);
     const diaries = STORE.diaries || [];
     diaries.push({ id: dateStr + '_dream', date: dateStr, author: 'dream', title: '梦角的日记', content, createdAt: ts, updatedAt: ts, comments: [] });
     STORE.diaries = diaries;
+    setTimeout(updateRedDots, 300);
   }
 });
 
@@ -3255,42 +3539,57 @@ function computeEventTimesForDay(dateStr, eventDef) {
     minP = 1; maxP = 1;
   } else {
     const perDay = (engCfg.perDay && engCfg.perDay[eventDef.id]) || {};
-    minP = perDay.min != null ? perDay.min : (eventDef.minPerDay || 1);
-    maxP = perDay.max != null ? perDay.max : (eventDef.maxPerDay || 1);
+    minP = (perDay.min != null && perDay.min >= 0) ? perDay.min : (eventDef.minPerDay || 1);
+    maxP = (perDay.max != null && perDay.max >= 1) ? perDay.max : (eventDef.maxPerDay || 1);
   }
 
   const nonce = getOrCreateDayNonce(dateStr, eventDef.id);
   const daySeed = dateStr + '_' + eventDef.id + '_' + nonce;
   const dayRng = seedRandom(daySeed);
-  const count = Math.floor(minP + dayRng() * (maxP - minP + 1));
+  var count = Math.floor(minP + dayRng() * (maxP - minP + 1));
+  if (count < 1) count = 1; // safety net: at least 1 event
 
   // Minimum spacing for non-diary events (e.g. checkin)
   const minSpacingMin = (engCfg.interval && engCfg.interval[eventDef.id] != null)
     ? engCfg.interval[eventDef.id] : 0;
 
-  const times = [];
+  let totalMins = (twEnd - twStart) * 60;
+  if (totalMins <= 0) totalMins = 24 * 60;
+
+  // Generate N random raw offsets, then spread them with jitter + min spacing
+  const rawOffsets = [];
   for (let i = 0; i < count; i++) {
     const slotRng = seedRandom(dateStr + '_' + eventDef.id + '_' + nonce + '_' + i);
-    let totalMins = (twEnd - twStart) * 60;
-    if (totalMins <= 0) totalMins = 24 * 60;
-    const offsetMin = Math.floor(slotRng() * totalMins);
-    let hour = twStart + Math.floor(offsetMin / 60);
-    if (hour >= 24) hour -= 24;
-    const minute = offsetMin % 60;
-    const [y, m, d] = dateStr.split('-').map(Number);
-    var ts = new Date(y, m - 1, d, hour, minute, 0, 0).getTime();
-    // Enforce minimum spacing against previous slot
-    if (minSpacingMin > 0 && i > 0) {
-      var prevTs = times[i - 1].timestamp;
-      var minGap = minSpacingMin * 60000;
-      if (ts < prevTs + minGap) {
-        ts = prevTs + minGap;
-        var nd = new Date(ts);
-        hour = nd.getHours(); // eslint-disable-line
-      }
-    }
-    times.push({ hour, minute, timestamp: ts, index: i });
+    rawOffsets.push({ offset: Math.floor(slotRng() * totalMins), idx: i });
   }
+  rawOffsets.sort((a, b) => a.offset - b.offset);
+
+  // Distribute: each slot gets minSpacingMin + a random share of the remaining slack.
+  // Use sorted cumulative fractions so gaps are always positive.
+  const totalSpanNeeded = count * minSpacingMin;
+  const slack = Math.max(0, totalMins - totalSpanNeeded);
+  const gapRng = seedRandom(daySeed + '_gap');
+  // Generate count random fractions, sort them so they're monotonic
+  const fracs = [0];
+  for (let i = 1; i < count; i++) fracs.push(gapRng());
+  fracs.sort(function(a, b) { return a - b; });
+  const fracSum = fracs[fracs.length - 1] || 1;
+  var cumMin = 0;
+  const spacedOffsets = [];
+  for (let i = 0; i < count; i++) {
+    cumMin += (i > 0 ? minSpacingMin : 0);
+    var extraFrac = fracs[i] / fracSum;
+    var pos = cumMin + Math.floor(extraFrac * slack);
+    spacedOffsets.push({ offset: pos, idx: rawOffsets[i].idx });
+  }
+
+  const [y, m, d] = dateStr.split('-').map(Number);
+  const windowBaseMs = new Date(y, m - 1, d, twStart, 0, 0, 0).getTime();
+  const times = spacedOffsets.map(s => {
+    const ts = windowBaseMs + s.offset * 60000;
+    const nd = new Date(ts);
+    return { hour: nd.getHours(), minute: nd.getMinutes(), timestamp: ts, index: s.idx };
+  });
   times.sort((a, b) => a.timestamp - b.timestamp);
   return times;
 }
@@ -3406,16 +3705,20 @@ const UNSPLASH_API = 'https://api.unsplash.com/photos/random';
 async function getRandomPhotoForDream() {
   try {
     const url = `${UNSPLASH_API}?count=1`;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(function() { controller.abort(); }, 6000);
     const resp = await fetch(url, {
       headers: { 'Authorization': `Client-ID ${UNSPLASH_ACCESS_KEY}` },
+      signal: controller.signal,
     });
+    clearTimeout(timeoutId);
     if (!resp.ok) throw new Error(`Unsplash HTTP ${resp.status}`);
     const data = await resp.json();
     if (!data || !Array.isArray(data) || !data[0] || !data[0].urls || !data[0].urls.regular) throw new Error('Unsplash: no results');
     return data[0].urls.regular;
   } catch (e) {
-    console.warn('Unsplash failed:', e.message);
-    return 'https://picsum.photos/1080/1920?random=' + Math.floor(Math.random() * 100);
+    console.warn('Unsplash failed:', e.name || e.message);
+    return 'https://picsum.photos/1080/1920?random=' + (Math.floor((_timeOverride || Date.now()) / 1000) % 1000);
   }
 }
 
@@ -3778,17 +4081,14 @@ function showEditDiaryModal(diaryId) {
 }
 
 // ============ Dream Diary Generation ============
-const DIARY_TEMPLATES=[
-  (w1,w2,cards)=>`今天是个特别的日子。「${w1}」和「${w2}」一直在我脑海里回荡。${cards[0]}，${cards[1]}，${cards[2]}。回想起来，${cards[3]}，${cards[4]}，${cards[5]}。这一天，值得被记住。`,
-  (w1,w2,cards)=>`啊，「${w1}」！多么美妙的词汇。它让我想起了「${w2}」。${cards[0]}，${cards[1]}，${cards[2]}。心中涌起无限感慨，${cards[3]}，${cards[4]}，${cards[5]}。`,
-  (w1,w2,cards)=>`「${w1}？」我问自己。「是的，还有${w2}。」我回答。${cards[0]}，${cards[1]}，${cards[2]}。${cards[3]}，${cards[4]}，${cards[5]}。这样的独白，每天都在上演。`,
-  (w1,w2,cards)=>`${w1} 和 ${w2} 陪伴了我一天。${cards[0]} 落在 ${cards[1]} 上，${cards[2]} 也轻轻摇曳。我在 ${cards[3]} 里写下 ${cards[4]}。最后 ${cards[5]} 说了晚安。`,
-  (w1,w2,cards)=>`哇！！今天 ${w1} 和 ${w2} 居然同时出现！我立刻拿起 ${cards[0]} 拍下 ${cards[1]}。${cards[2]} 跳起来喊："${cards[3]}！"然后 ${cards[4]} 就爆炸了！最后只剩下 ${cards[5]} 在傻笑。太好玩啦！`,
-  (w1,w2,cards)=>`今天好想见你呀。${w1} 和 ${w2} 一直在脑子里转。我趴在 ${cards[0]} 上，对着 ${cards[1]} 说："${cards[2]} 是不是代表你在想我？" 然后我偷偷把 ${cards[3]} 塞进 ${cards[4]} 里，等你看。最后 ${cards[5]} 替我说了声晚安——其实是我说的啦。`,
-  (w1,w2,cards)=>`今天我们一起做了好多事！${w1} 和 ${w2} 一直跟着我们。${cards[0]} 的时候，你拉着我的手去看 ${cards[1]}。我说"${cards[2]} 好厉害！" 你就笑了。后来 ${cards[3]} 悄悄告诉我，你其实偷偷藏了一个 ${cards[4]} 给我。我把它和 ${cards[5]} 放在一起。谢谢你。`,
-  (w1,w2,cards)=>`月亮出来了，今天要结束啦。${w1} 和 ${w2} 还在被窝里不肯走。我抱着 ${cards[0]} ，想起白天你给我的 ${cards[1]} 。${cards[2]} 唱了一首歌，歌词是"${cards[3]} 、${cards[4]} "。我闭上眼睛，听见 ${cards[5]} 说：明天见。嗯，明天见！`,
-  (w1,w2,cards)=>`今天 ${w1} 和 ${w2} 这两个词总是冒出来。${cards[0]} 的时候，${cards[1]} 突然跳到我面前。我说 ${cards[2]} 像 ${cards[3]} 一样闪闪发亮。我看了看 ${cards[4]}，忽然想起 ${cards[5]}。呀，今天也很有趣！`,
-];
+function generateDiaryContent(w1, w2, cards) {
+  var lines = [];
+  lines.push('今日高频：「' + (w1 || '今天') + '」「' + (w2 || '梦想') + '」');
+  if (cards.length > 0) {
+    lines.push('✨ ' + cards.join('、'));
+  }
+  return lines.join('\n');
+}
 
 function extractTopWords(dateStr, count) {
   const messages=STORE.messages||[], moments=STORE.moments||[];
@@ -3826,11 +4126,14 @@ function generateDreamDiary(dateStr) {
 
   const topWords=extractTopWords(dateStr,2);
   const visible=getVisibleCards();
+  const cfg=STORE.config||{};
+  const cardMin=cfg.diaryCardRangeMin!=null?cfg.diaryCardRangeMin:2;
+  const cardMax=cfg.diaryCardRangeMax!=null?cfg.diaryCardRangeMax:6;
+  const nCards=Math.floor(randomBetween(cardMin,cardMax+1));
   const cards=[];
-  for(let i=0;i<6;i++){const c=weightedPick(visible);cards.push(c?c.text:'...');}
+  for(let i=0;i<nCards;i++){const c=weightedPick(visible);cards.push(c?c.text:'...');}
 
-  const tplIdx=Math.floor(Math.random()*DIARY_TEMPLATES.length);
-  const content=DIARY_TEMPLATES[tplIdx](topWords[0]||'今天',topWords[1]||'梦想',cards);
+  const content=generateDiaryContent(topWords[0]||'今天',topWords[1]||'梦想',cards);
 
   const now=Date.now();
   const diary={
@@ -3841,6 +4144,7 @@ function generateDreamDiary(dateStr) {
   const diaries=STORE.diaries||[];
   diaries.push(diary);
   STORE.diaries=diaries;
+  setTimeout(updateRedDots, 300);
   return diary;
 }
 
@@ -4106,6 +4410,7 @@ function scheduleNextAutoCheckin() {
         const word = pool[Math.floor(Math.random() * pool.length)];
         STORE.lastCheckinWord = word;
         addCheckin('dream', word);
+        setTimeout(updateRedDots, 300);
         // Update date to today since auto checkin is always today
         const today = new Date();
         state.checkinDate = today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
@@ -4844,6 +5149,19 @@ function bindEvents() {
     scheduleIndicators(); triggerPassiveReply();
   }
   document.getElementById('btnSend').addEventListener('click',sendMsg);
+  // 📷 聊天配图
+  document.getElementById('btnPhoto').addEventListener('click',function(){
+    document.getElementById('chatFileInput').click();
+  });
+  document.getElementById('chatFileInput').addEventListener('change',function(){
+    var file = this.files[0];
+    if (!file) return;
+    compressImage(file).then(function(dataUrl) {
+      addMessage('user', '', Date.now(), dataUrl);
+      scheduleIndicators(); triggerPassiveReply();
+    }).catch(function(e) { console.error('图片压缩失败:', e); alert('图片处理失败，请重试'); });
+    this.value = '';
+  });
   document.getElementById('msgInput').addEventListener('keydown',e=>{
     if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}
   });
@@ -4957,6 +5275,7 @@ async function init() {
     STORE.lastActive = Date.now();
 
     renderHeader(); renderMessages();
+    updateRedDots();
     // Check for recalls that happened during offline period
     checkPendingRecalls();
     // Lazy recall checker: runs on user interaction (faster than 30s heartbeat)
@@ -4986,6 +5305,35 @@ async function init() {
   }
 }
 document.addEventListener('DOMContentLoaded',init);
+
+// ============ Image Compression ============
+// 将图片文件压缩为 base64 dataURL（长边限制 maxSize，JPEG 质量 quality）
+function compressImage(file, maxSize, quality) {
+  maxSize = maxSize || 800;
+  quality = quality || 0.7;
+  return new Promise(function(resolve, reject) {
+    var reader = new FileReader();
+    reader.onload = function() {
+      var img = new Image();
+      img.onload = function() {
+        var w = img.width, h = img.height;
+        if (w > maxSize || h > maxSize) {
+          if (w > h) { h = Math.round(h * maxSize / w); w = maxSize; }
+          else { w = Math.round(w * maxSize / h); h = maxSize; }
+        }
+        var canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        var ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = function() { reject(new Error('图片加载失败')); };
+      img.src = reader.result;
+    };
+    reader.onerror = function() { reject(new Error('文件读取失败')); };
+    reader.readAsDataURL(file);
+  });
+}
 
 // ============ AI Interpret (字卡解读) ============
 // 全局 AbortController：同一时刻只允许一个解读请求，新的请求会取消旧的
