@@ -2728,7 +2728,7 @@ function bindSettingsEvents(container) {
   }
   _setupAvatarUpload('avatarPreview', 'charAvInput', 'btnCharAvDel', 'avatarUrl', '🏐');
   _setupAvatarUpload('userAvatarPreview', 'userAvInput', 'btnUserAvDel', 'userAvatarUrl', '🐟');
-  container.querySelectorAll('input').forEach(inp=>inp.addEventListener('change',()=>saveSettingsFromForm(container)));
+  container.querySelectorAll('input:not([type="file"])').forEach(inp=>inp.addEventListener('change',()=>saveSettingsFromForm(container)));
   container.querySelectorAll('.prob-msg,.prob-card').forEach(inp=>inp.addEventListener('input',()=>updateProbSums(container)));
   container.querySelector('#btnClearChat').addEventListener('click',()=>{
     if(!confirm('确定清空所有聊天记录吗？此操作不可撤销。'))return;
@@ -2926,7 +2926,7 @@ function saveSettingsFromForm(container) {
   if (deEnaDD) engCfg.enabled.dreamDiary = deEnaDD.checked;
 
   cfg.dreamEngine = engCfg;
-  STORE.config=cfg; renderHeader();
+  STORE.config=cfg; renderHeader(); renderMessages();
   const body=document.getElementById('fsBody');
   if(body&&state.fsView==='settings')renderSettings(body);
   stopActive(); scheduleActive();
