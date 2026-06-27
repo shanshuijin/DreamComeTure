@@ -157,93 +157,185 @@ input, textarea, select { font-family:inherit; outline:none; }
 
 .msg-time { font-size:10px; color:var(--text-muted); flex-shrink:0; margin-bottom:2px; }
 
+/* Time divider between message gaps */
+.msg-time-divider {
+  text-align:center; font-size:11px; color:var(--text-muted);
+  padding:8px 0; opacity:0.55; user-select:none;
+}
+.msg-time-divider .divider-label {
+  display:inline-block; padding:2px 12px;
+  background:rgba(245,246,241,0.55); border-radius:10px;
+  letter-spacing:0.06em;
+}
+
 .read-tag {
   font-size:10px; color:var(--read-color); display:none; font-weight:500;
   text-align:right; padding:0 8px 2px 0; margin-top:-6px;
 }
 .msg-empty { text-align:center; color:var(--text-muted); padding:40px 20px; font-size:13px; }
 
-/* ---- Input (Neumorphic Glass) ---- */
+/* ---- Input (Glass + Inner Diffuse Glow) ---- */
 .chat-input {
-  padding:12px 16px;
-  background:linear-gradient(135deg,
-    rgba(255,225,195,0.65) 0%,
-    rgba(255,248,210,0.65) 40%,
-    rgba(240,244,200,0.65) 100%);
-  backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
-  border-top:1px solid rgba(255,255,255,0.5);
-  display:flex; gap:10px; align-items:flex-end; flex-shrink:0;
+  margin:0 12px 12px;
+  padding:8px 8px 8px 16px;
+  background:rgba(255,254,241,0.3);
+  backdrop-filter:blur(24px) saturate(160%); -webkit-backdrop-filter:blur(24px) saturate(160%);
+  border:1px solid rgba(255,255,255,0.55);
+  border-radius:26px;
+  display:flex; gap:8px; align-items:flex-end; flex-shrink:0;
   box-shadow:
-    0 -2px 12px rgba(120,110,70,0.06),
-    0 -1px 0 rgba(255,255,255,0.5) inset;
+    0 2px 18px rgba(120,110,70,0.06),
+    inset 0 1px 0 rgba(255,255,255,0.4);
+  position:relative; overflow:hidden;
+}
+/* 弥散光球 — 裁入输入栏内部 */
+.chat-input .glow-orb-a {
+  position:absolute; top:-50%; left:10%; right:10%; height:160%;
+  border-radius:50%; pointer-events:none; z-index:0;
+  background:radial-gradient(ellipse at 50% 40%,
+    rgba(248,143,80,0.30) 0%, rgba(248,143,80,0.12) 30%,
+    rgba(221,216,61,0.10) 55%, transparent 100%);
+  filter:blur(18px);
+}
+.chat-input .glow-orb-b {
+  position:absolute; top:-20%; right:-10%; width:60%; height:140%;
+  border-radius:50%; pointer-events:none; z-index:0;
+  background:radial-gradient(ellipse at 60% 50%,
+    rgba(221,216,61,0.18) 0%, rgba(221,216,61,0.05) 40%, transparent 100%);
+  filter:blur(20px);
 }
 .chat-input textarea {
   flex:1; resize:none; border-radius:var(--radius-lg);
   padding:11px 16px; font-size:14px; line-height:1.4; max-height:100px;
-  border:1px solid rgba(221,216,61,1.0);
-  background:linear-gradient(135deg,
-    rgba(255,243,230,0.38) 0%,
-    rgba(254,250,232,0.38) 45%,
-    rgba(248,250,225,0.38) 100%);
+  border:1px solid rgba(255,255,255,0.5);
+  background:rgba(255,255,255,0.48);
   backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
-  transition:all 0.2s;
+  transition:all 0.2s; position:relative; z-index:1;
   box-shadow:
-    inset 3px 3px 8px rgba(120,110,70,0.09),
-    inset -3px -3px 8px rgba(255,255,255,0.65),
-    0 1px 0 rgba(255,255,255,0.45);
+    inset 0 1px 3px rgba(0,0,0,0.03),
+    inset -1px -1px 3px rgba(255,255,255,0.5);
 }
 .chat-input textarea:focus {
-  border-color:var(--accent);
-  background:linear-gradient(135deg,
-    rgba(255,243,230,0.52) 0%,
-    rgba(254,248,228,0.52) 45%,
-    rgba(248,250,225,0.52) 100%);
+  border-color:rgba(248,160,80,0.35);
+  background:rgba(255,255,255,0.6);
   box-shadow:
-    inset 3px 3px 8px rgba(120,110,70,0.1),
-    inset -3px -3px 10px rgba(255,255,255,0.7),
-    0 0 0 3px rgba(248,160,80,0.12),
-    0 1px 0 rgba(255,255,255,0.5);
+    inset 0 1px 3px rgba(0,0,0,0.03),
+    0 0 0 3px rgba(248,160,80,0.08);
   outline:none;
 }
 .btn-send {
   width:46px; height:46px; flex-shrink:0; border-radius:50%;
-  background:rgba(248,160,80,0.5);
-  backdrop-filter:blur(10px) saturate(150%);
-  -webkit-backdrop-filter:blur(10px) saturate(150%);
-  color:rgba(255,255,255,0.92); font-size:18px;
+  background:rgba(255,255,255,0.35);
+  backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+  color:var(--text-secondary); font-size:18px;
   display:flex; align-items:center; justify-content:center;
-  border:1px solid rgba(255,255,255,0.35);
+  border:1px solid rgba(255,255,255,0.5);
   transition:all 0.18s cubic-bezier(0.4,0,0.2,1);
-  box-shadow:
-    5px 5px 14px rgba(120,110,70,0.12),
-    -4px -4px 12px rgba(255,255,255,0.55),
-    inset 1px 1px 3px rgba(255,255,255,0.5);
-  position:relative;
+  box-shadow:0 2px 8px rgba(120,110,70,0.06);
+  position:relative; z-index:1;
 }
-/* Inner highlight gleam */
-.btn-send::after {
+.btn-send:hover {
+  background:rgba(255,255,255,0.55);
+  box-shadow:0 4px 14px rgba(120,110,70,0.1);
+  transform:translateY(-1px);
+}
+.btn-send:active {
+  transform:scale(0.93);
+  background:rgba(255,255,255,0.45);
+  box-shadow:inset 0 2px 4px rgba(0,0,0,0.04);
+}
+/* 发送按钮 — 暖橙强调 */
+#btnSend {
+  background:rgba(248,160,80,0.58); border-color:rgba(248,143,80,0.35);
+  color:#fff;
+  box-shadow:0 4px 16px rgba(248,160,80,0.22);
+}
+#btnSend::after {
   content:''; position:absolute; top:7px; left:11px;
   width:14px; height:10px; border-radius:50%;
   background:rgba(255,255,255,0.45);
   filter:blur(4px); pointer-events:none;
 }
-.btn-send:hover {
-  background:rgba(248,160,80,0.62);
-  box-shadow:
-    6px 6px 18px rgba(120,110,70,0.14),
-    -4px -4px 14px rgba(255,255,255,0.6),
-    inset 1px 1px 3px rgba(255,255,255,0.55);
+#btnSend:hover {
+  background:rgba(248,160,80,0.72);
+  box-shadow:0 6px 20px rgba(248,160,80,0.3);
   transform:translateY(-2px);
 }
-.btn-send:active {
+#btnSend:active {
   transform:scale(0.93);
-  background:rgba(239,143,56,0.7);
+  background:rgba(239,143,56,0.75);
   box-shadow:
     inset 3px 3px 8px rgba(120,80,30,0.18),
-    inset -2px -2px 6px rgba(255,255,255,0.35),
-    0 1px 0 rgba(255,255,255,0.3);
+    inset -2px -2px 6px rgba(255,255,255,0.3),
+    0 1px 0 rgba(255,255,255,0.25);
 }
-.btn-photo { font-size:20px; }
+.btn-photo { font-size:20px; color:var(--text-secondary); }
+.btn-sticker { font-size:20px; color:var(--text-secondary); }
+
+/* ============ Sticker Panel (bottom slide-up) ============ */
+.sticker-overlay {
+  position:fixed; inset:0; background:rgba(0,0,0,0.18); z-index:29;
+  opacity:0; pointer-events:none; transition:opacity 0.22s ease;
+}
+.sticker-overlay.show { opacity:1; pointer-events:auto; }
+
+.sticker-panel {
+  position:fixed; bottom:0; left:0; right:0; z-index:30;
+  max-height:46vh; background:rgba(255,255,255,0.78);
+  backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+  border-radius:var(--radius-lg) var(--radius-lg) 0 0;
+  box-shadow:0 -6px 30px rgba(120,110,70,0.14);
+  transform:translateY(100%);
+  transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);
+  display:flex; flex-direction:column; overflow:hidden;
+}
+.sticker-panel.open { transform:translateY(0); }
+
+.sticker-panel-handle {
+  display:flex; justify-content:center; padding:10px 0 6px; flex-shrink:0;
+}
+.sticker-panel-handle::before {
+  content:''; width:36px; height:4px; border-radius:2px; background:var(--border);
+}
+.sticker-toolbar {
+  display:flex; align-items:center; gap:10px; padding:6px 16px 10px; flex-shrink:0;
+}
+.btn-add-sticker {
+  padding:8px 16px; font-size:13px; border-radius:20px;
+  background:var(--accent); color:#fff; cursor:pointer;
+  transition:all 0.15s; box-shadow:0 2px 8px rgba(248,160,80,0.25);
+}
+.btn-add-sticker:hover { background:var(--accent-hover); transform:translateY(-1px); }
+.sticker-hint { font-size:11px; color:var(--text-muted); }
+
+.sticker-grid-area {
+  flex:1; overflow-y:auto; padding:4px 14px 16px;
+}
+.sticker-grid-area::-webkit-scrollbar { width:3px; }
+.sticker-grid-area::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+
+.sticker-grid {
+  display:grid; grid-template-columns:repeat(3, 1fr); gap:8px;
+}
+.sticker-item {
+  aspect-ratio:1; border-radius:var(--radius-sm); overflow:hidden;
+  cursor:pointer; border:1px solid var(--border);
+  background:var(--bg-warm); position:relative;
+  transition:transform 0.12s;
+}
+.sticker-item:hover { transform:scale(1.03); }
+.sticker-item img {
+  width:100%; height:100%; object-fit:cover; display:block;
+}
+.sticker-item .sticker-del {
+  position:absolute; top:3px; right:3px; width:20px; height:20px;
+  border-radius:50%; background:rgba(0,0,0,0.45); color:#fff;
+  font-size:10px; display:flex; align-items:center; justify-content:center;
+  cursor:pointer; border:none; opacity:0; transition:opacity 0.15s;
+}
+.sticker-item:hover .sticker-del { opacity:1; }
+.sticker-empty { text-align:center; color:var(--text-muted); padding:30px; font-size:13px; }
+
 
 /* Chat message image */
 .msg-photo { margin-top:6px; max-width:200px; border-radius:var(--radius-sm); overflow:hidden; }
@@ -619,9 +711,8 @@ input, textarea, select { font-family:inherit; outline:none; }
 /* Comment area */
 .moment-comments {
   background:#faf8f5; border-radius:var(--radius-sm); padding:6px 10px;
-  margin-top:4px; display:none;
+  margin-top:4px;
 }
-.moment-comments.show { display:block; }
 .moment-comments .mc-input-row {
   display:flex; gap:6px; margin-top:4px;
 }
@@ -1367,11 +1458,15 @@ input, textarea, select { font-family:inherit; outline:none; }
       <div class="msg-empty">开始对话吧</div>
     </div>
     <div class="chat-input">
+      <div class="glow-orb-a"></div>
+      <div class="glow-orb-b"></div>
       <textarea id="msgInput" rows="1" placeholder="输入消息…" maxlength="500"></textarea>
       <button class="btn-send btn-photo" id="btnPhoto" title="发送图片">📷</button>
+      <button class="btn-send btn-sticker" id="btnSticker" title="表情包">😊</button>
       <button class="btn-send" id="btnSend" title="发送">➤</button>
     </div>
     <input type="file" id="chatFileInput" accept="image/*" style="display:none">
+    <input type="file" id="stickerFileInput" accept="image/*" multiple style="display:none">
   </div>
 
   <!-- Menu Overlay (for side panel) -->
@@ -1420,6 +1515,21 @@ input, textarea, select { font-family:inherit; outline:none; }
     <span class="fs-title" id="fsTitle"></span>
   </div>
   <div class="fs-body" id="fsBody"></div>
+</div>
+
+<!-- Sticker Overlay -->
+<div class="sticker-overlay" id="stickerOverlay"></div>
+
+<!-- Sticker Panel (bottom slide-up) -->
+<div class="sticker-panel" id="stickerPanel">
+  <div class="sticker-panel-handle"></div>
+  <div class="sticker-toolbar">
+    <button class="btn-add-sticker" id="btnAddSticker">＋ 添加表情</button>
+    <span class="sticker-hint">点击发送 · 悬停显示删除</span>
+  </div>
+  <div class="sticker-grid-area" id="stickerGridArea">
+    <div class="sticker-grid" id="stickerGrid"></div>
+  </div>
 </div>
 
 <!-- Message Toast (top notification when away from chat) -->
@@ -1539,6 +1649,8 @@ const STORE = {
   set periodConfig(v) { this._write('mcard_periodConfig', v); },
   get favorites() { return this._read('mcard_favorites') || []; },
   set favorites(v) { this._write('mcard_favorites', v); },
+  get stickers() { return this._read('mcard_stickers') || []; },
+  set stickers(v) { this._write('mcard_stickers', v); },
 };
 
 // ============ AI Interpret default config ============
@@ -1629,7 +1741,7 @@ function initDefaults() {
         diaryTimeStart: 21, diaryTimeEnd: 24,
         enabled: { dreamPost: true, dreamCheckin: false, dreamDiary: true, dreamChat: true, dreamDiaryComment: true },
         perDay: { dreamPost: { min: 2, max: 8 }, dreamCheckin: { min: 3, max: 12 }, dreamChat: { min: 5, max: 15 }, dreamDiary: { min: 1, max: 1 } },
-        prob: { dreamDiaryComment: 70, dreamPostPhoto: 60, recallProb: 1 },
+        prob: { dreamDiaryComment: 70, dreamPostPhoto: 60, dreamStickerFrac: 70, dreamChatSticker: 10, recallProb: 1 },
         interval: { dreamCheckin: 45 },
       },
       /* AI interpretation (字卡解读) */
@@ -1644,7 +1756,7 @@ function initDefaults() {
       diaryTimeStart: 21, diaryTimeEnd: 24,
       enabled: { dreamPost: true, dreamCheckin: false, dreamDiary: true, dreamChat: true, dreamDiaryComment: true },
       perDay: { dreamPost: { min: 2, max: 8 }, dreamCheckin: { min: 3, max: 12 }, dreamChat: { min: 5, max: 15 }, dreamDiary: { min: 1, max: 1 } },
-      prob: { dreamDiaryComment: 70, dreamPostPhoto: 60, recallProb: 1 },
+      prob: { dreamDiaryComment: 70, dreamPostPhoto: 60, dreamStickerFrac: 70, dreamChatSticker: 10, recallProb: 1 },
       interval: { dreamCheckin: 45 },
     };
     STORE.config = cfg;
@@ -1666,6 +1778,7 @@ function initDefaults() {
   if (!STORE.periodConfig) STORE.periodConfig = { cycleLength: 28, periodDuration: 5 };
   if (!STORE.favorites) STORE.favorites = [];
   if (!STORE.lastSeen) STORE.lastSeen = {};
+  if (!STORE.stickers) STORE.stickers = [];
 
   // Migrate old moments: likes from number → array (safe)
   try {
@@ -1901,10 +2014,21 @@ function addMessage(type,text,timestamp,imageData) {
     const prob = (engCfg.prob && engCfg.prob.recallProb != null) ? engCfg.prob.recallProb : 1;
     const roll = Math.random() * 100;
     msg.recall = { prob, decided: roll < prob, time: ts + Math.floor(Math.random() * 60000), executed: false };
+    // Sticker probability for dream chat messages (not for review/doodle)
+    if (!imageData && !doodleData) {
+      const stickerProb = (engCfg.prob && engCfg.prob.dreamChatSticker != null) ? engCfg.prob.dreamChatSticker : 0;
+      if (stickerProb > 0 && Math.random() * 100 < stickerProb) {
+        var stickers = STORE.stickers || [];
+        if (stickers.length > 0) {
+          msg.imageData = stickers[Math.floor(Math.random() * stickers.length)].dataUrl;
+        }
+      }
+    }
     // Toast if user is not on chat screen
     if (state.fsOpen || state.panelOpen) {
       var toastText = text || '';
       if (doodleData) toastText = '[涂鸦]';
+      else if (msg.imageData) toastText = '[表情包]';
       showMessageToast(toastText);
     }
   }
@@ -2063,11 +2187,24 @@ function renderMessages() {
   if (messages.length===0) {
     area.innerHTML='<div class="msg-empty">开始对话吧</div>';
   } else {
-    area.innerHTML = messages.map((m, idx) => renderOneMessageHTML(m, idx)).join('');
-    // Draw doodle canvases — wait for custom font to load first
+    area.innerHTML = messages.map(function(m, idx) {
+      const prev = idx > 0 ? messages[idx - 1] : null;
+      var divider = '';
+      if (prev && (m.timestamp - prev.timestamp) > 600000) {
+        const t = new Date(m.timestamp).toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});
+        divider = '<div class="msg-time-divider"><span class="divider-label">———— '+t+' ————</span></div>';
+      }
+      return divider + renderOneMessageHTML(m, idx);
+    }).join('');
     drawAllDoodles(messages);
   }
   area.scrollTop=area.scrollHeight;
+}
+
+function getLastMessageTimestamp() {
+  var msgs = STORE.messages || [];
+  if (msgs.length === 0) return null;
+  return msgs[msgs.length - 1].timestamp;
 }
 
 function drawAllDoodles(messages) {
@@ -2092,8 +2229,17 @@ function drawAllDoodles(messages) {
 function appendMessageToDOM(m) {
   const area=document.getElementById('messagesArea');
   const idx = (STORE.messages||[]).length - 1;
+  const prevTs = getLastMessagePreceding();
   // Clear empty state if present
   if (area.querySelector('.msg-empty')) area.innerHTML = '';
+  // Insert time divider if gap > 10 minutes
+  if (prevTs !== null && (m.timestamp - prevTs) > 600000) {
+    const t = new Date(m.timestamp).toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});
+    var divEl = document.createElement('div');
+    divEl.className = 'msg-time-divider';
+    divEl.innerHTML = '<span class="divider-label">———— '+t+' ————</span>';
+    area.appendChild(divEl);
+  }
   const html = renderOneMessageHTML(m, idx);
   var tmp = document.createElement('div');
   tmp.innerHTML = html;
@@ -2104,6 +2250,13 @@ function appendMessageToDOM(m) {
     drawDoodleCanvas('doodle_cv_'+idx, m.doodle);
   }
   area.scrollTop = area.scrollHeight;
+}
+
+// Returns the PREVIOUS message's timestamp (before the one about to be appended)
+function getLastMessagePreceding() {
+  var msgs = STORE.messages || [];
+  if (msgs.length <= 1) return null;
+  return msgs[msgs.length - 2].timestamp;
 }
 
 // ============ Doodle Canvas Drawing ============
@@ -2595,7 +2748,8 @@ function renderSettings(container) {
         <input type="checkbox" id="cfgDEEnaPost" ${(engCfg.enabled&&engCfg.enabled.dreamPost!==false)?'checked':''} style="width:auto;">
       </div>
       <div class="setting-row"><label>每天最少</label><input type="number" id="cfgDEPDPostMin" value="${(engCfg.perDay&&engCfg.perDay.dreamPost)?engCfg.perDay.dreamPost.min:2}" min="0" max="20" step="1"><label>最多</label><input type="number" id="cfgDEPDPostMax" value="${(engCfg.perDay&&engCfg.perDay.dreamPost)?engCfg.perDay.dreamPost.max:8}" min="0" max="20" step="1"><label>条</label></div>
-      <div class="setting-row"><label>配图概率(%)</label><input type="number" id="cfgPhotoProb" value="${(engCfg.prob&&engCfg.prob.dreamPostPhoto!=null)?engCfg.prob.dreamPostPhoto:60}" min="0" max="100" step="5"></div>
+      <div class="setting-row"><label>配图概率(%)</label><input type="number" id="cfgPhotoProb" value="${(engCfg.prob&&engCfg.prob.dreamPostPhoto!=null)?engCfg.prob.dreamPostPhoto:60}" min="0" max="100" step="5"><label>其中表情占</label><input type="number" id="cfgStickerFrac" value="${(engCfg.prob&&engCfg.prob.dreamStickerFrac!=null)?engCfg.prob.dreamStickerFrac:70}" min="0" max="100" step="5"><label>%</label></div>
+      <div class="setting-row"><label>聊天发图概率(%)</label><input type="number" id="cfgChatSticker" value="${(engCfg.prob&&engCfg.prob.dreamChatSticker!=null)?engCfg.prob.dreamChatSticker:10}" min="0" max="100" step="5"><label>梦角每条消息随机带表情</label></div>
     </div>
     <div class="setting-group">
       <div class="sg-title">📌 打卡</div>
@@ -2900,6 +3054,10 @@ function saveSettingsFromForm(container) {
   _savePerDay('Post', 'dreamPost', 2, 8);
   const photoProbEl = container.querySelector('#cfgPhotoProb');
   if (photoProbEl) engCfg.prob.dreamPostPhoto = parseInt(photoProbEl.value) || 60;
+  const stickerFracEl = container.querySelector('#cfgStickerFrac');
+  if (stickerFracEl) engCfg.prob.dreamStickerFrac = parseInt(stickerFracEl.value) || 70;
+  const chatStickerEl = container.querySelector('#cfgChatSticker');
+  if (chatStickerEl) engCfg.prob.dreamChatSticker = parseInt(chatStickerEl.value) || 0;
 
   // Dream checkin
   const deEnaCI = container.querySelector('#cfgDEEnaCI');
@@ -2952,7 +3110,7 @@ function renderMoments(container) {
     <div class="moments-header">
       <div class="mh-left">
         <span class="mh-title">朋友圈</span>
-        <span class="mh-sub">${escapeHtml(name)}的朋友圈</span>
+        <span class="mh-sub">${escapeHtml(cfg.userNickname||'我')}的朋友圈</span>
       </div>
       <div style="display:flex;align-items:center;gap:10px;">
         <div class="mh-avatar" id="mhAvatar">${avUrl?`<img src="${escapeHtml(avUrl)}" onerror="this.parentElement.textContent='🏐'">`:'🏐'}</div>
@@ -3004,9 +3162,14 @@ function renderFeed() {
     // Build comments HTML
     let commentsHtml='';
     if(comments.length>0){
-      commentsHtml=comments.map(c=>{
+      commentsHtml=comments.map(function(c,ci){
         const cName=c.commenter==='user'?(cfg.userNickname||'我'):name;
-        return `<div class="mc-item"><b>${escapeHtml(cName)}：</b>${escapeHtml(c.content)}</div>`;
+        var html='<div class="mc-item"><b>'+escapeHtml(cName)+'：</b>'+escapeHtml(c.content)+'</div>';
+        if(c.commenter==='dream'){
+          html+='<button class="mi-act mi-ai-btn" data-mid="'+m.id+'" data-cid="comment_'+ci+'" data-action="aiInterpretComment" style="font-size:11px;margin:2px 0 4px;">🤖 解读这条评论</button>';
+          html+='<div class="ai-box" data-ai-target="moment-comment" data-mid="'+m.id+'" data-cid="comment_'+ci+'"></div>';
+        }
+        return html;
       }).join('');
     }else{
       commentsHtml='<div class="mc-empty">暂无评论</div>';
@@ -3025,9 +3188,9 @@ function renderFeed() {
             <span>${isLiked?'❤️':'🤍'}</span> <span class="like-count">${likeCount||'赞'}</span>
           </button>
           <button class="mi-act mi-comment-btn" data-mid="${m.id}" data-action="comment">💬 评论</button>
-          ${!isUser?`<button class="mi-act mi-ai-btn" data-mid="${m.id}" data-action="aiInterpret">🤖 解读</button>`:''}
+          ${!isUser?`<button class="mi-act mi-ai-btn" data-mid="${m.id}" data-action="aiInterpret">🤖 解读这条朋友圈</button>`:''}
         </div>
-        ${!isUser?`<div class="ai-box" data-ai-target="moment" data-mid="${m.id}"></div>`:''}
+        ${!isUser?`<div class="ai-box" data-ai-target="moment-post" data-mid="${m.id}"></div>`:''}
         ${likerStr?`<div class="mi-likers">${likerStr}</div>`:''}
         <div class="moment-comments" id="mc-${m.id}">
           ${commentsHtml}
@@ -3061,8 +3224,9 @@ function bindMomentsEvents(container) {
     if(action==='like'){
       toggleLike(mid);
     } else if(action==='comment'){
+      // Comments always visible now, focus the input for this moment
       const mc=document.getElementById('mc-'+mid);
-      if(mc)mc.classList.toggle('show');
+      if(mc){ var inp=mc.querySelector('.mc-input'); if(inp)inp.focus(); }
     } else if(action==='sendComment'){
       const row=btn.parentElement;
       const inp=row?row.querySelector('.mc-input'):null;
@@ -3072,6 +3236,39 @@ function bindMomentsEvents(container) {
         inp.value='';
         addComment(mid,'user',text);
       }
+    } else if(action==='aiInterpretComment'){
+      e.stopPropagation();
+      if(!isAIInterpretReady()){alert('请先到「设置 → AI 解读」开启功能并填写 API Key');return;}
+      var cid=btn.dataset.cid;
+      var moments=STORE.moments||[];
+      var moment=moments.find(x=>x.id===mid);
+      if(!moment)return;
+      var commentIdx=parseInt(cid.replace('comment_',''),10);
+      var comment=moment.comments[commentIdx];
+      if(!comment)return;
+      var box=btn.parentElement.querySelector('.ai-box');
+      if(!box)return;
+      // Find index in combined comments+likes for context
+      var userName=(STORE.config||{}).userNickname||'我';
+      var charName=(STORE.config||{}).characterName||'梦角';
+      var postAuthor=moment.publisher==='user'?userName:charName;
+      // Build context: who posted, all comments up to this one
+      var allMsgs=[];
+      allMsgs.push({role:'system',content:postAuthor+'的朋友圈原文："'+moment.content+'"'});
+      (moment.comments||[]).forEach(function(c){
+        var r=c.commenter==='user'?userName:charName;
+        allMsgs.push({role:c.commenter==='dream'?'assistant':'user',content:r+'：'+c.content});
+      });
+      var commentGlobalIdx=allMsgs.findIndex(function(m){
+        return m.content&&m.content.indexOf(comment.content)>=0;
+      });
+      if(commentGlobalIdx<1)commentGlobalIdx=allMsgs.length-1;
+      runAIInterpretOnBox(box, {
+        targetText: charName+'的评论："'+comment.content+'"',
+        contextMessages: allMsgs.slice(0,commentGlobalIdx),
+        scene: 'moments-comment',
+        loadingText: '解读评论中'
+      });
     } else if(action==='delete'){
       deleteMoment(mid);
     } else if(action==='aiInterpret'){
@@ -3080,12 +3277,21 @@ function bindMomentsEvents(container) {
       var moments=STORE.moments||[];
       var moment=moments.find(x=>x.id===mid);
       if(!moment)return;
-      var box=btn.closest('.mi-body').querySelector('.ai-box');
+      var box=btn.closest('.mi-body').querySelector('.ai-box[data-ai-target="moment-post"]');
       if(!box)return;
+      var userName=(STORE.config||{}).userNickname||'我';
+      var charName=(STORE.config||{}).characterName||'梦角';
+      var postAuthor=moment.publisher==='user'?userName:charName;
+      var ctxMsgs=[{role:'system',content:postAuthor+'的朋友圈原文："'+moment.content+'"'}];
+      (moment.comments||[]).forEach(function(c){
+        var r=c.commenter==='user'?userName:charName;
+        ctxMsgs.push({role:c.commenter==='dream'?'assistant':'user',content:r+'：'+c.content});
+      });
+      var isMine=moment.publisher==='dream';
       runAIInterpretOnBox(box, {
         targetText: moment.content,
-        contextMessages: buildMomentContext(moment),
-        scene: 'moments',
+        contextMessages: ctxMsgs,
+        scene: isMine?'moments':'moments-friend',
         loadingText: '解读朋友圈中'
       });
     }
@@ -3379,7 +3585,14 @@ registerEventType({
     let imageUrl = '';
     const photoProb = (engCfg.prob && engCfg.prob.dreamPostPhoto != null) ? engCfg.prob.dreamPostPhoto : 60;
     if (Math.random() * 100 < photoProb) {
-      imageUrl = await getRandomPhotoForDream();
+      const stickerFrac = (engCfg.prob && engCfg.prob.dreamStickerFrac != null) ? engCfg.prob.dreamStickerFrac : 70;
+      if (Math.random() * 100 < stickerFrac) {
+        var stickers = STORE.stickers || [];
+        if (stickers.length > 0) imageUrl = stickers[Math.floor(Math.random() * stickers.length)].dataUrl;
+        else imageUrl = await getRandomPhotoForDream();
+      } else {
+        imageUrl = await getRandomPhotoForDream();
+      }
     }
     moments.push({ id: momentId, publisher: 'dream', content, timestamp: ts, likes: [], comments: [], imageUrl, dreamProcessed: true });
     STORE.moments = moments;
@@ -3968,7 +4181,7 @@ function renderDiaryEntry(diary, isUser) {
   const aiBtnDiary=!isUser?`<button class="btn-ai-diary" data-did="${diary.id}">📖 想说什么？</button>`:'';
   const aiBoxDiary=!isUser?`<div class="ai-box" data-ai-target="diary" data-did="${diary.id}"></div>`:'';
   return `<div class="diary-entry">
-    <div class="de-header"><span class="de-author">${isUser?'📝 '+((STORE.config||{}).userNickname||'我')+'的日记':(STORE.config||{}).characterName||'梦角'}的日记</span>${editBtn}</div>
+    <div class="de-header"><span class="de-author">${isUser?'📝 '+((STORE.config||{}).userNickname||'我'):(STORE.config||{}).characterName||'梦角'}的日记</span>${editBtn}</div>
     <div class="de-title">${escapeHtml(diary.title||'无题')}</div>
     <div class="de-body">${escapeHtml(diary.content||'')}</div>
     <div class="de-time">${new Date(diary.updatedAt||diary.createdAt).toLocaleString('zh-CN')}</div>
@@ -5058,6 +5271,62 @@ function returnToChat() {
   if (state.panelOpen) closePanel();
 }
 
+// ============ Sticker Panel ============
+function openStickerPanel() {
+  document.getElementById('stickerPanel').classList.add('open');
+  document.getElementById('stickerOverlay').classList.add('show');
+  renderStickerGrid();
+}
+
+function closeStickerPanel() {
+  document.getElementById('stickerPanel').classList.remove('open');
+  document.getElementById('stickerOverlay').classList.remove('show');
+}
+
+function sendSticker(dataUrl) {
+  addMessage('user', '', Date.now(), dataUrl);
+  closeStickerPanel();
+  scheduleIndicators(); triggerPassiveReply();
+}
+
+function deleteSticker(id) {
+  if (!confirm('确定删除这个表情吗？')) return;
+  var stickers = STORE.stickers || [];
+  STORE.stickers = stickers.filter(function(s) { return s.id !== id; });
+  renderStickerGrid();
+}
+
+function renderStickerGrid() {
+  var grid = document.getElementById('stickerGrid');
+  if (!grid) return;
+  var stickers = STORE.stickers || [];
+  if (stickers.length === 0) {
+    grid.innerHTML = '<div class="sticker-empty">暂无表情，点击上方按钮添加</div>';
+    return;
+  }
+  grid.innerHTML = stickers.map(function(s) {
+    return '<div class="sticker-item" onclick="sendSticker(\'' + s.dataUrl.replace(/'/g,"\\'") + '\')">'
+      + '<img src="' + s.dataUrl + '" alt="表情" loading="lazy">'
+      + '<button class="sticker-del" onclick="event.stopPropagation();deleteSticker(\'' + s.id + '\')">✕</button>'
+      + '</div>';
+  }).join('');
+}
+
+function addStickersFromFiles(files) {
+  var pending = Array.from(files || []).map(function(f) {
+    return compressImage(f, 400, 0.65);
+  });
+  Promise.all(pending).then(function(results) {
+    var stickers = STORE.stickers || [];
+    var added = 0;
+    results.forEach(function(dataUrl) {
+      stickers.push({ id: 'stk_' + Date.now() + '_' + (added++), dataUrl: dataUrl, addedAt: Date.now() });
+    });
+    STORE.stickers = stickers;
+    renderStickerGrid();
+  }).catch(function(e) { console.error('表情压缩失败:', e); alert('表情添加失败，请重试'); });
+}
+
 // ============ Search ============
 function openSearch() {
   document.getElementById('searchModal').classList.add('show');
@@ -5162,6 +5431,16 @@ function bindEvents() {
     }).catch(function(e) { console.error('图片压缩失败:', e); alert('图片处理失败，请重试'); });
     this.value = '';
   });
+  // 😊 表情包面板
+  document.getElementById('btnSticker').addEventListener('click', openStickerPanel);
+  document.getElementById('stickerOverlay').addEventListener('click', closeStickerPanel);
+  document.getElementById('btnAddSticker').addEventListener('click', function(){
+    document.getElementById('stickerFileInput').click();
+  });
+  document.getElementById('stickerFileInput').addEventListener('change', function(){
+    addStickersFromFiles(this.files);
+    this.value = '';
+  });
   document.getElementById('msgInput').addEventListener('keydown',e=>{
     if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}
   });
@@ -5241,6 +5520,7 @@ function bindEvents() {
     if(e.key==='Escape'){
       if(document.getElementById('modalOverlay').classList.contains('show')){hideModal();}
       else if(document.getElementById('searchModal').classList.contains('show')){closeSearch();}
+      else if(document.getElementById('stickerPanel').classList.contains('open')){closeStickerPanel();}
       else if(state.fsOpen){closeFullscreen();}
       else if(state.panelOpen){closePanel();}
     }
@@ -5361,22 +5641,22 @@ function getAIConfig() {
 // 根据场景拼装系统提示词
 function buildAISystemPrompt(scene, cfg) {
   var base = cfg.systemPrompt;
+  var userName = (STORE.config||{}).userNickname || '我';
   if (scene === 'moments') {
-    return '你扮演梦角本人。下面是你（梦角）发的一条朋友圈，以及你和用户在评论区的互动。' +
-      '请用第一人称"我"解读：我发这条朋友圈时心里在想什么？想要表达什么情绪？' +
-      '语气贴合梦角人设——活泼、真诚、偶尔撒娇。回答 80 字以内，自然口语，不要分点，不要说"作为AI"。';
+    return '你扮演梦角本人。下面是你（梦角）发的一条朋友圈，以及你和'+userName+'在评论区的互动。\n' + base;
+  }
+  if (scene === 'moments-friend') {
+    return '你扮演梦角本人。下面是你看到的朋友圈动态（发布者是'+userName+'），以及你和'+userName+'在评论区的互动。\n' + base;
+  }
+  if (scene === 'moments-comment') {
+    return '你扮演梦角本人。下面是一条朋友圈的动态和互动，你（梦角）在其中发表了一条评论。\n' + base;
   }
   if (scene === 'diary') {
-    return '你扮演梦角本人。下面是你（梦角）写的日记。' +
-      '请用第一人称"我"解读：我写这篇日记时的心情、惦记的事、想要对小屋主人（用户）说的话。' +
-      '语气贴合梦角人设——活泼、真诚、偶尔撒娇。回答 100 字以内，自然口语，不要分点，不要说"作为AI"。';
+    return '你扮演梦角本人。下面是你（梦角）写的日记。\n' + base;
   }
   if (scene === 'review') {
-    return '你扮演梦角本人。用户让你对某件事物做"锐评"（打分 + 评语），现在请用第一人称"我"解读：' +
-      '我为什么给出这个评价？我的评语背后是什么心思？' +
-      '语气贴合梦角人设——活泼、真诚、偶尔撒娇。回答 80 字以内，自然口语，不要分点，不要说"作为AI"。';
+    return '你扮演梦角本人。'+userName+'让你对某件事物做"锐评"（打分 + 评语），以下是你的评价。\n' + base;
   }
-  // chat 场景用用户配置的默认提示词
   return base;
 }
 
@@ -5387,24 +5667,23 @@ function buildAIUserContent(scene, targetText, contextMessages) {
     var ctx = '';
     if (contextMessages && contextMessages.length > 0) {
       ctx = '\n\n【最近的聊天记录】\n' + contextMessages.map(function(m) {
-        return (m.role === "assistant" ? "梦角" : userName) + "：" + m.content;
+        return (m.role === "assistant" ? '梦角' : userName) + '：' + m.content;
       }).join('\n');
     }
-    return '请解读我（梦角）说的这句话："' + targetText + '"。' + ctx;
+    return '以下是梦角和' + userName + '的聊天记录。请解读梦角说的这句话：' + targetText + '。' + ctx;
   }
-  if (scene === 'moments') {
+  if (scene === 'moments' || scene === 'moments-friend' || scene === 'moments-comment') {
     var cmts = (contextMessages || []).map(function(m) {
-      return '  ' + (m.role === "assistant" ? "梦角" : userName) + "：" + m.content;
+      return '  ' + m.content;
     }).join('\n');
-    return '我的朋友圈原文："' + targetText + '"。\n\n评论区互动：\n' + (cmts || '（暂无评论）');
+    return '以下是一条朋友圈的动态和评论互动：\n' + (cmts || '（暂无内容）');
   }
   if (scene === 'diary') {
-    return '我的日记内容：\n' + (contextMessages && contextMessages[0] ? contextMessages[0].content : targetText);
+    return '以下是梦角（我）写的日记：\n' + (contextMessages && contextMessages[0] ? contextMessages[0].content : targetText);
   }
   if (scene === 'review') {
-    // contextMessages[0] = 被锐评的内容，targetText = 评语
     var reviewed = (contextMessages && contextMessages[0]) ? contextMessages[0].content : '';
-    return '用户让我锐评："' + reviewed + '"。\n我的评价：' + targetText;
+    return userName + '让我锐评："' + reviewed + '"。\n我的评价：' + targetText;
   }
   return targetText;
 }
