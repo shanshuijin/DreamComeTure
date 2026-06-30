@@ -1643,6 +1643,8 @@ input, textarea, select { font-family:inherit; outline:none; }
   <button class="mab-btn mab-interpret" type="button">🔍 解读</button>
   <span class="mab-sep"></span>
   <button class="mab-btn mab-fav" type="button">⭐ 收藏</button>
+  <span class="mab-sep"></span>
+  <button class="mab-btn mab-del" type="button">🗑️ 删除</button>
 </div>
 
 <!-- Modal -->
@@ -2358,7 +2360,7 @@ function renderOneMessageHTML(m, idx) {
   const imgHtml = m.imageData
     ? '<div class="msg-photo"><img src="' + m.imageData + '" alt="图片" loading="lazy"></div>'
     : '';
-  return `<div class="msg-row ${isUser?'user':'char'}" ${!isUser&&m.text?'data-msg-idx="'+idx+'"':''}>
+  return `<div class="msg-row ${isUser?'user':'char'}" data-msg-idx="${idx}">
     <div class="msg-avatar">${isUser?av.user:av.char}</div>
     <div class="msg-bubble">${escapeHtml(m.text)}${imgHtml}${aiBox}</div>
     <div class="msg-time">${time}</div></div>`
@@ -5671,11 +5673,12 @@ function bindEvents() {
     if(_mabIdx >= 0) hideMsgActionBar();
   });
 
-  // 浮层按钮：解读/收藏
+  // 浮层按钮：解读/收藏/删除
   var actionBar = document.getElementById('msgActionBar');
   if(actionBar){
     actionBar.querySelector('.mab-interpret').addEventListener('click', mabDoInterpret);
     actionBar.querySelector('.mab-fav').addEventListener('click', mabDoFavorite);
+    actionBar.querySelector('.mab-del').addEventListener('click', mabDoDelete);
   }
   // 点浮层自身以外（且非消息区）时收起
   document.addEventListener('click', function(e){
@@ -6181,6 +6184,12 @@ function showMsgActionBarFor(rowEl, idx) {
   bar.style.top = top + 'px';
   // 更新收藏按钮态
   updateMabFavState(idx);
+  // 用户消息只显示删除按钮
+  var isUser = (STORE.messages || [])[idx] && (STORE.messages || [])[idx].type === 'user';
+  var interpBtn = bar.querySelector('.mab-interpret');
+  var favBtn = bar.querySelector('.mab-fav');
+  if (interpBtn) interpBtn.style.display = isUser ? 'none' : '';
+  if (favBtn) favBtn.style.display = isUser ? 'none' : '';
 }
 
 function hideMsgActionBar() {
@@ -6270,6 +6279,20 @@ function removeFavorite(favId) {
   STORE.favorites = favorites;
   var body = document.getElementById('fsBody');
   if (body && state.fsView === 'favorites') renderFavorites(body);
+}
+
+// 浮层"删除消息"按钮
+function mabDoDelete() {
+  if (_mabIdx < 0) return;
+  var idx = _mabIdx;
+  hideMsgActionBar();
+  var messages = STORE.messages || [];
+  var m = messages[idx];
+  if (!m) return;
+  if (!confirm('确定删除这条消息吗？')) return;
+  messages.splice(idx, 1);
+  STORE.messages = messages;
+  renderMessages();
 }
 
 // ============ 收藏夹视图 ============
