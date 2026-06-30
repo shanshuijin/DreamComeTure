@@ -102,10 +102,10 @@ input, textarea, select { font-family:inherit; outline:none; }
 .chat-header .header-right { pointer-events:auto; display:flex; align-items:center; gap:10px; }
 .btn-menu, .btn-review, .btn-search {
   width:40px; height:40px; border-radius:50%;
-  background:rgba(255,255,255,0.75); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+  background:rgba(255,255,255,0.15); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
   display:flex; align-items:center; justify-content:center;
   transition:all 0.2s; box-shadow:var(--shadow-sm);
-  font-size:18px; color:var(--text-primary);
+  font-size:18px; color:var(--text-primary); position:relative;
 }
 .btn-menu:hover, .btn-review:hover, .btn-search:hover { background:#fff; transform:translateY(-1px); box-shadow:var(--shadow-md); }
 @keyframes pulse-dot { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
@@ -225,52 +225,58 @@ input, textarea, select { font-family:inherit; outline:none; }
 }
 .btn-send {
   width:46px; height:46px; flex-shrink:0; border-radius:50%;
-  background:rgba(255,255,255,0.35);
+  background:rgba(255,255,255,0.15);
   backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
   color:var(--text-secondary); font-size:18px;
   display:flex; align-items:center; justify-content:center;
-  border:1px solid rgba(255,255,255,0.5);
+  border:1px solid rgba(255,255,255,0.35);
   transition:all 0.18s cubic-bezier(0.4,0,0.2,1);
   box-shadow:0 2px 8px rgba(120,110,70,0.06);
   position:relative; z-index:1;
 }
 .btn-send:hover {
-  background:rgba(255,255,255,0.55);
+  background:rgba(255,255,255,0.28);
   box-shadow:0 4px 14px rgba(120,110,70,0.1);
   transform:translateY(-1px);
 }
 .btn-send:active {
   transform:scale(0.93);
-  background:rgba(255,255,255,0.45);
+  background:rgba(255,255,255,0.2);
   box-shadow:inset 0 2px 4px rgba(0,0,0,0.04);
 }
 /* 发送按钮 — 暖橙强调 */
 #btnSend {
-  background:rgba(248,160,80,0.58); border-color:rgba(248,143,80,0.35);
+  background:rgba(248,160,80,0.3); border-color:rgba(248,143,80,0.25);
   color:#fff;
-  box-shadow:0 4px 16px rgba(248,160,80,0.22);
+  box-shadow:0 4px 16px rgba(248,160,80,0.15);
 }
 #btnSend::after {
-  content:''; position:absolute; top:7px; left:11px;
-  width:14px; height:10px; border-radius:50%;
-  background:rgba(255,255,255,0.45);
-  filter:blur(4px); pointer-events:none;
+  display:none;
 }
 #btnSend:hover {
-  background:rgba(248,160,80,0.72);
-  box-shadow:0 6px 20px rgba(248,160,80,0.3);
+  background:rgba(248,160,80,0.4);
+  box-shadow:0 6px 20px rgba(248,160,80,0.2);
   transform:translateY(-2px);
 }
 #btnSend:active {
   transform:scale(0.93);
-  background:rgba(239,143,56,0.75);
-  box-shadow:
-    inset 3px 3px 8px rgba(120,80,30,0.18),
-    inset -2px -2px 6px rgba(255,255,255,0.3),
-    0 1px 0 rgba(255,255,255,0.25);
+  background:rgba(239,143,56,0.45);
+  box-shadow:inset 3px 3px 8px rgba(120,80,30,0.12);
 }
-.btn-photo { font-size:20px; color:var(--text-secondary); }
-.btn-sticker { font-size:20px; color:var(--text-secondary); }
+.btn-photo, .btn-sticker { color:var(--text-secondary); }
+.btn-photo svg, .btn-sticker svg, #btnSend svg { display:block; filter:drop-shadow(0 1px 3px rgba(0,0,0,0.1)); }
+
+/* ===== 弥散光晕 (Diffuse Halo) — 方案 C ===== */
+.glow {
+  position:absolute; inset:0; border-radius:50%; pointer-events:none;
+  filter:blur(10px); opacity:0.55; z-index:-1;
+}
+.btn-photo .glow { background:radial-gradient(circle at 50% 50%, rgba(248,143,80,0.5), transparent 70%); }
+.btn-sticker .glow { background:radial-gradient(circle at 50% 50%, rgba(221,216,61,0.45), transparent 70%); }
+#btnSend .glow { background:radial-gradient(circle at 50% 50%, rgba(248,143,80,0.55), rgba(221,216,61,0.2) 60%, transparent 80%); }
+.btn-review .glow { background:radial-gradient(circle at 50% 50%, rgba(248,143,80,0.4), transparent 70%); }
+.btn-search .glow { background:radial-gradient(circle at 50% 50%, rgba(221,216,61,0.35), transparent 70%); }
+.btn-menu .glow { background:radial-gradient(circle at 50% 50%, rgba(248,143,80,0.3), rgba(221,216,61,0.2), transparent 70%); }
 
 /* ============ Sticker Panel (bottom slide-up) ============ */
 .sticker-overlay {
@@ -684,8 +690,10 @@ input, textarea, select { font-family:inherit; outline:none; }
 .moment-item .mi-body { flex:1; min-width:0; }
 .moment-item .mi-name { font-size:14px; font-weight:600; color:#576b95; margin-bottom:4px; }
 .moment-item .mi-text { font-size:14px; line-height:1.5; word-break:break-word; margin-bottom:8px; white-space:pre-wrap; }
-.moment-item .mi-photo { margin-bottom:8px; border-radius:var(--radius-sm); overflow:hidden; max-width:240px; }
-.moment-item .mi-photo img { width:100%; height:auto; display:block; object-fit:cover; }
+.moment-item .mi-photo-single {
+  margin-bottom:8px; border-radius:var(--radius-sm); overflow:hidden; max-width:260px; background:#f5f0eb;
+}
+.moment-item .mi-photo-single img { width:100%; height:auto; display:block; object-fit:cover; }
 .moment-item .mi-time { font-size:11px; color:var(--text-muted); margin-bottom:6px; }
 .moment-item .mi-actions {
   display:flex; align-items:center; gap:16px; border-top:1px solid #f0ebe3; padding-top:6px;
@@ -774,11 +782,13 @@ input, textarea, select { font-family:inherit; outline:none; }
 
 /* multi-photo layout in moments */
 .mi-photos {
-  display:flex; gap:4px; flex-wrap:wrap; margin-bottom:8px;
+  display:grid; grid-template-columns:repeat(3,1fr); gap:3px; margin-bottom:8px;
+  max-width:260px;
 }
 .mi-photos .mi-photo {
-  width:calc(33.3% - 3px); max-width:none;
+  aspect-ratio:1; border-radius:4px; overflow:hidden; background:#f5f0eb;
 }
+.mi-photos .mi-photo img { width:100%; height:100%; object-fit:cover; }
 
 /* ============ Diary (日记) ============ */
 .diary-page { display:flex; flex-direction:column; height:100%; }
@@ -876,13 +886,11 @@ input, textarea, select { font-family:inherit; outline:none; }
   border-radius:var(--radius-sm); background:var(--bg-warm); margin-bottom:8px;
 }
 
-.btn-review {
-  width:40px; height:40px; border-radius:50%; background:linear-gradient(135deg,#F8A050,#DDD33D);
-  font-size:16px; display:flex; align-items:center; justify-content:center;
-  transition:transform 0.15s,box-shadow 0.15s; color:#fff; box-shadow:0 2px 8px rgba(248,160,80,0.35);
-}
-.btn-review:hover { transform:scale(1.08); box-shadow:0 4px 14px rgba(248,160,80,0.5); }
-.btn-review:active { transform:scale(0.94); }
+/* Header icon SVGs */
+.btn-review svg, .btn-search svg, .btn-menu svg { display:block; filter:drop-shadow(0 1px 3px rgba(0,0,0,0.1)); }
+.btn-review:hover svg, .btn-search:hover svg, .btn-menu:hover svg { filter:drop-shadow(0 2px 5px rgba(0,0,0,0.15)); }
+
+/* Review modal */
 
 /* Review modal */
 .review-modal .rm-textarea {
@@ -980,6 +988,80 @@ input, textarea, select { font-family:inherit; outline:none; }
   transition:background 0.15s, color 0.15s;
 }
 .fav-del:hover { background:rgba(192,32,32,0.1); color:var(--danger); }
+
+/* ============ Memory Library ============ */
+.mem-page { display:flex; flex-direction:column; flex:1; padding:16px; box-sizing:border-box; }
+.mem-list-area { flex:1; padding:0 0 16px; }
+.mem-empty { text-align:center; color:var(--text-muted); padding:80px 20px; font-size:13px; line-height:1.8; margin:0 16px; }
+.mem-item {
+  position:relative; padding:12px 14px; margin:0 16px 8px;
+  background:var(--card-bg); border-radius:var(--radius); box-shadow:var(--shadow-sm);
+  border-left:3px solid var(--accent);
+}
+.mem-item[data-speaker="me"] { border-left-color:#5b9bd5; }
+.mem-item[data-speaker="mengjiao"] { border-left-color:var(--accent); }
+.mem-item[data-speaker="general"] { border-left-color:var(--brand-green); }
+.mem-item-content { font-size:13px; line-height:1.6; color:var(--text-primary); padding-right:28px; word-break:break-word; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.mem-item:hover .mem-item-content { white-space:normal; overflow:visible; }
+.mem-item-meta { display:flex; gap:6px; flex-wrap:wrap; margin-top:6px; font-size:11px; }
+.mem-tag {
+  display:inline-block; padding:1px 8px; border-radius:8px;
+  background:var(--bg-warm); color:var(--text-secondary);
+}
+.mem-tag.speaker-me { background:#e3f0ff; color:#5b9bd5; }
+.mem-tag.speaker-mengjiao { background:var(--accent-light); color:var(--accent); }
+.mem-tag.speaker-general { background:#e8f5e8; color:#4caf50; }
+.mem-tag.source-ai { background:#f3e8ff; color:#9b59b6; }
+.mem-tag.source-manual { background:#fff8e1; color:#f0a040; }
+.mem-time { font-size:11px; color:var(--text-muted); margin-top:4px; }
+.mem-item-actions { position:absolute; top:8px; right:8px; display:flex; gap:2px; }
+.mem-edit, .mem-del {
+  width:24px; height:24px; border:none; border-radius:50%;
+  background:transparent; color:var(--text-muted); font-size:14px; cursor:pointer;
+  transition:background 0.15s, color 0.15s;
+}
+.mem-edit:hover { background:rgba(248,160,80,0.1); color:var(--accent); }
+.mem-del:hover { background:rgba(192,32,32,0.1); color:var(--danger); }
+
+/* ============ Memory Inline Edit ============ */
+.mem-edit-area { padding:0; }
+.mem-edit-textarea {
+  width:100%; padding:8px 10px; font-size:13px; line-height:1.6;
+  border:1px solid var(--border); border-radius:var(--radius-sm);
+  background:var(--bg-warm); resize:vertical; min-height:60px;
+  box-sizing:border-box; font-family:inherit;
+}
+.mem-edit-textarea:focus { border-color:var(--accent); outline:none; }
+.mem-edit-actions { display:flex; gap:6px; margin-top:4px; }
+.mem-edit-save {
+  padding:4px 14px; font-size:12px; border-radius:16px;
+  background:var(--accent); color:#fff; cursor:pointer; border:none;
+  transition:all 0.12s;
+}
+.mem-edit-save:hover { background:var(--accent-hover); }
+.mem-edit-cancel {
+  padding:4px 14px; font-size:12px; border-radius:16px;
+  background:var(--bg-warm); color:var(--text-secondary); cursor:pointer; border:1px solid var(--border);
+  transition:all 0.12s;
+}
+.mem-edit-cancel:hover { background:var(--border); }
+
+.mem-import-area { margin:0 0 14px; padding:0 16px; flex-shrink:0; }
+.mem-import-area textarea {
+  width:100%; min-height:80px; padding:10px 14px; font-size:13px; line-height:1.6;
+  border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg-warm);
+  resize:vertical; box-sizing:border-box; font-family:inherit;
+}
+.mem-import-area textarea:focus { border-color:var(--accent); }
+.mem-import-actions { display:flex; align-items:center; gap:10px; margin-top:6px; }
+.btn-mem-import {
+  padding:8px 20px; font-size:13px; border-radius:20px;
+  background:var(--accent); color:#fff; cursor:pointer; border:none;
+  transition:all 0.15s; box-shadow:0 2px 8px rgba(248,160,80,0.25);
+}
+.btn-mem-import:hover { background:var(--accent-hover); transform:translateY(-1px); }
+.mem-import-hint { font-size:11px; color:var(--text-muted); }
+.mem-import-ok { font-size:12px; color:var(--brand-green); font-weight:600; }
 
 /* 朋友圈解读按钮（复用 .mi-act 样式） */
 .mi-ai-btn { color:var(--accent) !important; }
@@ -1312,7 +1394,7 @@ input, textarea, select { font-family:inherit; outline:none; }
   .chat-titles .ct-main { font-size:85px; font-weight:700; }
   .chat-titles .ct-sub { font-size:24px; font-weight:700; }
   .chat-titles { top:70px; }
-  .chat-input { padding:8px 10px; gap:6px; }
+  .chat-input { margin:0 8px 8px; padding:6px 6px 6px 12px; gap:6px; }
   .cards-toolbar { gap:2px; padding:4px 6px; }
   .cards-toolbar .tb-btn { padding:4px 7px; font-size:10px; }
   .settings-body { padding:8px 10px; }
@@ -1446,10 +1528,19 @@ input, textarea, select { font-family:inherit; outline:none; }
     </div>
     <div class="chat-header">
       <div class="header-right">
-        <button class="btn-review" id="btnReview" title="锐评">💥</button>
-        <button class="btn-search" id="btnSearch" title="搜索">🔍</button>
+        <button class="btn-review" id="btnReview" title="锐评">
+          <div class="glow"></div>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </button>
+        <button class="btn-search" id="btnSearch" title="搜索">
+          <div class="glow"></div>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21"/></svg>
+        </button>
         <div class="btn-menu-wrap">
-          <button class="btn-menu" id="btnMenu" title="菜单">☰</button>
+          <button class="btn-menu" id="btnMenu" title="菜单">
+            <div class="glow"></div>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
+          </button>
           <span class="dot dot-v1" id="menuBtnDot" style="display:none"></span>
         </div>
       </div>
@@ -1461,9 +1552,18 @@ input, textarea, select { font-family:inherit; outline:none; }
       <div class="glow-orb-a"></div>
       <div class="glow-orb-b"></div>
       <textarea id="msgInput" rows="1" placeholder="输入消息…" maxlength="500"></textarea>
-      <button class="btn-send btn-photo" id="btnPhoto" title="发送图片">📷</button>
-      <button class="btn-send btn-sticker" id="btnSticker" title="表情包">😊</button>
-      <button class="btn-send" id="btnSend" title="发送">➤</button>
+      <button class="btn-send btn-photo" id="btnPhoto" title="发送图片">
+        <div class="glow"></div>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="15" rx="3"/><circle cx="12" cy="13" r="3"/><path d="M21 8l-4 3.5L13 8"/></svg>
+      </button>
+      <button class="btn-send btn-sticker" id="btnSticker" title="表情包">
+        <div class="glow"></div>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 14s1.5 2.5 4 2.5 4-2.5 4-2.5"/><circle cx="9" cy="10" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="10" r="1" fill="currentColor" stroke="none"/></svg>
+      </button>
+      <button class="btn-send" id="btnSend" title="发送">
+        <div class="glow"></div>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2L15 22l-4-9-9-4L22 2z"/></svg>
+      </button>
     </div>
     <input type="file" id="chatFileInput" accept="image/*" style="display:none">
     <input type="file" id="stickerFileInput" accept="image/*" multiple style="display:none">
@@ -1503,6 +1603,9 @@ input, textarea, select { font-family:inherit; outline:none; }
       </button>
       <button class="menu-btn" data-view="favorites">
         <span class="menu-icon">⭐</span> 收藏夹 <span class="menu-arrow">›</span>
+      </button>
+      <button class="menu-btn" data-view="memory">
+        <span class="menu-icon">🧠</span> 记忆库 <span class="menu-arrow">›</span>
       </button>
     </div>
   </div>
@@ -1652,6 +1755,68 @@ const STORE = {
   get stickers() { return this._read('mcard_stickers') || []; },
   set stickers(v) { this._write('mcard_stickers', v); },
 };
+
+// ============ Memory Library ============
+// 记忆条目字段:
+//   id, content, speaker("me"|"mengjiao"|"general"),
+//   source("ai_approved"|"manual"), timestamp(ISO),
+//   createdAt(ISO), updatedAt(ISO)
+
+function _loadMemories() {
+  try { return JSON.parse(localStorage.getItem('memory_library')) || []; }
+  catch(e) { return []; }
+}
+
+function _saveMemories(list) {
+  try { localStorage.setItem('memory_library', JSON.stringify(list)); }
+  catch(e) { console.error('memory_library 写入失败:', e); }
+}
+
+function saveMemory(memory) {
+  var list = _loadMemories();
+  var now = new Date().toISOString();
+  var entry = {
+    id: memory.id || (Date.now().toString(36) + Math.random().toString(36).slice(2, 10)),
+    content: memory.content || '',
+    speaker: memory.speaker || 'general',
+    source: memory.source || 'manual',
+    timestamp: memory.timestamp || now,
+    createdAt: memory.createdAt || now,
+    updatedAt: now,
+  };
+  list.push(entry);
+  _saveMemories(list);
+  return entry;
+}
+
+function getMemoryList() {
+  var list = _loadMemories();
+  list.sort(function(a, b) {
+    var ta = a.timestamp || a.createdAt || '';
+    var tb = b.timestamp || b.createdAt || '';
+    return tb.localeCompare(ta); // 按时间倒序
+  });
+  return list;
+}
+
+function deleteMemory(id) {
+  var list = _loadMemories();
+  list = list.filter(function(m) { return m.id !== id; });
+  _saveMemories(list);
+}
+
+function updateMemory(id, newContent) {
+  var list = _loadMemories();
+  for (var i = 0; i < list.length; i++) {
+    if (list[i].id === id) {
+      list[i].content = newContent;
+      list[i].updatedAt = new Date().toISOString();
+      _saveMemories(list);
+      return true;
+    }
+  }
+  return false;
+}
 
 // ============ AI Interpret default config ============
 function defaultAIInterpret() {
@@ -2119,7 +2284,26 @@ function checkPendingRecalls() {
   }
   if (changed) {
     STORE.messages = messages;
-    renderMessages();
+    try {
+      var area = document.getElementById('messagesArea');
+      var allKids = area.children;
+      var msgIdx = 0;
+      for (var i = 0; i < allKids.length && msgIdx < messages.length; i++) {
+        var el = allKids[i];
+        if (el.classList.contains('msg-time-divider')) continue;
+        var m = messages[msgIdx];
+        if (m && m.type === 'character' && m.recall && m.recall.executed && !m.doodle) {
+          var newHtml = renderOneMessageHTML(m, msgIdx);
+          var tmp = document.createElement('div');
+          tmp.innerHTML = newHtml;
+          el.parentNode.replaceChild(tmp.firstElementChild, el);
+        }
+        msgIdx++;
+      }
+    } catch(e) {
+      console.warn('Surgical recall DOM update failed, falling back to full render');
+      renderMessages();
+    }
   }
 }
 
@@ -2418,6 +2602,9 @@ function openFullscreen(viewId) {
   } else if(viewId==='favorites'){
     document.getElementById('fsTitle').textContent='收藏夹';
     renderFavorites(body);
+  } else if(viewId==='memory'){
+    document.getElementById('fsTitle').textContent='记忆库管理';
+    renderMemoryLibrary(body);
   }
 }
 
@@ -3181,7 +3368,7 @@ function renderFeed() {
         <div class="mi-name">${escapeHtml(pubName)}</div>
         <div class="mi-text">${escapeHtml(m.content)}</div>
         ${m.imageDataList&&m.imageDataList.length>0?'<div class="mi-photos">'+m.imageDataList.map(function(u){return '<div class="mi-photo"><img src="'+u+'" alt="配图" loading="lazy"></div>';}).join('')+'</div>':''}
-        ${!m.imageDataList&&m.imageUrl?`<div class="mi-photo"><img src="${escapeHtml(m.imageUrl)}" alt="配图" loading="lazy" onerror="this.parentElement.style.display='none'"></div>`:''}
+        ${!m.imageDataList&&m.imageUrl?`<div class="mi-photo-single"><img src="${escapeHtml(m.imageUrl)}" alt="配图" loading="lazy" onerror="this.parentElement.style.display='none'"></div>`:''}
         <div class="mi-time">${timeStr}</div>
         <div class="mi-actions">
           <button class="mi-act mi-like-btn ${isLiked?'liked':''}" data-mid="${m.id}" data-action="like">
@@ -5589,8 +5776,8 @@ document.addEventListener('DOMContentLoaded',init);
 // ============ Image Compression ============
 // 将图片文件压缩为 base64 dataURL（长边限制 maxSize，JPEG 质量 quality）
 function compressImage(file, maxSize, quality) {
-  maxSize = maxSize || 800;
-  quality = quality || 0.7;
+  maxSize = maxSize || 1000;
+  quality = quality || 0.82;
   return new Promise(function(resolve, reject) {
     var reader = new FileReader();
     reader.onload = function() {
@@ -5708,8 +5895,25 @@ function callAIInterpret(opts) {
 
   var messages = [
     { role: 'system', content: buildAISystemPrompt(opts.scene, cfg) },
-    { role: 'user', content: buildAIUserContent(opts.scene, opts.targetText, opts.contextMessages) }
   ];
+
+  // ---- LokulMem: inject recent memories into context ----
+  var memories = getMemoryList();
+  if (memories.length > 0) {
+    var speakerMap = { me: '我', mengjiao: '梦角', general: '共同' };
+    var memLines = ['【以下是梦角的历史记忆，供你参考】'];
+    var count = 0;
+    for (var i = 0; i < memories.length && count < 20; i++) {
+      var m = memories[i];
+      var label = speakerMap[m.speaker] || m.speaker;
+      var dateStr = m.timestamp ? new Date(m.timestamp).toISOString().slice(0, 10) : '';
+      memLines.push('[' + dateStr + '] ' + label + '：' + m.content);
+      count++;
+    }
+    messages.push({ role: 'system', content: memLines.join('\n') });
+  }
+
+  messages.push({ role: 'user', content: buildAIUserContent(opts.scene, opts.targetText, opts.contextMessages) });
 
   fetch(cfg.apiUrl, {
     method: 'POST',
@@ -5787,6 +5991,9 @@ function abortAIInterpret() {
 function aiBoxStartLoading(box, loadingText) {
   box.classList.add('show', 'loading');
   box.innerHTML = '<div class="ai-loading"><span class="ai-dot"></span><span class="ai-dot"></span><span class="ai-dot"></span><span class="ai-loading-text">' + escapeHtml(loadingText || '组织语言中') + '</span></div><div class="ai-text"></div>';
+  // Reset memory-actions flag so fresh interpretation can save/ignore again
+  box._memoryBtnsAdded = false;
+  delete box.dataset.aiDecision;
   return box.querySelector('.ai-text');
 }
 
@@ -5824,17 +6031,92 @@ function aiBoxError(box, msg) {
 // 触发一次解读，自动管理 .ai-box 的生命周期（loading → streaming → finish/error）
 function runAIInterpretOnBox(box, aiOpts) {
   var textEl = aiBoxStartLoading(box, aiOpts.loadingText);
+  var scene = aiOpts.scene || 'chat';
+  var speaker = 'mengjiao'; // All AI interpretations are from 梦角's perspective
   callAIInterpret({
     targetText: aiOpts.targetText,
     contextMessages: aiOpts.contextMessages,
-    scene: aiOpts.scene,
+    scene: scene,
     onResult: function(chunk) {
       if (box.classList.contains('loading')) aiBoxStartStreaming(box);
       aiBoxAppend(box, chunk);
     },
-    onDone: function() { aiBoxFinish(box); },
+    onDone: function() {
+      aiBoxFinish(box);
+      // Add memory/ignore buttons after finish
+      // addMemoryActionButtons(box, scene, speaker);  // <-- 注释掉，后续需要时取消注释
+    },
     onError: function(msg) { aiBoxError(box, msg); }
   });
+}
+
+function addMemoryActionButtons(box, scene, speaker) {
+  if (box._memoryBtnsAdded) return;
+  box._memoryBtnsAdded = true;
+  // Check if already decided (ignored or saved)
+  var decision = box.dataset.aiDecision;
+  if (decision === 'ignored') return;
+  if (decision === 'saved') return;
+
+  // Check if this interpretation content was previously ignored (saved in session memory)
+  var textEl = box.querySelector('.ai-text');
+  if (!textEl) return;
+  var content = textEl.textContent.trim();
+  if (!content) return;
+  if (window._ignoredInterpretations && window._ignoredInterpretations.indexOf(content) >= 0) return;
+
+  var btns = document.createElement('div');
+  btns.className = 'ai-memory-btns';
+  btns.style.cssText = 'display:flex;gap:8px;margin-top:8px;';
+
+  var saveBtn = document.createElement('button');
+  saveBtn.textContent = '✅ 存入记忆';
+  saveBtn.style.cssText = 'padding:4px 12px;font-size:12px;border-radius:16px;background:var(--accent);color:#fff;cursor:pointer;border:none;';
+
+  var ignoreBtn = document.createElement('button');
+  ignoreBtn.textContent = '❌ 忽略';
+  ignoreBtn.style.cssText = 'padding:4px 12px;font-size:12px;border-radius:16px;background:var(--bg-warm);color:var(--text-secondary);cursor:pointer;border:1px solid var(--border);';
+
+  saveBtn.addEventListener('click', function() {
+    // Check if already in memory library (prevents duplicate on re-interpret)
+    var existing = getMemoryList().filter(function(m) { return m.content === content; });
+    if (existing.length > 0) {
+      saveBtn.textContent = '已存入 ✓';
+      saveBtn.disabled = true;
+      saveBtn.style.opacity = '0.6';
+      ignoreBtn.disabled = true;
+      ignoreBtn.style.opacity = '0.6';
+      box.dataset.aiDecision = 'saved';
+      return;
+    }
+    saveMemory({
+      content: content,
+      speaker: speaker,
+      source: 'ai_approved',
+      timestamp: new Date().toISOString()
+    });
+    saveBtn.textContent = '已存入 ✓';
+    saveBtn.disabled = true;
+    saveBtn.style.opacity = '0.6';
+    ignoreBtn.disabled = true;
+    ignoreBtn.style.opacity = '0.6';
+    box.dataset.aiDecision = 'saved';
+  });
+
+  ignoreBtn.addEventListener('click', function() {
+    if (!window._ignoredInterpretations) window._ignoredInterpretations = [];
+    window._ignoredInterpretations.push(content);
+    ignoreBtn.textContent = '已忽略 ✗';
+    ignoreBtn.disabled = true;
+    ignoreBtn.style.opacity = '0.6';
+    saveBtn.disabled = true;
+    saveBtn.style.opacity = '0.6';
+    box.dataset.aiDecision = 'ignored';
+  });
+
+  btns.appendChild(saveBtn);
+  btns.appendChild(ignoreBtn);
+  box.appendChild(btns);
 }
 
 // ============ AI 解读：四个场景的上下文组装 ============
@@ -6034,6 +6316,133 @@ function renderFavorites(container) {
     btn.addEventListener('click', function() {
       var fid = this.dataset.fid;
       removeFavorite(fid);
+    });
+  });
+}
+
+// ============ Memory Library Rendering ============
+function renderMemoryLibrary(container) {
+  var memories = getMemoryList();
+  var speakerMap = { me: '我', mengjiao: '梦角', general: '共同背景' };
+  var sourceMap = { ai_approved: 'AI审批', manual: '手动导入' };
+
+  var html = '<div class="mem-page">'
+    + '<div style="text-align:center;padding:0 0 14px;">'
+    + '<button class="btn-mem-import" id="btnMemImport">📥 导入历史记忆</button>'
+    + '<span class="mem-import-hint" style="display:block;font-size:11px;color:var(--text-muted);margin-top:6px;">点击弹出导入框，支持我：/梦角：前缀</span>'
+    + '</div>';
+
+  if (memories.length === 0) {
+    html += '<div class="mem-empty">🧠 暂无记忆</div>';
+  } else {
+    memories.forEach(function(mem) {
+      var speakerLabel = speakerMap[mem.speaker] || mem.speaker;
+      var sourceLabel = sourceMap[mem.source] || mem.source;
+      var sourceIcon = mem.source === 'manual' ? '📥 ' : '🤖 ';
+      var timeStr = mem.timestamp ? new Date(mem.timestamp).toLocaleString('zh-CN', { year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' }) : '';
+      var speakerCls = mem.speaker === 'me' ? 'speaker-me' : (mem.speaker === 'mengjiao' ? 'speaker-mengjiao' : 'speaker-general');
+      var sourceCls = mem.source === 'ai_approved' ? 'source-ai' : 'source-manual';
+      html += '<div class="mem-item" data-speaker="' + mem.speaker + '">'
+        + '<div class="mem-item-content" title="' + escapeHtml(mem.content) + '">' + escapeHtml(mem.content) + '</div>'
+        + '<div class="mem-item-meta">'
+        + '<span class="mem-tag ' + speakerCls + '">' + speakerLabel + '</span>'
+        + '<span class="mem-tag ' + sourceCls + '">' + sourceIcon + sourceLabel + '</span>'
+        + '</div>'
+        + '<div class="mem-time">' + timeStr + '</div>'
+        + '<div class="mem-item-actions">'
+        + '<button class="mem-edit" data-mid="' + mem.id + '" title="编辑">✏️</button>'
+        + '<button class="mem-del" data-mid="' + mem.id + '" title="删除">✕</button>'
+        + '</div>'
+        + '</div>';
+    });
+  }
+  html += '</div>';
+  container.innerHTML = html;
+
+  // Bind import button → show modal
+  var importBtn = container.querySelector('#btnMemImport');
+  if (importBtn) {
+    importBtn.addEventListener('click', function() {
+      showModal('<h3>📥 导入历史记忆</h3>'
+        + '<div class="mem-import-modal">'
+        + '<textarea id="memImportText" rows="8" placeholder="每行一条记忆&#10;例如：我：今天去公园散步了&#10;例如：梦角：加油！冲啊！&#10;例如：两个人都喜欢雨天" style="width:100%;border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;font-size:13px;line-height:1.6;background:var(--bg-warm);resize:vertical;box-sizing:border-box;font-family:inherit;"></textarea>'
+        + '<div style="font-size:11px;color:var(--text-muted);margin-top:6px;line-height:1.6;">📌 每行一条记忆<br>支持前缀：<b>我：</b>、<b>梦角：</b> —— 或直接输入（视为共同背景）</div>'
+        + '<div style="display:flex;align-items:center;gap:10px;margin-top:10px;">'
+        + '<button class="btn-primary" id="memImportConfirm" style="padding:8px 20px;">✅ 确认导入</button>'
+        + '<span id="memImportStatus" style="font-size:12px;color:var(--brand-green);font-weight:600;"></span>'
+        + '</div></div>');
+
+      document.getElementById('memImportConfirm').addEventListener('click', function() {
+        var textarea = document.getElementById('memImportText');
+        var status = document.getElementById('memImportStatus');
+        if (!textarea) return;
+        var raw = textarea.value.trim();
+        if (!raw) { alert('请输入要导入的记忆内容'); return; }
+        var lines = raw.split(/[\n\r]+/).map(function(l) { return l.trim(); }).filter(function(l) { return l; });
+        var combined = lines.join("\n");
+        saveMemory({ content: combined, speaker: 'general', source: 'manual' });
+        if (status) status.textContent = '✅ 成功导入 1 组对话（共 ' + lines.length + ' 条消息）';
+        textarea.value = '';
+        renderMemoryLibrary(container);
+      });
+    });
+  }
+
+  // Bind delete buttons
+  container.querySelectorAll('.mem-del').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var mid = this.dataset.mid;
+      if (!confirm('确定删除这条记忆吗？')) return;
+      deleteMemory(mid);
+      renderMemoryLibrary(container);
+    });
+  });
+
+  // Bind edit buttons → inline edit
+  container.querySelectorAll('.mem-edit').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var mid = this.dataset.mid;
+      var memories = getMemoryList();
+      var mem = memories.find(function(m) { return m.id === mid; });
+      if (!mem) return;
+
+      var item = this.closest('.mem-item');
+      if (!item) return;
+      var contentDiv = item.querySelector('.mem-item-content');
+      if (!contentDiv) return;
+      var actions = item.querySelector('.mem-item-actions');
+      if (!actions) return;
+
+      // Replace content with textarea
+      var origContent = mem.content;
+      contentDiv.innerHTML = '<div class="mem-edit-area">'
+        + '<textarea class="mem-edit-textarea" rows="3">' + escapeHtml(origContent) + '</textarea>'
+        + '<div class="mem-edit-actions">'
+        + '<button class="mem-edit-save">保存</button>'
+        + '<button class="mem-edit-cancel">取消</button>'
+        + '</div></div>';
+
+      // Hide edit/del buttons while editing
+      actions.style.display = 'none';
+
+      // Save
+      var saveBtn = contentDiv.querySelector('.mem-edit-save');
+      if (saveBtn) {
+        saveBtn.addEventListener('click', function() {
+          var newText = contentDiv.querySelector('.mem-edit-textarea').value.trim();
+          if (!newText) { alert('内容不能为空'); return; }
+          updateMemory(mid, newText);
+          renderMemoryLibrary(container);
+        });
+      }
+
+      // Cancel
+      var cancelBtn = contentDiv.querySelector('.mem-edit-cancel');
+      if (cancelBtn) {
+        cancelBtn.addEventListener('click', function() {
+          renderMemoryLibrary(container);
+        });
+      }
     });
   });
 }
