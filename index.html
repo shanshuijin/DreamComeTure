@@ -108,7 +108,6 @@ input, textarea, select { font-family:inherit; outline:none; }
   font-size:18px; color:var(--text-primary); position:relative;
 }
 .btn-menu:hover, .btn-review:hover, .btn-search:hover { background:#fff; transform:translateY(-1px); box-shadow:var(--shadow-md); }
-@keyframes pulse-dot { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
 @keyframes blink-text { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
 
 /* ---- Messages：滚动靠近顶部时淡出（60px过渡带） ---- */
@@ -486,108 +485,123 @@ input, textarea, select { font-family:inherit; outline:none; }
 .fs-body::-webkit-scrollbar { width:3px; }
 .fs-body::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
 
-/* ============ Card Manager ============ */
+/* ============ Card Manager (frosted glass) ============ */
 .cards-toolbar {
-  display:flex; align-items:center; flex-wrap:wrap; gap:4px;
-  padding:6px 10px; border-bottom:1px solid var(--border); flex-shrink:0;
+  display:flex; align-items:center; justify-content:center; gap:6px;
+  padding:10px 14px; flex-shrink:0; flex-wrap:wrap;
 }
 .cards-toolbar .tb-btn {
-  padding:5px 10px; font-size:11px; border-radius:var(--radius-sm);
-  background:var(--bg-warm); color:var(--text-secondary);
-  border:1px solid var(--border); transition:all 0.15s; white-space:nowrap;
+  padding:8px 20px; font-size:18px; border-radius:24px;
+  background:rgba(255,254,241,0.4); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+  color:var(--text-secondary); border:1px solid rgba(255,255,255,0.4);
+  transition:all 0.15s; white-space:nowrap; cursor:pointer;
 }
-.cards-toolbar .tb-btn:hover { background:var(--accent-light); color:var(--accent); border-color:var(--accent); }
-.cards-toolbar .tb-search {
-  flex:1; min-width:60px; padding:5px 10px; font-size:12px;
-  border:1px solid var(--border); border-radius:20px; background:var(--bg-warm);
+.cards-toolbar .tb-btn:hover { background:rgba(255,255,255,0.6); color:var(--accent); border-color:var(--accent); }
+.tb-search {
+  padding:8px 18px; font-size:18px; width:100%;
+  border:1px solid rgba(255,255,255,0.35); border-radius:24px;
+  background:rgba(255,254,241,0.2); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+  font-family:inherit; outline:none; color:var(--text-primary);
 }
-.cards-toolbar .tb-search:focus { border-color:var(--accent); }
+.tb-search:focus { border-color:var(--accent); }
 
 .cat-tabs {
-  display:flex; align-items:center; gap:6px; padding:6px 10px;
-  border-bottom:1px solid var(--border); overflow-x:auto; flex-shrink:0;
-  scrollbar-width:none; -ms-overflow-style:none;
+  display:flex; align-items:center; gap:6px; padding:6px 14px; flex-shrink:0;
+  overflow-x:auto; scrollbar-width:none; -ms-overflow-style:none;
+  -webkit-mask-image:linear-gradient(to right, transparent 0%, #000 6%, #000 94%, transparent 100%);
+  mask-image:linear-gradient(to right, transparent 0%, #000 6%, #000 94%, transparent 100%);
 }
 .cat-tabs::-webkit-scrollbar { display:none; }
 .cat-tabs .cat-tab {
-  padding:7px 14px; font-size:13px; border-radius:20px;
-  border:1px solid var(--border); background:var(--bg-warm);
-  color:var(--text-secondary); cursor:pointer; transition:all 0.15s;
-  white-space:nowrap; flex-shrink:0; display:flex; align-items:center; gap:6px;
+  padding:8px 20px; font-size:20px; border-radius:24px;
+  background:rgba(255,255,255,0.25); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,0.25); color:var(--text-secondary); cursor:pointer;
+  white-space:nowrap; flex-shrink:0; transition:all 0.15s; position:relative;
 }
 .cat-tabs .cat-tab:hover { border-color:var(--accent); color:var(--accent); }
-.cat-tabs .cat-tab.active { background:var(--accent); color:#fff; border-color:var(--accent); }
-.cat-tabs .cat-tab .cat-eye { font-size:14px; cursor:pointer; }
-.cat-tabs .cat-tab .cat-actions { display:flex; gap:3px; margin-left:2px; }
-.cat-tabs .cat-tab .cat-act-btn {
-  font-size:13px; background:transparent; padding:3px 4px; border-radius:4px;
-  color:inherit; opacity:0.6; transition:opacity 0.15s;
-}
-.cat-tabs .cat-tab .cat-act-btn:hover { opacity:1; }
+.cat-tabs .cat-tab.active { background:rgba(248,160,80,0.2); border-color:var(--accent); color:var(--accent); font-weight:500; }
+.cat-tabs .cat-tab.hidden { opacity:0.4; color:var(--text-muted); }
+.cat-tabs .cat-tab .cat-badge { font-size:11px; background:rgba(248,160,80,0.1); padding:1px 8px; border-radius:8px; margin-left:6px; color:var(--text-muted); }
 .btn-new-cat {
-  padding:7px 14px; font-size:13px; border-radius:20px; white-space:nowrap; flex-shrink:0;
-  background:transparent; color:var(--accent); border:1px dashed var(--border);
-  cursor:pointer; transition:background 0.15s;
+  padding:8px 16px; font-size:18px; border-radius:24px; white-space:nowrap; flex-shrink:0;
+  background:transparent; color:var(--accent); border:1px dashed rgba(248,160,80,0.3); cursor:pointer;
 }
-.btn-new-cat:hover { background:var(--accent-light); }
 
 .subcat-row {
   display:flex; align-items:center; flex-wrap:wrap; gap:4px;
-  padding:6px 10px; border-bottom:1px solid var(--border); flex-shrink:0;
+  padding:6px 14px; flex-shrink:0;
+  border-bottom:1px solid rgba(255,255,255,0.08);
 }
-.subcat-chip {
-  padding:7px 14px; font-size:13px; border-radius:20px;
-  border:1px solid var(--border); background:var(--bg-warm);
-  color:var(--text-secondary); cursor:pointer; transition:all 0.15s;
-  display:flex; align-items:center; gap:6px; white-space:nowrap;
+.subcat-row .subcat-chip {
+  padding:6px 18px; font-size:18px; border-radius:20px;
+  background:rgba(255,255,255,0.12); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,0.12); color:var(--text-secondary); cursor:pointer;
+  transition:all 0.15s; white-space:nowrap; position:relative;
 }
-.subcat-chip:hover { border-color:var(--accent); color:var(--accent); }
-.subcat-chip.active { background:var(--accent); color:#fff; border-color:var(--accent); }
-.subcat-chip .sub-eye { font-size:14px; cursor:pointer; }
-.subcat-chip .sub-act-btn {
-  font-size:13px; background:transparent; padding:3px 4px; border-radius:4px;
-  color:inherit; opacity:0.6; transition:opacity 0.15s;
-}
-.subcat-chip .sub-act-btn:hover { opacity:1; }
+.subcat-row .subcat-chip:hover { border-color:var(--accent); }
+.subcat-row .subcat-chip.active { background:rgba(221,216,61,0.15); border-color:var(--green); color:var(--text-primary); }
+.subcat-row .subcat-chip.hidden { opacity:0.4; color:var(--text-muted); }
 .btn-new-subcat {
-  padding:7px 14px; font-size:13px; border-radius:20px; white-space:nowrap;
-  background:transparent; color:var(--accent); border:1px dashed var(--border);
-  cursor:pointer; transition:background 0.15s;
+  padding:6px 14px; font-size:18px; border-radius:20px; white-space:nowrap; flex-shrink:0;
+  background:transparent; color:var(--accent); border:1px dashed rgba(248,160,80,0.2); cursor:pointer;
 }
-.btn-new-subcat:hover { background:var(--accent-light); }
 
 .card-count-info {
-  font-size:11px; color:var(--text-muted); text-align:center;
-  padding:6px 10px 2px; flex-shrink:0;
+  font-size:12px; color:var(--text-muted); text-align:center;
+  padding:6px 0 4px; flex-shrink:0;
 }
 
-.card-list { flex:1; overflow-y:auto; padding:4px 0; }
+.card-list { flex:1; overflow-y:auto; padding:4px 12px 8px; }
 .card-list::-webkit-scrollbar { width:3px; }
 .card-list::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
 
 .card-item {
-  display:flex; align-items:center; gap:6px; padding:7px 10px;
-  border-bottom:1px solid #f5ede3; font-size:13px; transition:background 0.1s;
+  display:flex; align-items:center; gap:8px; padding:8px 12px; margin-bottom:6px;
+  border-radius:var(--radius-sm); font-size:13px;
+  background:rgba(255,255,255,0.12); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+  border:1px solid rgba(255,255,255,0.1); transition:all 0.1s;
 }
-.card-item:hover { background:var(--bg-warm); }
-.card-item .card-text { flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.card-item:hover { background:rgba(255,255,255,0.25); }
+.card-item .card-text { flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:15px; }
 .card-item .card-weight {
   display:flex; align-items:center; gap:3px; flex-shrink:0; cursor:pointer; user-select:none;
 }
-.card-item .weight-star { font-size:14px; }
-.card-item .weight-num { font-size:11px; min-width:16px; text-align:center; }
+.card-item .weight-star { font-size:15px; }
+.card-item .weight-num { font-size:12px; min-width:16px; text-align:center; }
 .weight-1 { color:#b0a090; } .weight-2 { color:#f0a040; }
 .weight-3 { color:#e08020; } .weight-4 { color:#e04040; }
 .weight-5 { color:#c02020; }
 
 .card-item .btn-card-act {
-  width:24px; height:24px; border-radius:50%; font-size:12px;
-  background:transparent; color:var(--text-muted); transition:all 0.15s; flex-shrink:0;
-  display:flex; align-items:center; justify-content:center;
+  width:30px; height:30px; border-radius:50%; font-size:14px;
+  background:transparent; color:var(--text-muted); border:none; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; transition:all 0.15s;
 }
-.card-item .btn-card-edit:hover { background:#fff8e1; color:#f0a040; }
-.card-item .btn-card-del:hover { background:#ffebee; color:var(--danger); }
-.card-empty { padding:30px; text-align:center; color:var(--text-muted); font-size:12px; }
+.card-item .btn-card-edit:hover { background:rgba(248,160,80,0.12); color:var(--accent); }
+.card-item .btn-card-del:hover { background:rgba(232,97,91,0.1); color:var(--danger); }
+.card-empty { padding:30px; text-align:center; color:var(--text-muted); font-size:11px; }
+
+/* ===== Card manager popover ===== */
+.cm-popover {
+  position:fixed; z-index:9999; display:flex; gap:4px; padding:6px 10px;
+  background:rgba(255,255,255,0.92); backdrop-filter:blur(24px) saturate(180%);
+  -webkit-backdrop-filter:blur(24px) saturate(180%);
+  border-radius:18px; border:1px solid rgba(255,255,255,0.6);
+  box-shadow:0 4px 24px rgba(120,110,70,0.18), 0 1px 0 rgba(255,255,255,0.5) inset;
+  white-space:nowrap; pointer-events:auto;
+}
+.cm-popover::before {
+  content:''; position:absolute; top:-5px; left:50%; transform:translateX(-50%) rotate(45deg);
+  width:10px; height:10px; background:rgba(255,255,255,0.92);
+  border-left:1px solid rgba(255,255,255,0.6); border-top:1px solid rgba(255,255,255,0.6);
+}
+.cm-popover .cm-pop-btn {
+  width:36px; height:36px; border-radius:50%; border:none; background:transparent;
+  font-size:20px; color:var(--text-secondary); cursor:pointer;
+  display:flex; align-items:center; justify-content:center; transition:all 0.15s;
+}
+.cm-popover .cm-pop-btn:hover { background:rgba(248,160,80,0.1); color:var(--accent); }
+.cm-popover .cm-pop-btn.cm-pop-danger:hover { background:rgba(232,97,91,0.1); color:var(--danger); }
 
 /* ============ Settings ============ */
 .settings-body { padding:12px 16px; overflow-y:auto; flex:1; }
@@ -1395,8 +1409,13 @@ input, textarea, select { font-family:inherit; outline:none; }
   .chat-titles .ct-sub { font-size:24px; font-weight:700; }
   .chat-titles { top:70px; }
   .chat-input { margin:0 8px 8px; padding:6px 6px 6px 12px; gap:6px; }
-  .cards-toolbar { gap:2px; padding:4px 6px; }
-  .cards-toolbar .tb-btn { padding:4px 7px; font-size:10px; }
+  .cards-toolbar { gap:4px; padding:6px 8px; }
+  .cards-toolbar .tb-btn { padding:5px 12px; font-size:14px; }
+  .cat-tabs { padding:4px 8px; }
+  .cat-tabs .cat-tab { padding:5px 12px; font-size:15px; }
+  .subcat-row { padding:4px 8px; }
+  .subcat-row .subcat-chip { padding:4px 10px; font-size:14px; }
+  .tb-search { padding:5px 10px; font-size:14px; }
   .settings-body { padding:8px 10px; }
   .ci-content { font-size:20px; }
   .ci-time-label { font-size:12px; }
@@ -1895,7 +1914,6 @@ function initDefaults() {
       dreamReplyDecaySeq:[100,70,40,10,0],
       dreamReplyDecayOn:true,
       diaryGenHourMin:21, diaryGenHourMax:24,
-      diaryCardRangeMin:2, diaryCardRangeMax:6,
       diaryCommentProb:70, diaryCommentDelayMin:30, diaryCommentDelayMax:120,
       reviewCounterProb:20, reviewCardCount:3, reviewMode:'random',
       doodleProb:8,
@@ -2611,6 +2629,9 @@ function openFullscreen(viewId) {
 }
 
 function closeFullscreen() {
+  cmHidePop();
+  var backBtn = document.getElementById('btnBackToChat');
+  if (backBtn) backBtn.textContent = '← 返回聊天';
   state.fsOpen=false;
   state.fsView=null;
   document.getElementById('fullscreenView').classList.remove('open');
@@ -2618,15 +2639,53 @@ function closeFullscreen() {
 }
 
 // ============ Rendering: Card Manager ============
+var cmPopover = null;
+
+function cmHidePop() {
+  if (cmPopover) { cmPopover.remove(); cmPopover = null; }
+}
+
+function cmShowPop(el, type) {
+  cmHidePop();
+  var rect = el.getBoundingClientRect();
+  // Check hidden state
+  var isHidden = false;
+  if (type === 'cat') { var cats=STORE.categories||[], c=cats.find(x=>x.id===el.dataset.catId); if(c) isHidden=c.hidden; }
+  else { var subs=STORE.subcategories||[], s=subs.find(x=>x.id===el.dataset.subId); if(s) isHidden=s.hidden; }
+  var eyeIcon = isHidden ? '👁️‍🗨️' : '👁️';
+
+  var pop = document.createElement('div');
+  pop.className = 'cm-popover';
+  pop.style.left = Math.round(rect.left + rect.width / 2) + 'px';
+  pop.style.top = Math.round(rect.bottom + 6) + 'px';
+  pop.style.transform = 'translateX(-50%)';
+  pop.innerHTML =
+    '<button class="cm-pop-btn cm-pop-eye" title="显示/隐藏">'+eyeIcon+'</button>' +
+    '<button class="cm-pop-btn cm-pop-rename" title="重命名">✏️</button>' +
+    '<button class="cm-pop-btn cm-pop-danger cm-pop-del" title="删除">🗑️</button>';
+  pop.dataset.type = type;
+  pop.dataset.id = el.dataset.catId || el.dataset.subId || '';
+  document.body.appendChild(pop);
+  cmPopover = pop;
+  requestAnimationFrame(function() {
+    var pr = pop.getBoundingClientRect();
+    if (pr.right > window.innerWidth - 8) { pop.style.left = (window.innerWidth - pr.width - 8) + 'px'; pop.style.transform = 'none'; }
+    if (pr.left < 8) { pop.style.left = '8px'; pop.style.transform = 'none'; }
+  });
+}
+
 function renderCardManager(container) {
+  var backBtn = document.getElementById('btnBackToChat');
+  if (backBtn) backBtn.textContent = '✕';
+
   container.innerHTML=`
     <div class="cards-toolbar">
       <button class="tb-btn" id="tbAddCard">＋ 添加</button>
       <button class="tb-btn" id="tbBatch">📋 批量导入</button>
       <button class="tb-btn" id="tbExport">📥 导出</button>
       <button class="tb-btn" id="tbImport">📤 导入</button>
-      <input type="text" class="tb-search" id="tbSearch" placeholder="🔍 搜索字卡…" value="${escapeHtml(state.searchQuery)}">
     </div>
+    <input type="text" class="tb-search" id="tbSearch" placeholder="🔍 搜索字卡…" value="${escapeHtml(state.searchQuery)}" style="margin:2px 14px 4px;width:calc(100% - 28px);flex-shrink:0;">
     <div class="cat-tabs" id="catTabs"></div>
     <div class="subcat-row" id="subcatRow"></div>
     <div class="card-count-info" id="cardCountInfo"></div>
@@ -2641,12 +2700,10 @@ function renderCatTabs() {
   const cats=STORE.categories||[];
   ct.innerHTML=cats.map(c=>{
     const active=state.selectedCatId===c.id?' active':'';
-    return `<span class="cat-tab${active}" data-cat-id="${c.id}">
-      <span class="cat-eye cat-eye-tgl">${c.hidden?'👁️‍🗨️':'👁️'}</span>${escapeHtml(c.name)}
-      <span class="cat-actions">
-        <button class="cat-act-btn cat-edit-btn">✏️</button>
-        <button class="cat-act-btn cat-del-btn">🗑️</button>
-      </span></span>`;
+    const hidden=c.hidden?' hidden':'';
+    const cnt=(STORE.cards||[]).filter(card=>card.categoryId===c.id).length;
+    return `<span class="cat-tab${active}${hidden}" data-cat-id="${c.id}">
+      ${escapeHtml(c.name)}<span class="cat-badge">${cnt}</span></span>`;
   }).join('')+'<button class="btn-new-cat" id="btnNewCat">＋ 新建大类</button>';
 }
 
@@ -2656,11 +2713,9 @@ function renderSubchips() {
   const filtered=state.selectedCatId?subs.filter(s=>s.categoryId===state.selectedCatId):[];
   row.innerHTML=filtered.map(s=>{
     const active=state.selectedSubId===s.id?' active':'';
-    return `<span class="subcat-chip${active}" data-sub-id="${s.id}">
-      <span class="sub-eye sub-eye-tgl">${s.hidden?'👁️‍🗨️':'👁️'}</span>${escapeHtml(s.name)}
-      <button class="sub-act-btn sub-edit-btn">✏️</button>
-      <button class="sub-act-btn sub-del-btn">🗑️</button></span>`;
-  }).join('')+(state.selectedCatId?'<button class="btn-new-subcat" id="btnNewSub">＋ 新建小类</button>':'<span style="font-size:11px;color:var(--text-muted);padding:4px 8px;">← 请先选择大类</span>');
+    const hidden=s.hidden?' hidden':'';
+    return `<span class="subcat-chip${active}${hidden}" data-sub-id="${s.id}">${escapeHtml(s.name)}</span>`;
+  }).join('')+(state.selectedCatId?'<button class="btn-new-subcat" id="btnNewSub">＋ 新建小类</button>':'<span style="font-size:11px;color:var(--text-muted);padding:3px 8px;">← 请先选择大类</span>');
 }
 
 function renderCardItems() {
@@ -2701,7 +2756,48 @@ function bindCardManagerEvents(container) {
   container.querySelector('#tbBatch').addEventListener('click',showBatchImportModal);
   container.querySelector('#tbExport').addEventListener('click',exportData);
   container.querySelector('#tbImport').addEventListener('click',()=>document.getElementById('fileImport').click());
-  container.querySelector('#tbSearch').addEventListener('input',function(){state.searchQuery=this.value;renderCardItems();});
+  container.querySelector('#tbSearch').addEventListener('input',function(){state.searchQuery=this.value;renderCardItems();cmHidePop();});
+
+  // Popover button actions (global capture)
+  document.addEventListener('click', function cmPopHandler(e) {
+    var pop = e.target.closest('.cm-popover');
+    if (!pop) {
+      // Close popover on outside click
+      if (cmPopover && !e.target.closest('.cat-tab') && !e.target.closest('.subcat-chip')) cmHidePop();
+      return;
+    }
+    var type = pop.dataset.type, id = pop.dataset.id;
+    if (e.target.closest('.cm-pop-eye')) {
+      if (type === 'cat') { var cats=STORE.categories||[], c=cats.find(x=>x.id===id); if(c){c.hidden=!c.hidden;STORE.categories=cats;renderCatTabs();renderCardItems();var newEye=c.hidden?'👁️‍🗨️':'👁️';e.target.closest('.cm-popover')&&(e.target.closest('.cm-popover').querySelector('.cm-pop-eye').textContent=newEye);} }
+      else { var subs=STORE.subcategories||[], s=subs.find(x=>x.id===id); if(s){s.hidden=!s.hidden;STORE.subcategories=subs;renderSubchips();renderCardItems();var newEye=s.hidden?'👁️‍🗨️':'👁️';e.target.closest('.cm-popover')&&(e.target.closest('.cm-popover').querySelector('.cm-pop-eye').textContent=newEye);} }
+      return;
+    }
+    if (e.target.closest('.cm-pop-rename')) {
+      if (type === 'cat') { var cats=STORE.categories||[], c=cats.find(x=>x.id===id); if(!c)return; var n=prompt('修改大类名称：',c.name); if(n&&n.trim()&&n.trim()!==c.name){c.name=n.trim();STORE.categories=cats;renderCatTabs();renderSubchips();renderCardItems();} }
+      else { var subs=STORE.subcategories||[], s=subs.find(x=>x.id===id); if(!s)return; var n=prompt('修改小类名称：',s.name); if(n&&n.trim()&&n.trim()!==s.name){s.name=n.trim();STORE.subcategories=subs;renderSubchips();renderCardItems();} }
+      cmHidePop(); return;
+    }
+    if (e.target.closest('.cm-pop-del')) {
+      if (type === 'cat') {
+        var cats=STORE.categories||[], c=cats.find(x=>x.id===id); if(!c)return;
+        var sc=(STORE.subcategories||[]).filter(x=>x.categoryId===id).length, cc=(STORE.cards||[]).filter(x=>x.categoryId===id).length;
+        if(!confirm(`确定删除大类「${c.name}」吗？\n将同时删除其下的 ${sc} 个小类和 ${cc} 条字卡。`))return;
+        STORE.categories=cats.filter(x=>x.id!==id); STORE.subcategories=(STORE.subcategories||[]).filter(x=>x.categoryId!==id);
+        STORE.cards=(STORE.cards||[]).filter(x=>x.categoryId!==id);
+        if(state.selectedCatId===id){state.selectedCatId=null;state.selectedSubId=null;}
+        renderCatTabs(); renderSubchips(); renderCardItems();
+      } else {
+        var subs=STORE.subcategories||[], s=subs.find(x=>x.id===id); if(!s)return;
+        var cc=(STORE.cards||[]).filter(x=>x.subcategoryId===id).length;
+        if(!confirm(`确定删除小类「${s.name}」吗？\n将同时删除其下的 ${cc} 条字卡。`))return;
+        STORE.subcategories=subs.filter(x=>x.id!==id); STORE.cards=(STORE.cards||[]).filter(x=>x.subcategoryId!==id);
+        if(state.selectedSubId===id)state.selectedSubId=null;
+        renderSubchips(); renderCardItems();
+      }
+      cmHidePop(); return;
+    }
+  }, true);
+
   // Delegation: category tabs
   container.querySelector('#catTabs').addEventListener('click',e=>{
     const newCatBtn = e.target.id==='btnNewCat' ? e.target : e.target.closest('#btnNewCat');
@@ -2714,33 +2810,10 @@ function bindCardManagerEvents(container) {
       renderCatTabs(); renderSubchips(); renderCardItems(); return;
     }
     const tab = e.target.closest('.cat-tab'); if(!tab) return;
-    const catId = tab.dataset.catId, cats=STORE.categories||[];
-    const cat = cats.find(c=>c.id===catId); if(!cat) return;
-    // Eye toggle
-    if(e.target.closest('.cat-eye-tgl')){
-      cat.hidden=!cat.hidden; STORE.categories=cats;
-      renderCatTabs(); renderSubchips(); renderCardItems(); return;
-    }
-    // Edit button
-    if(e.target.closest('.cat-edit-btn')){
-      const name=prompt('修改大类名称：',cat.name);
-      if(name&&name.trim()&&name.trim()!==cat.name){cat.name=name.trim();STORE.categories=cats;renderCatTabs();renderSubchips();renderCardItems();}
-      return;
-    }
-    // Delete button
-    if(e.target.closest('.cat-del-btn')){
-      const sc=(STORE.subcategories||[]).filter(s=>s.categoryId===catId).length;
-      const cc=(STORE.cards||[]).filter(c=>c.categoryId===catId).length;
-      if(!confirm(`确定删除大类「${cat.name}」吗？\n将同时删除其下的 ${sc} 个小类和 ${cc} 条字卡。`))return;
-      STORE.categories=cats.filter(c=>c.id!==catId);
-      STORE.subcategories=(STORE.subcategories||[]).filter(s=>s.categoryId!==catId);
-      STORE.cards=(STORE.cards||[]).filter(c=>c.categoryId!==catId);
-      if(state.selectedCatId===catId){state.selectedCatId=null;state.selectedSubId=null;}
-      renderCatTabs(); renderSubchips(); renderCardItems(); return;
-    }
-    // Select tab
+    const catId = tab.dataset.catId;
     state.selectedCatId=catId; state.selectedSubId=null;
     renderCatTabs(); renderSubchips(); renderCardItems();
+    cmShowPop(tab, 'cat');
   });
   // Delegation: subcategory chips
   container.querySelector('#subcatRow').addEventListener('click',e=>{
@@ -2754,43 +2827,21 @@ function bindCardManagerEvents(container) {
       renderSubchips(); return;
     }
     const chip = e.target.closest('.subcat-chip'); if(!chip) return;
-    const subId = chip.dataset.subId, subs=STORE.subcategories||[];
-    const sub = subs.find(s=>s.id===subId); if(!sub) return;
-    // Eye toggle
-    if(e.target.closest('.sub-eye-tgl')){
-      sub.hidden=!sub.hidden; STORE.subcategories=subs;
-      renderSubchips(); renderCardItems(); return;
-    }
-    // Edit button
-    if(e.target.closest('.sub-edit-btn')){
-      const name=prompt('修改小类名称：',sub.name);
-      if(name&&name.trim()&&name.trim()!==sub.name){sub.name=name.trim();STORE.subcategories=subs;renderSubchips();renderCardItems();}
-      return;
-    }
-    // Delete button
-    if(e.target.closest('.sub-del-btn')){
-      const cc=(STORE.cards||[]).filter(c=>c.subcategoryId===subId).length;
-      if(!confirm(`确定删除小类「${sub.name}」吗？\n将同时删除其下的 ${cc} 条字卡。`))return;
-      STORE.subcategories=subs.filter(s=>s.id!==subId);
-      STORE.cards=(STORE.cards||[]).filter(c=>c.subcategoryId!==subId);
-      if(state.selectedSubId===subId)state.selectedSubId=null;
-      renderSubchips(); renderCardItems(); return;
-    }
-    // Select chip
-    state.selectedSubId=subId; renderSubchips(); renderCardItems();
+    const subId = chip.dataset.subId;
+    state.selectedSubId=subId;
+    renderSubchips(); renderCardItems();
+    cmShowPop(chip, 'sub');
   });
   // Delegation: card list (weight, edit, delete)
   container.querySelector('#cardList').addEventListener('click',e=>{
     const cardItem = e.target.closest('.card-item');
     if (!cardItem) return;
     const cardId = cardItem.dataset.cardId;
-    // Weight increment
     if (e.target.closest('.card-weight') && !e.target.closest('.weight-num')) {
       const cards=STORE.cards||[], card=cards.find(c=>c.id===cardId);
       if (card) { card.weight = Math.min(100, (card.weight||1)+1); STORE.cards=cards; renderCardItems(); }
       return;
     }
-    // Weight number direct input
     if (e.target.closest('.weight-num')) {
       const cards=STORE.cards||[], card=cards.find(c=>c.id===cardId);
       if (!card) return;
@@ -2798,9 +2849,7 @@ function bindCardManagerEvents(container) {
       if (v!==null) { const n=parseInt(v,10); if (!isNaN(n)&&n>=1&&n<=100) { card.weight=n; STORE.cards=cards; renderCardItems(); } else if (v.trim()!=='') { alert('请输入1~100之间的整数'); } }
       return;
     }
-    // Edit button
     if (e.target.closest('.btn-card-edit')) { showEditCardModal(cardId); return; }
-    // Delete button
     if (e.target.closest('.btn-card-del')) {
       if (!confirm('确定删除这条字卡吗？')) return;
       STORE.cards=(STORE.cards||[]).filter(c=>c.id!==cardId);
@@ -2821,94 +2870,85 @@ function renderSettings(container) {
 
   container.innerHTML=`
   <div class="settings-body">
+
     <div class="setting-group">
-      <div class="sg-title">🧑 形象设置</div>
+      <div class="sg-title">👤 形象设置</div>
       <div class="avatar-preview" id="avatarPreview">${av?`<img src="${escapeHtml(av)}" onerror="this.parentElement.textContent='🏐'">`:'🏐'}</div>
       <div class="avatar-actions"><button class="btn-avatar-del" id="btnCharAvDel" ${av?'':'style="display:none"'}>移除头像</button></div>
       <input type="file" id="charAvInput" accept="image/*" style="display:none">
-      <div class="setting-row"><label>昵称</label><input type="text" id="cfgName" value="${escapeHtml(cfg.characterName||'')}"></div>
-    </div>
-    <div class="setting-group">
-      <div class="sg-title">👤 我的形象</div>
-      <div class="avatar-preview" id="userAvatarPreview">${uav?`<img src="${escapeHtml(uav)}" onerror="this.parentElement.textContent='🐟'">`:'🐟'}</div>
+      <div class="setting-row"><label>梦角昵称</label><input type="text" id="cfgName" value="${escapeHtml(cfg.characterName||'')}"></div>
+      <div class="avatar-preview" id="userAvatarPreview" style="margin-top:10px;">${uav?`<img src="${escapeHtml(uav)}" onerror="this.parentElement.textContent='🐟'">`:'🐟'}</div>
       <div class="avatar-actions"><button class="btn-avatar-del" id="btnUserAvDel" ${uav?'':'style="display:none"'}>移除头像</button></div>
       <input type="file" id="userAvInput" accept="image/*" style="display:none">
-      <div class="setting-row"><label>昵称</label><input type="text" id="cfgUserNickname" value="${escapeHtml(cfg.userNickname||'我')}" placeholder="我"></div>
+      <div class="setting-row"><label>我的昵称</label><input type="text" id="cfgUserNickname" value="${escapeHtml(cfg.userNickname||'我')}" placeholder="我"></div>
     </div>
+
     <div class="setting-group">
-      <div class="sg-title">⏱️ 主动发言间隔（分钟）</div>
-      <div class="setting-row"><label>最小</label><input type="number" id="cfgActiveMin" value="${cfg.activeMin!=null?cfg.activeMin:30}" min="5" step="5"><label>最大</label><input type="number" id="cfgActiveMax" value="${cfg.activeMax!=null?cfg.activeMax:60}" min="5" step="5"></div>
+      <div class="sg-title">🌅 梦角作息</div>
+      <div class="setting-row"><label>起床时间</label><input type="number" id="cfgWakeTime" value="${engCfg.wakeTime!=null?engCfg.wakeTime:7}" min="0" max="12" step="1"><label>时</label><span style="width:20px;"></span><label>睡觉时间</label><input type="number" id="cfgSleepTime" value="${engCfg.sleepTime!=null?engCfg.sleepTime:23}" min="18" max="24" step="1"><label>时</label></div>
+      <div class="setting-row" style="font-size:11px;color:var(--text-muted);">除日记外，所有自动行为都在此时间段内随机触发</div>
     </div>
+
     <div class="setting-group">
-      <div class="sg-title">💬 被动回复延迟（秒）</div>
-      <div class="setting-row"><label>最小</label><input type="number" id="cfgPassiveMin" value="${cfg.passiveMin!=null?cfg.passiveMin:0.5}" min="0.1" step="0.1"><label>最大</label><input type="number" id="cfgPassiveMax" value="${cfg.passiveMax!=null?cfg.passiveMax:2.5}" min="0.1" step="0.1"></div>
-    </div>
-    <div class="setting-group">
-      <div class="sg-title">📊 每次发言的消息条数概率（1~4条）</div>
-      <div class="prob-grid">
-        <div class="prob-label">1条</div><div class="prob-label">2条</div><div class="prob-label">3条</div><div class="prob-label">4条</div>
-        <input type="number" class="prob-msg" data-idx="0" min="0" max="100" value="${msgP[0]}">
-        <input type="number" class="prob-msg" data-idx="1" min="0" max="100" value="${msgP[1]}">
-        <input type="number" class="prob-msg" data-idx="2" min="0" max="100" value="${msgP[2]}">
-        <input type="number" class="prob-msg" data-idx="3" min="0" max="100" value="${msgP[3]}">
+      <div class="sg-title">💬 聊天设置</div>
+      <div class="setting-row">
+        <label>启用主动聊天</label>
+        <input type="checkbox" id="cfgDEEnaChat" ${(engCfg.enabled&&engCfg.enabled.dreamChat!==false)?'checked':''} style="width:auto;">
       </div>
-      <div class="prob-hint">总和：<span id="probMsgSum">${msgP.reduce((a,b)=>a+b,0)}</span></div>
+      <div class="setting-row"><label>每天主动聊</label><input type="number" id="cfgDEPDChatMin" value="${(engCfg.perDay&&engCfg.perDay.dreamChat)?engCfg.perDay.dreamChat.min:5}" min="0" max="30" step="1"><label>~</label><input type="number" id="cfgDEPDChatMax" value="${(engCfg.perDay&&engCfg.perDay.dreamChat)?engCfg.perDay.dreamChat.max:15}" min="0" max="30" step="1"><label>次</label></div>
+      <div class="setting-row"><label>主动发言间隔(分)</label><input type="number" id="cfgActiveMin" value="${cfg.activeMin!=null?cfg.activeMin:30}" min="5" step="5"><label>~</label><input type="number" id="cfgActiveMax" value="${cfg.activeMax!=null?cfg.activeMax:60}" min="5" step="5"></div>
+      <div class="setting-row"><label>被动回复延迟(秒)</label><input type="number" id="cfgPassiveMin" value="${cfg.passiveMin!=null?cfg.passiveMin:0.5}" min="0.1" step="0.1"><label>~</label><input type="number" id="cfgPassiveMax" value="${cfg.passiveMax!=null?cfg.passiveMax:2.5}" min="0.1" step="0.1"></div>
+      <div class="setting-row"><label>一次说</label><input type="number" id="cfgMsgCnt1" value="${msgP[0]}" style="width:50px;" class="prob-msg" data-idx="0" min="0" max="100"><label>1条 /</label><input type="number" id="cfgMsgCnt2" value="${msgP[1]}" style="width:50px;" class="prob-msg" data-idx="1" min="0" max="100"><label>2条 /</label><input type="number" id="cfgMsgCnt3" value="${msgP[2]}" style="width:50px;" class="prob-msg" data-idx="2" min="0" max="100"><label>3条 /</label><input type="number" id="cfgMsgCnt4" value="${msgP[3]}" style="width:50px;" class="prob-msg" data-idx="3" min="0" max="100"><label>4条（概率）</label></div>
+      <div class="setting-row"><label>一条用</label><input type="number" id="cfgCardCnt1" value="${cardP[0]}" style="width:50px;" class="prob-card" data-idx="0" min="0" max="100"><label>1张 /</label><input type="number" id="cfgCardCnt2" value="${cardP[1]}" style="width:50px;" class="prob-card" data-idx="1" min="0" max="100"><label>2张 /</label><input type="number" id="cfgCardCnt3" value="${cardP[2]}" style="width:50px;" class="prob-card" data-idx="2" min="0" max="100"><label>3张 /</label><input type="number" id="cfgCardCnt4" value="${cardP[3]}" style="width:50px;" class="prob-card" data-idx="3" min="0" max="100"><label>4张字卡（概率）</label></div>
+      <div class="prob-hint">消息条数总和：<span id="probMsgSum">${msgP.reduce((a,b)=>a+b,0)}</span>　字卡张数总和：<span id="probCardSum">${cardP.reduce((a,b)=>a+b,0)}</span></div>
+      <div class="setting-row"><label>涂鸦概率(%)</label><input type="number" id="cfgDoodleProb" value="${cfg.doodleProb!=null?cfg.doodleProb:8}" min="0" max="100" step="1"><label>0关·100必出</label></div>
+      <div class="setting-row"><label>聊天带表情概率(%)</label><input type="number" id="cfgChatSticker" value="${(engCfg.prob&&engCfg.prob.dreamChatSticker!=null)?engCfg.prob.dreamChatSticker:10}" min="0" max="100" step="5"></div>
+      <div class="setting-row"><label>消息撤回概率(%)</label><input type="number" id="cfgRecallProb" value="${(engCfg.prob&&engCfg.prob.recallProb!=null)?engCfg.prob.recallProb:1}" min="0" max="100" step="0.1"></div>
     </div>
+
     <div class="setting-group">
-      <div class="sg-title">🃏 每��消息的字卡张数概率（1~4张）</div>
-      <div class="prob-grid">
-        <div class="prob-label">1张</div><div class="prob-label">2张</div><div class="prob-label">3张</div><div class="prob-label">4张</div>
-        <input type="number" class="prob-card" data-idx="0" min="0" max="100" value="${cardP[0]}">
-        <input type="number" class="prob-card" data-idx="1" min="0" max="100" value="${cardP[1]}">
-        <input type="number" class="prob-card" data-idx="2" min="0" max="100" value="${cardP[2]}">
-        <input type="number" class="prob-card" data-idx="3" min="0" max="100" value="${cardP[3]}">
+      <div class="sg-title">🫂 朋友圈设置</div>
+      <div class="setting-row">
+        <label>启用</label>
+        <input type="checkbox" id="cfgDEEnaPost" ${(engCfg.enabled&&engCfg.enabled.dreamPost!==false)?'checked':''} style="width:auto;">
       </div>
-      <div class="prob-hint">总和：<span id="probCardSum">${cardP.reduce((a,b)=>a+b,0)}</span></div>
+      <div class="setting-row"><label>每天发</label><input type="number" id="cfgDEPDPostMin" value="${(engCfg.perDay&&engCfg.perDay.dreamPost)?engCfg.perDay.dreamPost.min:2}" min="0" max="20" step="1"><label>~</label><input type="number" id="cfgDEPDPostMax" value="${(engCfg.perDay&&engCfg.perDay.dreamPost)?engCfg.perDay.dreamPost.max:8}" min="0" max="20" step="1"><label>条</label></div>
+      <div class="setting-row"><label>发圈间隔(分)</label><input type="number" id="cfgDPostMin" value="${cfg.dreamPostMin!=null?cfg.dreamPostMin:2}" min="0.5" step="0.5"><label>~</label><input type="number" id="cfgDPostMax" value="${cfg.dreamPostMax!=null?cfg.dreamPostMax:8}" min="0.5" step="0.5"></div>
+      <div class="setting-row"><label>一条用字卡</label><input type="number" id="cfgDPCardMin" value="${cfg.dreamPostCardMin!=null?cfg.dreamPostCardMin:1}" min="1" max="10" step="1"><label>~</label><input type="number" id="cfgDPCardMax" value="${cfg.dreamPostCardMax!=null?cfg.dreamPostCardMax:5}" min="1" max="10" step="1"><label>张</label></div>
+      <div class="setting-row"><label>配图概率(%)</label><input type="number" id="cfgPhotoProb" value="${(engCfg.prob&&engCfg.prob.dreamPostPhoto!=null)?engCfg.prob.dreamPostPhoto:60}" min="0" max="100" step="5"><label>含表情贴纸</label><input type="number" id="cfgStickerFrac" value="${(engCfg.prob&&engCfg.prob.dreamStickerFrac!=null)?engCfg.prob.dreamStickerFrac:70}" min="0" max="100" step="5"><label>%</label></div>
+      <div class="setting-row"><label>刷圈间隔(分)</label><input type="number" id="cfgDRMin" value="${cfg.dreamReactionMin!=null?cfg.dreamReactionMin:1}" min="0.5" step="0.5"><label>~</label><input type="number" id="cfgDRMax" value="${cfg.dreamReactionMax!=null?cfg.dreamReactionMax:6}" min="0.5" step="0.5"></div>
+      <div class="setting-row"><label>点赞概率(%)</label><input type="number" id="cfgLikeProb" value="${cfg.dreamLikeProb!=null?cfg.dreamLikeProb:80}" min="0" max="100" step="5"><label>评论概率(%)</label><input type="number" id="cfgCommentProb" value="${cfg.dreamCommentProb!=null?cfg.dreamCommentProb:65}" min="0" max="100" step="5"></div>
+      <div class="setting-row"><label>回复延迟(秒)</label><input type="number" id="cfgCDMin" value="${cfg.dreamCommentDelayMin!=null?cfg.dreamCommentDelayMin:2}" min="0.5" step="0.5"><label>~</label><input type="number" id="cfgCDMax" value="${cfg.dreamCommentDelayMax!=null?cfg.dreamCommentDelayMax:8}" min="0.5" step="0.5"></div>
+      <div class="setting-row"><label>评论衰减(%)</label><input type="number" class="prob-decay" data-idx="0" value="${(cfg.dreamReplyDecaySeq||[100,70,40,10,0])[0]}" style="width:46px;" min="0" max="100"><input type="number" class="prob-decay" data-idx="1" value="${(cfg.dreamReplyDecaySeq||[100,70,40,10,0])[1]}" style="width:46px;" min="0" max="100"><input type="number" class="prob-decay" data-idx="2" value="${(cfg.dreamReplyDecaySeq||[100,70,40,10,0])[2]}" style="width:46px;" min="0" max="100"><input type="number" class="prob-decay" data-idx="3" value="${(cfg.dreamReplyDecaySeq||[100,70,40,10,0])[3]}" style="width:46px;" min="0" max="100"><span style="font-size:11px;color:var(--text-muted);">第1~4轮</span></div>
+      <div class="setting-row"><label>第5轮+</label><input type="number" id="cfgDecay5" value="${(cfg.dreamReplyDecaySeq||[100,70,40,10,0])[4]||0}" min="0" max="100" step="5" style="width:60px;"><label>启用衰减</label><input type="checkbox" id="cfgDecayOn" ${cfg.dreamReplyDecayOn!==false?'checked':''} style="width:auto;"></div>
     </div>
+
     <div class="setting-group">
-      <div class="sg-title">🫂 梦角发朋友圈间隔（分钟）</div>
-      <div class="setting-row"><label>最小</label><input type="number" id="cfgDPostMin" value="${cfg.dreamPostMin!=null?cfg.dreamPostMin:2}" min="0.5" step="0.5"><label>最大</label><input type="number" id="cfgDPostMax" value="${cfg.dreamPostMax!=null?cfg.dreamPostMax:8}" min="0.5" step="0.5"></div>
-    </div>
-    <div class="setting-group">
-      <div class="sg-title">🃏 梦角发朋友圈字卡张数</div>
-      <div class="setting-row"><label>最少</label><input type="number" id="cfgDPCardMin" value="${cfg.dreamPostCardMin!=null?cfg.dreamPostCardMin:1}" min="1" max="10" step="1"><label>最多</label><input type="number" id="cfgDPCardMax" value="${cfg.dreamPostCardMax!=null?cfg.dreamPostCardMax:5}" min="1" max="10" step="1"></div>
-    </div>
-    <div class="setting-group">
-      <div class="sg-title">👀 梦角刷朋友圈间隔（分钟）</div>
-      <div class="setting-row"><label>最小</label><input type="number" id="cfgDRMin" value="${cfg.dreamReactionMin!=null?cfg.dreamReactionMin:1}" min="0.5" step="0.5"><label>最大</label><input type="number" id="cfgDRMax" value="${cfg.dreamReactionMax!=null?cfg.dreamReactionMax:6}" min="0.5" step="0.5"></div>
-    </div>
-    <div class="setting-group">
-      <div class="sg-title">🎲 梦角对新动态的反应概率（%）</div>
-      <div class="setting-row"><label>点赞概率</label><input type="number" id="cfgLikeProb" value="${cfg.dreamLikeProb!=null?cfg.dreamLikeProb:80}" min="0" max="100" step="5"><label>评论概率</label><input type="number" id="cfgCommentProb" value="${cfg.dreamCommentProb!=null?cfg.dreamCommentProb:65}" min="0" max="100" step="5"></div>
-    </div>
-    <div class="setting-group">
-      <div class="sg-title">💬 梦角回复评论延迟（秒）</div>
-      <div class="setting-row"><label>最小</label><input type="number" id="cfgCDMin" value="${cfg.dreamCommentDelayMin!=null?cfg.dreamCommentDelayMin:2}" min="0.5" step="0.5"><label>最大</label><input type="number" id="cfgCDMax" value="${cfg.dreamCommentDelayMax!=null?cfg.dreamCommentDelayMax:8}" min="0.5" step="0.5"></div>
-    </div>
-    <div class="setting-group">
-      <div class="sg-title">📉 评论衰减概率（%）<span style="font-weight:400;font-size:11px;color:var(--text-muted)"> 第1~5轮</span></div>
-      <div class="prob-grid">
-        <div class="prob-label">第1轮</div><div class="prob-label">第2轮</div><div class="prob-label">第3轮</div><div class="prob-label">第4轮</div>
-        <input type="number" class="prob-decay" data-idx="0" min="0" max="100" value="${(cfg.dreamReplyDecaySeq||[100,70,40,10,0])[0]}">
-        <input type="number" class="prob-decay" data-idx="1" min="0" max="100" value="${(cfg.dreamReplyDecaySeq||[100,70,40,10,0])[1]}">
-        <input type="number" class="prob-decay" data-idx="2" min="0" max="100" value="${(cfg.dreamReplyDecaySeq||[100,70,40,10,0])[2]}">
-        <input type="number" class="prob-decay" data-idx="3" min="0" max="100" value="${(cfg.dreamReplyDecaySeq||[100,70,40,10,0])[3]}">
+      <div class="sg-title">📔 日记设置</div>
+      <div class="setting-row">
+        <label>启用梦角日记</label>
+        <input type="checkbox" id="cfgDEEnaDD" ${(engCfg.enabled&&engCfg.enabled.dreamDiary!==false)?'checked':''} style="width:auto;">
       </div>
-      <div class="setting-row" style="margin-top:6px;">
-        <label>第5轮及以后</label><input type="number" id="cfgDecay5" value="${(cfg.dreamReplyDecaySeq||[100,70,40,10,0])[4]||0}" min="0" max="100" step="5" style="width:60px;">
-        <label>启用衰减</label><input type="checkbox" id="cfgDecayOn" ${cfg.dreamReplyDecayOn!==false?'checked':''} style="width:auto;">
+      <div class="setting-row"><label>生成时段</label><input type="number" id="cfgDETWDDS" value="${engCfg.diaryTimeStart!=null?engCfg.diaryTimeStart:21}" min="0" max="23" step="1"><label>时~</label><input type="number" id="cfgDETWDDE" value="${engCfg.diaryTimeEnd!=null?engCfg.diaryTimeEnd:24}" min="1" max="24" step="1"><label>时（每天1篇）</label></div>
+      <div class="setting-row"><label>备选时段</label><input type="number" id="cfgDGMin" value="${cfg.diaryGenHourMin!=null?cfg.diaryGenHourMin:21}" min="0" max="23" step="1"><label>~</label><input type="number" id="cfgDGMax" value="${cfg.diaryGenHourMax!=null?cfg.diaryGenHourMax:24}" min="1" max="24" step="1"><label>时（旧调度）</label></div>
+      <div class="setting-row" style="border-top:1px solid var(--border);padding-top:8px;margin-top:4px;">
+        <label>启用批阅用户日记</label>
+        <input type="checkbox" id="cfgDEEnaDC" ${(engCfg.enabled&&engCfg.enabled.dreamDiaryComment!==false)?'checked':''} style="width:auto;">
       </div>
+      <div class="setting-row"><label>批阅概率(%)</label><input type="number" id="cfgDCProbNew" value="${(engCfg.prob&&engCfg.prob.dreamDiaryComment!=null)?engCfg.prob.dreamDiaryComment:70}" min="0" max="100" step="5"></div>
+      <div class="setting-row"><label>批阅延迟(分)</label><input type="number" id="cfgDCDMin" value="${cfg.diaryCommentDelayMin!=null?cfg.diaryCommentDelayMin:30}" min="1" step="1"><label>~</label><input type="number" id="cfgDCDMax" value="${cfg.diaryCommentDelayMax!=null?cfg.diaryCommentDelayMax:120}" min="1" step="1"></div>
     </div>
+
     <div class="setting-group">
-      <div class="sg-title">📔 梦角日记生成时段</div>
-      <div class="setting-row"><label>起始时间</label><input type="number" id="cfgDGMin" value="${cfg.diaryGenHourMin!=null?cfg.diaryGenHourMin:21}" min="0" max="23" step="1"><label>结束时间</label><input type="number" id="cfgDGMax" value="${cfg.diaryGenHourMax!=null?cfg.diaryGenHourMax:24}" min="1" max="24" step="1"></div>
-      <div class="setting-row"><label>字卡最少</label><input type="number" id="cfgDCRMin" value="${cfg.diaryCardRangeMin!=null?cfg.diaryCardRangeMin:2}" min="0" max="20" step="1"><label>最多</label><input type="number" id="cfgDCRMax" value="${cfg.diaryCardRangeMax!=null?cfg.diaryCardRangeMax:6}" min="1" max="20" step="1"><label>张（不含高频词）</label></div>
+      <div class="sg-title">📌 打卡设置</div>
+      <div class="setting-row">
+        <label>启用梦角打卡</label>
+        <input type="checkbox" id="cfgDEEnaCI" ${(engCfg.enabled&&engCfg.enabled.dreamCheckin===true)?'checked':''} style="width:auto;">
+      </div>
+      <div class="setting-row"><label>每天</label><input type="number" id="cfgDEPDCIMin" value="${(engCfg.perDay&&engCfg.perDay.dreamCheckin)?engCfg.perDay.dreamCheckin.min:3}" min="0" max="30" step="1"><label>~</label><input type="number" id="cfgDEPDCIMax" value="${(engCfg.perDay&&engCfg.perDay.dreamCheckin)?engCfg.perDay.dreamCheckin.max:12}" min="0" max="30" step="1"><label>次</label></div>
+      <div class="setting-row"><label>最少间隔(分)</label><input type="number" id="cfgCIIntv" value="${(engCfg.interval&&engCfg.interval.dreamCheckin!=null)?engCfg.interval.dreamCheckin:45}" min="10" max="180" step="5"></div>
     </div>
-    <div class="setting-group">
-      <div class="sg-title">💬 梦角批阅日记设置</div>
-      <div class="setting-row"><label>批阅概率(%)</label><input type="number" id="cfgDCProb" value="${cfg.diaryCommentProb!=null?cfg.diaryCommentProb:70}" min="0" max="100" step="5"></div>
-      <div class="setting-row"><label>延迟最小(分)</label><input type="number" id="cfgDCDMin" value="${cfg.diaryCommentDelayMin!=null?cfg.diaryCommentDelayMin:30}" min="1" step="1"><label>最大(分)</label><input type="number" id="cfgDCDMax" value="${cfg.diaryCommentDelayMax!=null?cfg.diaryCommentDelayMax:120}" min="1" step="1"></div>
-    </div>
+
     <div class="setting-group">
       <div class="sg-title">💥 锐评设置</div>
       <div class="setting-row"><label>反问概率(%)</label><input type="number" id="cfgRCProb" value="${cfg.reviewCounterProb!=null?cfg.reviewCounterProb:20}" min="0" max="100" step="5"><label>评语字卡数</label><input type="number" id="cfgRCardCnt" value="${cfg.reviewCardCount||3}" min="1" max="10" step="1"></div>
@@ -2921,68 +2961,7 @@ function renderSettings(container) {
         </select>
       </div>
     </div>
-    <div class="setting-group">
-      <div class="sg-title">🎨 涂鸦概率</div>
-      <div class="setting-row"><label>出现概率(%)</label><input type="number" id="cfgDoodleProb" value="${cfg.doodleProb!=null?cfg.doodleProb:8}" min="0" max="100" step="1"><label>0 关 · 100 必出 · 默认 8%</label></div>
-    </div>
-    <div class="setting-group">
-      <div class="sg-title">🌅 梦角作息</div>
-      <div class="setting-row"><label>起床时间</label><input type="number" id="cfgWakeTime" value="${engCfg.wakeTime!=null?engCfg.wakeTime:7}" min="0" max="12" step="1"><label>时</label><span style="width:20px;"></span><label>睡觉时间</label><input type="number" id="cfgSleepTime" value="${engCfg.sleepTime!=null?engCfg.sleepTime:23}" min="18" max="24" step="1"><label>时</label></div>
-      <div class="setting-row" style="font-size:11px;color:var(--text-muted);">除日记外，所有自动行为都在此时间段内随机触发</div>
-    </div>
-    <div class="setting-group">
-      <div class="sg-title">🫂 朋友圈</div>
-      <div class="setting-row">
-        <label>启用</label>
-        <input type="checkbox" id="cfgDEEnaPost" ${(engCfg.enabled&&engCfg.enabled.dreamPost!==false)?'checked':''} style="width:auto;">
-      </div>
-      <div class="setting-row"><label>每天最少</label><input type="number" id="cfgDEPDPostMin" value="${(engCfg.perDay&&engCfg.perDay.dreamPost)?engCfg.perDay.dreamPost.min:2}" min="0" max="20" step="1"><label>最多</label><input type="number" id="cfgDEPDPostMax" value="${(engCfg.perDay&&engCfg.perDay.dreamPost)?engCfg.perDay.dreamPost.max:8}" min="0" max="20" step="1"><label>条</label></div>
-      <div class="setting-row"><label>配图概率(%)</label><input type="number" id="cfgPhotoProb" value="${(engCfg.prob&&engCfg.prob.dreamPostPhoto!=null)?engCfg.prob.dreamPostPhoto:60}" min="0" max="100" step="5"><label>其中表情占</label><input type="number" id="cfgStickerFrac" value="${(engCfg.prob&&engCfg.prob.dreamStickerFrac!=null)?engCfg.prob.dreamStickerFrac:70}" min="0" max="100" step="5"><label>%</label></div>
-      <div class="setting-row"><label>聊天发图概率(%)</label><input type="number" id="cfgChatSticker" value="${(engCfg.prob&&engCfg.prob.dreamChatSticker!=null)?engCfg.prob.dreamChatSticker:10}" min="0" max="100" step="5"><label>梦角每条消息随机带表情</label></div>
-    </div>
-    <div class="setting-group">
-      <div class="sg-title">📌 打卡</div>
-      <div class="setting-row">
-        <label>启用</label>
-        <input type="checkbox" id="cfgDEEnaCI" ${(engCfg.enabled&&engCfg.enabled.dreamCheckin===true)?'checked':''} style="width:auto;">
-      </div>
-      <div class="setting-row"><label>每天最少</label><input type="number" id="cfgDEPDCIMin" value="${(engCfg.perDay&&engCfg.perDay.dreamCheckin)?engCfg.perDay.dreamCheckin.min:3}" min="0" max="30" step="1"><label>最多</label><input type="number" id="cfgDEPDCIMax" value="${(engCfg.perDay&&engCfg.perDay.dreamCheckin)?engCfg.perDay.dreamCheckin.max:12}" min="0" max="30" step="1"><label>次</label></div>
-      <div class="setting-row"><label>最少间隔(分)</label><input type="number" id="cfgCIIntv" value="${(engCfg.interval&&engCfg.interval.dreamCheckin!=null)?engCfg.interval.dreamCheckin:45}" min="10" max="180" step="5"><label>连续两次打卡间的最短间隔</label></div>
-    </div>
-    <div class="setting-group">
-      <div class="sg-title">💬 主动聊天</div>
-      <div class="setting-row">
-        <label>启用</label>
-        <input type="checkbox" id="cfgDEEnaChat" ${(engCfg.enabled&&engCfg.enabled.dreamChat!==false)?'checked':''} style="width:auto;">
-      </div>
-      <div class="setting-row"><label>每天最少</label><input type="number" id="cfgDEPDChatMin" value="${(engCfg.perDay&&engCfg.perDay.dreamChat)?engCfg.perDay.dreamChat.min:5}" min="0" max="30" step="1"><label>最多</label><input type="number" id="cfgDEPDChatMax" value="${(engCfg.perDay&&engCfg.perDay.dreamChat)?engCfg.perDay.dreamChat.max:15}" min="0" max="30" step="1"><label>次</label></div>
-      <div class="setting-row"><label>消息撤回概率(%)</label><input type="number" id="cfgRecallProb" value="${(engCfg.prob&&engCfg.prob.recallProb!=null)?engCfg.prob.recallProb:1}" min="0" max="100" step="0.1"><label>仅对发送后的新消息生效</label></div>
-    </div>
-    <div class="setting-group">
-      <div class="sg-title">📝 批阅日记</div>
-      <div class="setting-row">
-        <label>启用</label>
-        <input type="checkbox" id="cfgDEEnaDC" ${(engCfg.enabled&&engCfg.enabled.dreamDiaryComment!==false)?'checked':''} style="width:auto;">
-      </div>
-      <div class="setting-row"><label>批阅概率(%)</label><input type="number" id="cfgDCProbNew" value="${(engCfg.prob&&engCfg.prob.dreamDiaryComment!=null)?engCfg.prob.dreamDiaryComment:70}" min="0" max="100" step="5"><label>当天只摇一次，不批以后也不会批</label></div>
-    </div>
-    <div class="setting-group">
-      <div class="sg-title">📔 日记写作（独立于作息）</div>
-      <div class="setting-row">
-        <label>启用</label>
-        <input type="checkbox" id="cfgDEEnaDD" ${(engCfg.enabled&&engCfg.enabled.dreamDiary!==false)?'checked':''} style="width:auto;">
-      </div>
-      <div class="setting-row"><label>时间范围</label><input type="number" id="cfgDETWDDS" value="${engCfg.diaryTimeStart!=null?engCfg.diaryTimeStart:21}" min="0" max="23" step="1"><label>时 —</label><input type="number" id="cfgDETWDDE" value="${engCfg.diaryTimeEnd!=null?engCfg.diaryTimeEnd:24}" min="1" max="24" step="1"><label>时（每天固定1篇）</label></div>
-    </div>
-    <div class="setting-group">
-      <div class="sg-title">🧪 调试工具</div>
-      <div class="setting-row">
-        <button id="btnResetToday" style="padding:6px 14px;font-size:12px;border-radius:20px;background:#fff5f5;color:var(--danger);border:1px solid #ffc9c9;cursor:pointer;">重置今日事件（重算）</button>
-      </div>
-      <div class="setting-row" style="font-size:11px;color:var(--text-muted);">
-        上次离开: <span id="lastActiveDisplay">${STORE.lastActive ? new Date(STORE.lastActive).toLocaleString('zh-CN') : '无记录'}</span>
-      </div>
-    </div>
+
     <div class="setting-group">
       <div class="sg-title">🤖 AI 解读</div>
       <div class="setting-row">
@@ -2990,7 +2969,7 @@ function renderSettings(container) {
         <input type="checkbox" id="cfgAIEna" ${aiCfg.enabled?'checked':''} style="width:auto;">
       </div>
       <div class="setting-row"><label>API 地址</label><input type="text" id="cfgAIUrl" value="${escapeHtml(aiCfg.apiUrl)}" style="width:240px;text-align:left;"></div>
-      <div class="setting-row" style="font-size:10px;color:var(--text-muted);margin-bottom:8px;">需支持浏览器跨域(CORS)，DeepSeek 官方接口兼容</div>
+      <div class="setting-row" style="font-size:10px;color:var(--text-muted);">需支持浏览器跨域(CORS)，DeepSeek 官方接口兼容</div>
       <div class="setting-row">
         <label>API Key</label>
         <div style="display:flex;align-items:center;gap:6px;">
@@ -3012,8 +2991,19 @@ function renderSettings(container) {
         <textarea id="cfgAIPrompt" rows="6" style="display:none;width:100%;padding:8px;font-size:12px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg-warm);resize:vertical;font-family:inherit;box-sizing:border-box;margin-top:4px;">${escapeHtml(aiCfg.systemPrompt)}</textarea>
       </div>
     </div>
-    <button class="btn-danger" id="btnClearChat">🗑️ 清空聊天记录</button>
-    <button class="btn-danger" id="btnResetAll" style="margin-top:8px;background:#fff0f0;color:#c02020;">⚠️ 删除所有数据（保留初始预设）</button>
+
+    <div class="setting-group">
+      <div class="sg-title">🧪 调试工具</div>
+      <div class="setting-row">
+        <button id="btnResetToday" style="padding:6px 14px;font-size:12px;border-radius:20px;background:#fff5f5;color:var(--danger);border:1px solid #ffc9c9;cursor:pointer;">重置今日事件（重算）</button>
+        <button class="btn-danger" id="btnClearChat" style="margin:0;padding:6px 14px;font-size:12px;width:auto;display:inline-block;">🗑️ 清空聊天</button>
+      </div>
+      <div class="setting-row" style="font-size:11px;color:var(--text-muted);">
+        上次离开: <span id="lastActiveDisplay">${STORE.lastActive ? new Date(STORE.lastActive).toLocaleString('zh-CN') : '无记录'}</span>
+      </div>
+      <div style="margin-top:8px;"><button class="btn-danger" id="btnResetAll" style="background:#fff0f0;color:#c02020;">⚠️ 删除所有数据（保留初始预设）</button></div>
+    </div>
+
   </div>`;
 
   bindSettingsEvents(container);
@@ -3187,9 +3177,6 @@ function saveSettingsFromForm(container) {
   const dcpEl=container.querySelector('#cfgDCProb'), dcdmEl=container.querySelector('#cfgDCDMin'), dcdxEl=container.querySelector('#cfgDCDMax');
   if(dgmEl)cfg.diaryGenHourMin=parseInt(dgmEl.value)||21;
   if(dgxEl)cfg.diaryGenHourMax=parseInt(dgxEl.value)||24;
-  const dcrMinEl=container.querySelector('#cfgDCRMin'), dcrMaxEl=container.querySelector('#cfgDCRMax');
-  if(dcrMinEl)cfg.diaryCardRangeMin=parseInt(dcrMinEl.value)||2;
-  if(dcrMaxEl)cfg.diaryCardRangeMax=parseInt(dcrMaxEl.value)||6;
   if(dcpEl)cfg.diaryCommentProb=parseInt(dcpEl.value)||70;
   if(dcdmEl)cfg.diaryCommentDelayMin=parseInt(dcdmEl.value)||30;
   if(dcdxEl)cfg.diaryCommentDelayMax=parseInt(dcdxEl.value)||120;
@@ -3275,7 +3262,7 @@ function saveSettingsFromForm(container) {
   cfg.dreamEngine = engCfg;
   STORE.config=cfg; renderHeader(); renderMessages();
   const body=document.getElementById('fsBody');
-  if(body&&state.fsView==='settings')renderSettings(body);
+  if(body&&state.fsView==='settings'){var _st=container.scrollTop||body.scrollTop;renderSettings(body);setTimeout(function(){var el=body.querySelector('.settings-body');if(el)el.scrollTop=_st;else body.scrollTop=_st;},0);}
   stopActive(); scheduleActive();
   // Restart dream engine with new settings
   stopAllDreamEventTimers();
@@ -3860,23 +3847,8 @@ registerEventType({
   useWakeSleep: false, // diary uses its own night window
   dependsOnUserAction: false,
   generateContent: async function(overrides) {
-    const ts = overrides.timestamp || Date.now();
-    const dateStr = new Date(ts).toISOString().slice(0, 10);
-    if (hasDiary(dateStr, 'dream')) return;
-    if (!checkWordCards()) return;
-    const topWords = extractTopWords(dateStr, 2);
-    const visible = getVisibleCards();
-    const cfg = STORE.config || {};
-    const cardMin = cfg.diaryCardRangeMin != null ? cfg.diaryCardRangeMin : 2;
-    const cardMax = cfg.diaryCardRangeMax != null ? cfg.diaryCardRangeMax : 6;
-    const nCards = Math.floor(randomBetween(cardMin, cardMax + 1));
-    const cards = [];
-    for (let i = 0; i < nCards; i++) { const c = weightedPick(visible); cards.push(c ? c.text : '...'); }
-    const content = generateDiaryContent(topWords[0] || '今天', topWords[1] || '梦想', cards);
-    const diaries = STORE.diaries || [];
-    diaries.push({ id: dateStr + '_dream', date: dateStr, author: 'dream', title: '梦角的日记', content, createdAt: ts, updatedAt: ts, comments: [] });
-    STORE.diaries = diaries;
-    setTimeout(updateRedDots, 300);
+    const dateStr = new Date(overrides.timestamp || Date.now()).toISOString().slice(0, 10);
+    await generateDreamDiary(dateStr);
   }
 });
 
@@ -4307,8 +4279,14 @@ function showDiaryDetail(dateStr) {
   // Dream diary
   if(dreamDiary){
     html+=renderDiaryEntry(dreamDiary,false);
+    if(isToday){
+      html+=`<div style="text-align:center;margin-top:8px;"><button class="btn-refresh-diary" data-date="${dateStr}" style="padding:6px 14px;font-size:12px;border-radius:20px;background:var(--bg-warm);color:var(--accent);border:1px solid var(--border);cursor:pointer;transition:all 0.15s;">🔄 刷新梦角日记</button></div>`;
+    }
   } else {
     html+=`<div class="diary-empty">🤔 梦角还在酝酿中...</div>`;
+    if(isToday){
+      html+=`<div style="text-align:center;margin-top:8px;"><button class="btn-refresh-diary" data-date="${dateStr}" style="padding:6px 14px;font-size:12px;border-radius:20px;background:var(--accent);color:#fff;border:none;cursor:pointer;transition:all 0.15s;">✨ 生成梦角今日日记</button></div>`;
+    }
   }
 
   detail.innerHTML=html;
@@ -4354,6 +4332,19 @@ function showDiaryDetail(dateStr) {
         loadingText: '解读日记中'
       });
     });
+  });
+  // 刷新/生成梦角日记按钮
+  detail.querySelector('.btn-refresh-diary')?.addEventListener('click',async function(){
+    var dateStr = this.dataset.date;
+    // 删除已有梦角日记
+    var diaries = STORE.diaries || [];
+    var idx = diaries.findIndex(function(d) { return d.date === dateStr && d.author === 'dream'; });
+    if (idx >= 0) diaries.splice(idx, 1);
+    STORE.diaries = diaries;
+    this.textContent = '生成中...';
+    this.disabled = true;
+    await generateDreamDiary(dateStr);
+    showDiaryDetail(dateStr);
   });
 }
 
@@ -4483,69 +4474,195 @@ function showEditDiaryModal(diaryId) {
 }
 
 // ============ Dream Diary Generation ============
-function generateDiaryContent(w1, w2, cards) {
+function collectTodayMaterials(dateStr) {
+  var favorites = (STORE.favorites || []).filter(function(f) {
+    var d = new Date(f.timestamp).toISOString().slice(0, 10);
+    return d === dateStr && f.type === 'message';
+  });
+  var messages = (STORE.messages || []).filter(function(m) {
+    var d = new Date(m.timestamp).toISOString().slice(0, 10);
+    return d === dateStr;
+  });
+  var moments = (STORE.moments || []).filter(function(m) {
+    var d = new Date(m.timestamp).toISOString().slice(0, 10);
+    return d === dateStr;
+  });
+  var checkins = (STORE.checkins || []).filter(function(c) {
+    var d = new Date(c.timestamp).toISOString().slice(0, 10);
+    return d === dateStr;
+  });
+  return { favorites: favorites, messages: messages, moments: moments, checkins: checkins };
+}
+
+function buildMaterialsContext(mat) {
+  var cfg = STORE.config || {};
+  var charName = cfg.characterName || '梦角';
+  var userName = cfg.userNickname || '我';
   var lines = [];
-  lines.push('今日高频：「' + (w1 || '今天') + '」「' + (w2 || '梦想') + '」');
-  if (cards.length > 0) {
-    lines.push('✨ ' + cards.join('、'));
+
+  lines.push('日期：' + new Date().toISOString().slice(0, 10));
+
+  // 聊天记录
+  if (mat.messages.length > 0) {
+    lines.push('\n【聊天记录】');
+    mat.messages.forEach(function(m) {
+      var who = m.type === 'user' ? userName : charName;
+      var text = m.text || (m.doodle ? '[涂鸦]' : '') || (m.imageData ? '[图片]' : '');
+      var t = new Date(m.timestamp).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+      if (text) lines.push(t + ' ' + who + '：' + text);
+    });
   }
+
+  // AI解读收藏
+  if (mat.favorites.length > 0) {
+    lines.push('\n【收藏的AI解读】');
+    mat.favorites.forEach(function(f) {
+      var t = f.text || '';
+      var interp = f.interpretation || '';
+      if (t) lines.push('原文：' + t + (interp ? ' → 解读：' + interp : ''));
+    });
+  }
+
+  // 朋友圈
+  if (mat.moments.length > 0) {
+    lines.push('\n【朋友圈动态】');
+    mat.moments.forEach(function(m) {
+      var publisher = m.publisher === 'dream' ? charName : m.publisher === 'user' ? userName : '未知';
+      var content = m.content || '';
+      lines.push(publisher + '：' + (content || '(无文字)'));
+      var likes = m.likes || [];
+      if (likes.length > 0) lines.push('  👍 ' + likes.length + '人赞');
+      var comments = m.comments || [];
+      comments.forEach(function(c) {
+        var name = c.commenter === 'dream' ? charName : c.commenter === 'user' ? userName : c.commenter;
+        lines.push('  💬 ' + name + '：' + c.content);
+      });
+    });
+  }
+
+  // 打卡
+  if (mat.checkins.length > 0) {
+    lines.push('\n【打卡记录】');
+    mat.checkins.sort(function(a, b) { return a.timestamp - b.timestamp; });
+    mat.checkins.forEach(function(c) {
+      var who = c.role === 'user' ? userName : charName;
+      var t = new Date(c.timestamp).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+      lines.push(t + ' ' + who + '：' + c.content);
+    });
+  }
+
   return lines.join('\n');
 }
 
-function extractTopWords(dateStr, count) {
-  const messages=STORE.messages||[], moments=STORE.moments||[];
-  let text='';
-  messages.forEach(m=>{
-    const d=new Date(m.timestamp).toISOString().slice(0,10);
-    if(d===dateStr)text+=' '+m.text;
-  });
-  moments.forEach(m=>{
-    const d=new Date(m.timestamp).toISOString().slice(0,10);
-    if(d===dateStr){text+=' '+m.content;(m.comments||[]).forEach(c=>text+=' '+c.content);}
-  });
+// 模板兜底的日记
+function generateFallbackDiaryContent(mat) {
+  var cfg = STORE.config || {};
+  var charName = cfg.characterName || '梦角';
+  var userName = cfg.userNickname || '我';
+  var parts = [];
 
-  // Simple word extraction: Chinese chars + alphanumeric, filter len>=2
-  const words=text.match(/[一-鿿\w]{2,}/g)||[];
-  const freq={}; words.forEach(w=>{freq[w]=(freq[w]||0)+1;});
-  const sorted=Object.entries(freq).sort((a,b)=>b[1]-a[1]);
+  parts.push(charName + '的日记\n');
 
-  const top=sorted.slice(0,count).map(e=>e[0]);
-  // If not enough words, fill from word cards
-  if(top.length<count){
-    const visible=getVisibleCards();
-    while(top.length<count){
-      const c=weightedPick(visible);
-      if(c&&!top.includes(c.text))top.push(c.text);
-      else if(!c)top.push('今天');
-    }
+  if (mat.messages.length > 0) {
+    var userMsgs = mat.messages.filter(function(m) { return m.type === 'user'; });
+    var charMsgs = mat.messages.filter(function(m) { return m.type === 'character'; });
+    var userTexts = userMsgs.slice(0, 2).map(function(m) { return m.text || ''; }).filter(Boolean);
+    var charTexts = charMsgs.slice(0, 2).map(function(m) { return m.text || ''; }).filter(Boolean);
+    var chatStr = '';
+    if (userTexts.length > 0) chatStr += userName + '跟我说了些有趣的事';
+    if (charTexts.length > 0) chatStr += (chatStr ? '，我也' : '我') + '用字卡回应了';
+    if (chatStr) parts.push('今天和' + userName + '聊了天，' + chatStr + '。一共' + mat.messages.length + '条消息。');
   }
-  return top;
+
+  if (mat.checkins.length > 0) {
+    parts.push('我们一起打卡了' + mat.checkins.length + '次，记录了今天的生活。');
+  }
+
+  if (mat.moments.length > 0) {
+    parts.push('朋友圈里也很热闹，大家分享了今天的点滴。');
+  }
+
+  if (mat.favorites.length > 0) {
+    parts.push('我还收藏了几条特别有感触的对话解读。');
+  }
+
+  parts.push('今天也是充实的一天，想对' + userName + '说声谢谢陪伴。——' + charName);
+  return parts.join('\n\n');
 }
 
-function generateDreamDiary(dateStr) {
-  if(!checkWordCards())return null;
-  if(hasDiary(dateStr,'dream'))return null; // already exists
+// AI生成日记内容（异步）
+function generateAIDiaryContent(mat) {
+  return new Promise(function(resolve, reject) {
+    var cfg = getAIConfig();
+    if (!cfg.enabled || !cfg.apiKey) { reject(new Error('AI not configured')); return; }
 
-  const topWords=extractTopWords(dateStr,2);
-  const visible=getVisibleCards();
-  const cfg=STORE.config||{};
-  const cardMin=cfg.diaryCardRangeMin!=null?cfg.diaryCardRangeMin:2;
-  const cardMax=cfg.diaryCardRangeMax!=null?cfg.diaryCardRangeMax:6;
-  const nCards=Math.floor(randomBetween(cardMin,cardMax+1));
-  const cards=[];
-  for(let i=0;i<nCards;i++){const c=weightedPick(visible);cards.push(c?c.text:'...');}
+    var charName = (STORE.config || {}).characterName || '梦角';
+    var userName = (STORE.config || {}).userNickname || '我';
 
-  const content=generateDiaryContent(topWords[0]||'今天',topWords[1]||'梦想',cards);
+    var systemPrompt = '你扮演' + charName + '本人，用第一人称"我"写一篇今天的日记，约200字。\n\n' +
+      '要求：\n' +
+      '1. 语言自然口语化，像一个真实的年轻人在写日记\n' +
+      '2. 把提供的素材自然地融入日记中，不要逐条罗列\n' +
+      '3. 表达出对' + userName + '（用"你"或"ta"称呼）的感情和这一天的感受\n' +
+      '4. 风格活泼、真诚，偶尔带点撒娇或小感慨\n' +
+      '5. 不要写开头称呼（如"亲爱的日记"），直接写正文\n' +
+      '6. 只输出日记正文，不要额外说明';
 
-  const now=Date.now();
-  const diary={
-    id:dateStr+'_dream', date:dateStr, author:'dream',
-    title:'梦角的日记', content,
-    createdAt:now, updatedAt:now, comments:[]
+    var userContent = '以下是我今天的活动素材，请根据这些写一篇日记：\n\n' + buildMaterialsContext(mat);
+
+    fetch(cfg.apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + cfg.apiKey },
+      body: JSON.stringify({
+        model: cfg.model,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userContent }
+        ],
+        stream: false,
+        temperature: 0.85,
+        max_tokens: 600
+      })
+    }).then(function(resp) {
+      if (!resp.ok) { return resp.text().then(function(t) { reject(new Error('HTTP ' + resp.status + (t ? ': ' + t.slice(0, 200) : ''))); }); }
+      return resp.json();
+    }).then(function(data) {
+      var content = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || '';
+      if (!content) { reject(new Error('AI returned empty')); return; }
+      resolve(content);
+    }).catch(function(err) { reject(err); });
+  });
+}
+
+async function generateDreamDiary(dateStr) {
+  if (hasDiary(dateStr, 'dream')) return null;
+
+  var mat = collectTodayMaterials(dateStr);
+  var content = '';
+
+  // 优先尝试AI生成，失败则用模板兜底
+  try {
+    content = await generateAIDiaryContent(mat);
+  } catch (e) {
+    content = generateFallbackDiaryContent(mat);
+  }
+
+  if (!content || content.length < 10) return null;
+
+  var now = Date.now();
+  var diary = {
+    id: dateStr + '_dream',
+    date: dateStr,
+    author: 'dream',
+    title: '梦角的日记',
+    content: content,
+    createdAt: now,
+    updatedAt: now,
+    comments: []
   };
-  const diaries=STORE.diaries||[];
+  var diaries = STORE.diaries || [];
   diaries.push(diary);
-  STORE.diaries=diaries;
+  STORE.diaries = diaries;
   setTimeout(updateRedDots, 300);
   return diary;
 }
