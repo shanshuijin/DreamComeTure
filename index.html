@@ -857,6 +857,8 @@ input, textarea, select { font-family:inherit; outline:none; }
   background:var(--card-bg); border-radius:var(--radius); padding:14px 16px;
   margin-bottom:12px; box-shadow:var(--shadow-sm);
 }
+.diary-entry.diary-card-openable { cursor:pointer; transition:transform 0.15s, box-shadow 0.15s; }
+.diary-entry.diary-card-openable:hover { transform:translateY(-1px); box-shadow:0 4px 14px rgba(120,110,70,0.12); }
 .diary-entry .de-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
 .diary-entry .de-author { font-size:13px; font-weight:600; color:var(--accent); }
 .diary-entry .de-title { font-size:15px; font-weight:600; margin-bottom:6px; }
@@ -899,6 +901,53 @@ input, textarea, select { font-family:inherit; outline:none; }
   width:100%; padding:8px 12px; font-size:14px; border:1px solid var(--border);
   border-radius:var(--radius-sm); background:var(--bg-warm); margin-bottom:8px;
 }
+
+/* Diary fullscreen */
+.diary-fullscreen {
+  display:flex; flex-direction:column; height:100%; min-height:0;
+  background:var(--bg); overflow:hidden;
+}
+.diary-full-head {
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  padding:12px 14px; border-bottom:1px solid var(--border);
+  background:rgba(255,250,244,0.94); flex-shrink:0;
+}
+.diary-full-titlebar { min-width:0; flex:1; text-align:center; }
+.diary-full-date { font-size:12px; color:var(--text-muted); margin-bottom:2px; }
+.diary-full-name {
+  font-size:16px; font-weight:700; color:var(--text-primary);
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.diary-full-actions { display:flex; align-items:center; gap:8px; flex-shrink:0; }
+.diary-full-btn {
+  border:1px solid var(--border); border-radius:18px; background:var(--bg-warm);
+  color:var(--text-secondary); padding:6px 12px; font-size:12px; cursor:pointer;
+  transition:background 0.15s, color 0.15s, border-color 0.15s;
+}
+.diary-full-btn:hover { background:var(--accent-light); color:var(--accent); border-color:rgba(248,143,80,0.35); }
+.diary-full-btn.primary { background:var(--accent); color:#fff; border-color:var(--accent); }
+.diary-full-body {
+  flex:1; min-height:0; overflow-y:auto; padding:18px 18px 28px;
+  box-sizing:border-box;
+}
+.diary-full-paper {
+  max-width:720px; margin:0 auto; background:var(--card-bg);
+  border:1px solid var(--border); border-radius:var(--radius);
+  padding:18px 18px 20px; box-shadow:var(--shadow-sm);
+}
+.diary-full-title-input {
+  width:100%; box-sizing:border-box; border:none; border-bottom:1px solid var(--border);
+  background:transparent; color:var(--text-primary); font-size:22px; font-weight:700;
+  padding:4px 0 10px; margin-bottom:14px;
+}
+.diary-full-content-input {
+  width:100%; min-height:48vh; box-sizing:border-box; border:none; resize:vertical;
+  background:transparent; color:var(--text-primary); font-size:15px; line-height:1.8;
+}
+.diary-full-read-title { font-size:22px; font-weight:700; margin-bottom:14px; color:var(--text-primary); }
+.diary-full-read-body { font-size:15px; line-height:1.85; white-space:pre-wrap; word-break:break-word; color:var(--text-primary); }
+.diary-full-meta { margin-top:14px; font-size:11px; color:var(--text-muted); }
+.diary-full-extra { max-width:720px; margin:12px auto 0; }
 
 /* Header icon SVGs */
 .btn-review svg, .btn-search svg, .btn-menu svg { display:block; filter:drop-shadow(0 1px 3px rgba(0,0,0,0.1)); }
@@ -986,6 +1035,11 @@ input, textarea, select { font-family:inherit; outline:none; }
 .fav-item-text {
   font-size:13px; color:var(--text-primary); line-height:1.6;
   padding-right:28px; word-break:break-word;
+}
+.fav-item-source {
+  display:inline-flex; align-items:center; margin-bottom:6px; padding:2px 8px;
+  border-radius:12px; background:var(--accent-light); color:var(--accent);
+  font-size:11px; font-weight:600;
 }
 .fav-item-interp {
   margin-top:8px; padding:8px 10px; font-size:12.5px; line-height:1.65;
@@ -1120,6 +1174,14 @@ input, textarea, select { font-family:inherit; outline:none; }
 .ai-text {
   min-height:1em; word-break:break-word; white-space:pre-wrap;
 }
+.ai-fav-row { display:flex; justify-content:flex-end; margin-top:8px; }
+.ai-fav-btn {
+  padding:4px 10px; border:1px solid var(--border); border-radius:14px;
+  background:rgba(255,255,255,0.65); color:var(--text-secondary);
+  font-size:12px; cursor:pointer; transition:background 0.15s, color 0.15s, border-color 0.15s;
+}
+.ai-fav-btn:hover { background:var(--accent-light); color:var(--accent); border-color:rgba(248,143,80,0.35); }
+.ai-fav-btn.faved { color:#f5a623; border-color:rgba(245,166,35,0.35); }
 .ai-box.streaming .ai-text::after {
   content:'▍'; display:inline; color:var(--accent);
   animation:ai-cursor-blink 0.6s step-end infinite;
@@ -1904,22 +1966,41 @@ function initDefaults() {
   if (!STORE.config) {
     STORE.config = {
       characterName:'梦角', userNickname:'我', avatarUrl:'', userAvatarUrl:'',
-      activeMin:30, activeMax:60,     // minutes
-      passiveMin:0.5, passiveMax:2.5,    // seconds
+      
+      // ========== 时间参数集中管理（单位在参数名或注释中明确） ==========
+      timing: {
+        activeChat: { min: 30, max: 60 },              // 主动发言间隔(分钟)
+        passiveReply: { min: 0.5, max: 2.5 },          // 被动回复延迟(秒)
+        dreamPost: { min: 2, max: 8 },                 // 梦角圈子发圈间隔(分钟)
+        dreamPostCard: { min: 1, max: 5 },             // 梦角发圈卡片数
+        dreamReaction: { min: 1, max: 6 },             // 梦角反应时间(分钟)
+        dreamComment: { min: 2, max: 8 },              // 梦角评论延迟(秒)
+        diaryGen: { hourMin: 21, hourMax: 24 },        // 日记生成时段(小时)
+        diaryComment: { min: 30, max: 120 },           // 日记评论延迟(秒)
+        checkin: { timeStart: 9, timeEnd: 21, intervalMin: 30, intervalMax: 120 }, // 签到设置(24h制+分钟)
+      },
+      
+      // 消息配置
       msgCountProbs:[30,40,20,10], cardCountProbs:[30,40,20,10],
-      dreamPostMin:2, dreamPostMax:8, dreamPostCardMin:1, dreamPostCardMax:5,
-      dreamReactionMin:1, dreamReactionMax:6,
-      dreamLikeProb:80, dreamCommentProb:65,
-      dreamCommentDelayMin:2, dreamCommentDelayMax:8, // seconds
+      
+      // 概率配置
+      prob: {
+        dreamLike: 80,
+        dreamComment: 65,
+        diaryComment: 70,
+        postPhoto: 60,
+        stickerFrac: 70,
+        chatSticker: 10,
+        reviewCounter: 20,
+        doodle: 8,
+      },
+      
+      // 其他配置
       dreamReplyDecaySeq:[100,70,40,10,0],
       dreamReplyDecayOn:true,
-      diaryGenHourMin:21, diaryGenHourMax:24,
-      diaryCommentProb:70, diaryCommentDelayMin:30, diaryCommentDelayMax:120,
-      reviewCounterProb:20, reviewCardCount:3, reviewMode:'random',
-      doodleProb:8,
-      /* checkin settings */
-      checkinAutoEnabled:false, checkinTimeStart:9, checkinTimeEnd:21,
-      checkinIntervalMin:30, checkinIntervalMax:120,
+      reviewCardCount:3, reviewMode:'random',
+      checkinAutoEnabled:false,
+      
       /* dream behavior engine */
       dreamEngine: {
         wakeTime: 7, sleepTime: 23,
@@ -2029,6 +2110,8 @@ const state = {
   pendingCommentTimers: {},   // mid → timeoutId (delayed reply to comment)
   decayRounds: {},            // mid → number (in-memory, resets on refresh)
   diaryMonth: null,           // 'YYYY-MM' for calendar view
+  diarySelectedDate: null,     // date shown in diary detail
+  diaryFullscreenId: null,     // diary id opened in fullscreen reader/editor
   diaryGenTimerId: null,      // setTimeout for dream diary generation
   checkinDate: null,          // 'YYYY-MM-DD' for checkin view
   checkinAutoTimerId: null,   // setTimeout for auto checkin
@@ -2129,7 +2212,7 @@ function generateMessage(opts) {
   opts = opts || {};
   // Doodle probability (configurable)
   var cfg = STORE.config || {};
-  var doodleProb = (cfg.doodleProb != null ? cfg.doodleProb : 8) / 100;
+  var doodleProb = ((cfg.prob?.doodle != null ? cfg.prob.doodle : 8) / 100);
   if (opts.allowDoodle && doodleProb > 0 && Math.random() < doodleProb) {
     const doodle = generateDoodle();
     if (doodle) return { doodle: doodle };
@@ -2236,8 +2319,9 @@ async function sendBatch(batchCount) {
 function scheduleActive() {
   clearTimeout(state.activeTimerId); state.activeTimerId=null;
   const cfg=STORE.config||{};
-  const minMs=(cfg.activeMin!=null?cfg.activeMin:0.1)*60000;
-  const maxMs=(cfg.activeMax!=null?cfg.activeMax:0.4)*60000;
+  const timing=cfg.timing||{activeChat:{min:30,max:60}};
+  const minMs=(timing.activeChat?.min||30)*60000;
+  const maxMs=(timing.activeChat?.max||60)*60000;
   state.activeTimerId=setTimeout(async()=>{
     if(state.isSending){state.activeTimerId=setTimeout(()=>scheduleActive(),2000);return;}
     const probs=cfg.msgCountProbs||[30,40,20,10];
@@ -2251,8 +2335,9 @@ function stopActive() { clearTimeout(state.activeTimerId); state.activeTimerId=n
 // ============ Core: Passive reply ============
 async function triggerPassiveReply() {
   const cfg=STORE.config||{};
-  const minMs=(cfg.passiveMin!=null?cfg.passiveMin:0.5)*1000;
-  const maxMs=(cfg.passiveMax!=null?cfg.passiveMax:2.5)*1000;
+  const timing=cfg.timing||{passiveReply:{min:0.5,max:2.5}};
+  const minMs=(timing.passiveReply?.min||0.5)*1000;
+  const maxMs=(timing.passiveReply?.max||2.5)*1000;
   await sleep(randomBetween(minMs,maxMs));
   if(state.isSending)await sleep(500);
   const probs=cfg.msgCountProbs||[30,40,20,10];
@@ -2896,12 +2981,12 @@ function renderSettings(container) {
         <input type="checkbox" id="cfgDEEnaChat" ${(engCfg.enabled&&engCfg.enabled.dreamChat!==false)?'checked':''} style="width:auto;">
       </div>
       <div class="setting-row"><label>每天主动聊</label><input type="number" id="cfgDEPDChatMin" value="${(engCfg.perDay&&engCfg.perDay.dreamChat)?engCfg.perDay.dreamChat.min:5}" min="0" max="30" step="1"><label>~</label><input type="number" id="cfgDEPDChatMax" value="${(engCfg.perDay&&engCfg.perDay.dreamChat)?engCfg.perDay.dreamChat.max:15}" min="0" max="30" step="1"><label>次</label></div>
-      <div class="setting-row"><label>主动发言间隔(分)</label><input type="number" id="cfgActiveMin" value="${cfg.activeMin!=null?cfg.activeMin:30}" min="5" step="5"><label>~</label><input type="number" id="cfgActiveMax" value="${cfg.activeMax!=null?cfg.activeMax:60}" min="5" step="5"></div>
-      <div class="setting-row"><label>被动回复延迟(秒)</label><input type="number" id="cfgPassiveMin" value="${cfg.passiveMin!=null?cfg.passiveMin:0.5}" min="0.1" step="0.1"><label>~</label><input type="number" id="cfgPassiveMax" value="${cfg.passiveMax!=null?cfg.passiveMax:2.5}" min="0.1" step="0.1"></div>
+      <div class="setting-row"><label>主动发言间隔(分)</label><input type="number" id="cfgActiveMin" value="${cfg.timing?.activeChat?.min||30}" min="5" step="5"><label>~</label><input type="number" id="cfgActiveMax" value="${cfg.timing?.activeChat?.max||60}" min="5" step="5"></div>
+      <div class="setting-row"><label>被动回复延迟(秒)</label><input type="number" id="cfgPassiveMin" value="${cfg.timing?.passiveReply?.min||0.5}" min="0.1" step="0.1"><label>~</label><input type="number" id="cfgPassiveMax" value="${cfg.timing?.passiveReply?.max||2.5}" min="0.1" step="0.1"></div>
       <div class="setting-row"><label>一次说</label><input type="number" id="cfgMsgCnt1" value="${msgP[0]}" style="width:50px;" class="prob-msg" data-idx="0" min="0" max="100"><label>1条 /</label><input type="number" id="cfgMsgCnt2" value="${msgP[1]}" style="width:50px;" class="prob-msg" data-idx="1" min="0" max="100"><label>2条 /</label><input type="number" id="cfgMsgCnt3" value="${msgP[2]}" style="width:50px;" class="prob-msg" data-idx="2" min="0" max="100"><label>3条 /</label><input type="number" id="cfgMsgCnt4" value="${msgP[3]}" style="width:50px;" class="prob-msg" data-idx="3" min="0" max="100"><label>4条（概率）</label></div>
       <div class="setting-row"><label>一条用</label><input type="number" id="cfgCardCnt1" value="${cardP[0]}" style="width:50px;" class="prob-card" data-idx="0" min="0" max="100"><label>1张 /</label><input type="number" id="cfgCardCnt2" value="${cardP[1]}" style="width:50px;" class="prob-card" data-idx="1" min="0" max="100"><label>2张 /</label><input type="number" id="cfgCardCnt3" value="${cardP[2]}" style="width:50px;" class="prob-card" data-idx="2" min="0" max="100"><label>3张 /</label><input type="number" id="cfgCardCnt4" value="${cardP[3]}" style="width:50px;" class="prob-card" data-idx="3" min="0" max="100"><label>4张字卡（概率）</label></div>
       <div class="prob-hint">消息条数总和：<span id="probMsgSum">${msgP.reduce((a,b)=>a+b,0)}</span>　字卡张数总和：<span id="probCardSum">${cardP.reduce((a,b)=>a+b,0)}</span></div>
-      <div class="setting-row"><label>涂鸦概率(%)</label><input type="number" id="cfgDoodleProb" value="${cfg.doodleProb!=null?cfg.doodleProb:8}" min="0" max="100" step="1"><label>0关·100必出</label></div>
+      <div class="setting-row"><label>涂鸦概率(%)</label><input type="number" id="cfgDoodleProb" value="${cfg.prob?.doodle||8}" min="0" max="100" step="1"><label>0关·100必出</label></div>
       <div class="setting-row"><label>聊天带表情概率(%)</label><input type="number" id="cfgChatSticker" value="${(engCfg.prob&&engCfg.prob.dreamChatSticker!=null)?engCfg.prob.dreamChatSticker:10}" min="0" max="100" step="5"></div>
       <div class="setting-row"><label>消息撤回概率(%)</label><input type="number" id="cfgRecallProb" value="${(engCfg.prob&&engCfg.prob.recallProb!=null)?engCfg.prob.recallProb:1}" min="0" max="100" step="0.1"></div>
     </div>
@@ -2913,12 +2998,12 @@ function renderSettings(container) {
         <input type="checkbox" id="cfgDEEnaPost" ${(engCfg.enabled&&engCfg.enabled.dreamPost!==false)?'checked':''} style="width:auto;">
       </div>
       <div class="setting-row"><label>每天发</label><input type="number" id="cfgDEPDPostMin" value="${(engCfg.perDay&&engCfg.perDay.dreamPost)?engCfg.perDay.dreamPost.min:2}" min="0" max="20" step="1"><label>~</label><input type="number" id="cfgDEPDPostMax" value="${(engCfg.perDay&&engCfg.perDay.dreamPost)?engCfg.perDay.dreamPost.max:8}" min="0" max="20" step="1"><label>条</label></div>
-      <div class="setting-row"><label>发圈间隔(分)</label><input type="number" id="cfgDPostMin" value="${cfg.dreamPostMin!=null?cfg.dreamPostMin:2}" min="0.5" step="0.5"><label>~</label><input type="number" id="cfgDPostMax" value="${cfg.dreamPostMax!=null?cfg.dreamPostMax:8}" min="0.5" step="0.5"></div>
-      <div class="setting-row"><label>一条用字卡</label><input type="number" id="cfgDPCardMin" value="${cfg.dreamPostCardMin!=null?cfg.dreamPostCardMin:1}" min="1" max="10" step="1"><label>~</label><input type="number" id="cfgDPCardMax" value="${cfg.dreamPostCardMax!=null?cfg.dreamPostCardMax:5}" min="1" max="10" step="1"><label>张</label></div>
-      <div class="setting-row"><label>配图概率(%)</label><input type="number" id="cfgPhotoProb" value="${(engCfg.prob&&engCfg.prob.dreamPostPhoto!=null)?engCfg.prob.dreamPostPhoto:60}" min="0" max="100" step="5"><label>含表情贴纸</label><input type="number" id="cfgStickerFrac" value="${(engCfg.prob&&engCfg.prob.dreamStickerFrac!=null)?engCfg.prob.dreamStickerFrac:70}" min="0" max="100" step="5"><label>%</label></div>
-      <div class="setting-row"><label>刷圈间隔(分)</label><input type="number" id="cfgDRMin" value="${cfg.dreamReactionMin!=null?cfg.dreamReactionMin:1}" min="0.5" step="0.5"><label>~</label><input type="number" id="cfgDRMax" value="${cfg.dreamReactionMax!=null?cfg.dreamReactionMax:6}" min="0.5" step="0.5"></div>
-      <div class="setting-row"><label>点赞概率(%)</label><input type="number" id="cfgLikeProb" value="${cfg.dreamLikeProb!=null?cfg.dreamLikeProb:80}" min="0" max="100" step="5"><label>评论概率(%)</label><input type="number" id="cfgCommentProb" value="${cfg.dreamCommentProb!=null?cfg.dreamCommentProb:65}" min="0" max="100" step="5"></div>
-      <div class="setting-row"><label>回复延迟(秒)</label><input type="number" id="cfgCDMin" value="${cfg.dreamCommentDelayMin!=null?cfg.dreamCommentDelayMin:2}" min="0.5" step="0.5"><label>~</label><input type="number" id="cfgCDMax" value="${cfg.dreamCommentDelayMax!=null?cfg.dreamCommentDelayMax:8}" min="0.5" step="0.5"></div>
+      <div class="setting-row"><label>发圈间隔(分)</label><input type="number" id="cfgDPostMin" value="${cfg.timing?.dreamPost?.min||2}" min="0.5" step="0.5"><label>~</label><input type="number" id="cfgDPostMax" value="${cfg.timing?.dreamPost?.max||8}" min="0.5" step="0.5"></div>
+      <div class="setting-row"><label>一条用字卡</label><input type="number" id="cfgDPCardMin" value="${cfg.timing?.dreamPostCard?.min||1}" min="1" max="10" step="1"><label>~</label><input type="number" id="cfgDPCardMax" value="${cfg.timing?.dreamPostCard?.max||5}" min="1" max="10" step="1"><label>张</label></div>
+      <div class="setting-row"><label>配图概率(%)</label><input type="number" id="cfgPhotoProb" value="${cfg.prob?.postPhoto||60}" min="0" max="100" step="5"><label>含表情贴纸</label><input type="number" id="cfgStickerFrac" value="${cfg.prob?.stickerFrac||70}" min="0" max="100" step="5"><label>%</label></div>
+      <div class="setting-row"><label>刷圈间隔(分)</label><input type="number" id="cfgDRMin" value="${cfg.timing?.dreamReaction?.min||1}" min="0.5" step="0.5"><label>~</label><input type="number" id="cfgDRMax" value="${cfg.timing?.dreamReaction?.max||6}" min="0.5" step="0.5"></div>
+      <div class="setting-row"><label>点赞概率(%)</label><input type="number" id="cfgLikeProb" value="${cfg.prob?.dreamLike||80}" min="0" max="100" step="5"><label>评论概率(%)</label><input type="number" id="cfgCommentProb" value="${cfg.prob?.dreamComment||65}" min="0" max="100" step="5"></div>
+      <div class="setting-row"><label>回复延迟(秒)</label><input type="number" id="cfgCDMin" value="${cfg.timing?.dreamComment?.min||2}" min="0.5" step="0.5"><label>~</label><input type="number" id="cfgCDMax" value="${cfg.timing?.dreamComment?.max||8}" min="0.5" step="0.5"></div>
       <div class="setting-row"><label>评论衰减(%)</label><input type="number" class="prob-decay" data-idx="0" value="${(cfg.dreamReplyDecaySeq||[100,70,40,10,0])[0]}" style="width:46px;" min="0" max="100"><input type="number" class="prob-decay" data-idx="1" value="${(cfg.dreamReplyDecaySeq||[100,70,40,10,0])[1]}" style="width:46px;" min="0" max="100"><input type="number" class="prob-decay" data-idx="2" value="${(cfg.dreamReplyDecaySeq||[100,70,40,10,0])[2]}" style="width:46px;" min="0" max="100"><input type="number" class="prob-decay" data-idx="3" value="${(cfg.dreamReplyDecaySeq||[100,70,40,10,0])[3]}" style="width:46px;" min="0" max="100"><span style="font-size:11px;color:var(--text-muted);">第1~4轮</span></div>
       <div class="setting-row"><label>第5轮+</label><input type="number" id="cfgDecay5" value="${(cfg.dreamReplyDecaySeq||[100,70,40,10,0])[4]||0}" min="0" max="100" step="5" style="width:60px;"><label>启用衰减</label><input type="checkbox" id="cfgDecayOn" ${cfg.dreamReplyDecayOn!==false?'checked':''} style="width:auto;"></div>
     </div>
@@ -2930,13 +3015,13 @@ function renderSettings(container) {
         <input type="checkbox" id="cfgDEEnaDD" ${(engCfg.enabled&&engCfg.enabled.dreamDiary!==false)?'checked':''} style="width:auto;">
       </div>
       <div class="setting-row"><label>生成时段</label><input type="number" id="cfgDETWDDS" value="${engCfg.diaryTimeStart!=null?engCfg.diaryTimeStart:21}" min="0" max="23" step="1"><label>时~</label><input type="number" id="cfgDETWDDE" value="${engCfg.diaryTimeEnd!=null?engCfg.diaryTimeEnd:24}" min="1" max="24" step="1"><label>时（每天1篇）</label></div>
-      <div class="setting-row"><label>备选时段</label><input type="number" id="cfgDGMin" value="${cfg.diaryGenHourMin!=null?cfg.diaryGenHourMin:21}" min="0" max="23" step="1"><label>~</label><input type="number" id="cfgDGMax" value="${cfg.diaryGenHourMax!=null?cfg.diaryGenHourMax:24}" min="1" max="24" step="1"><label>时（旧调度）</label></div>
+      <div class="setting-row"><label>备选时段</label><input type="number" id="cfgDGMin" value="${cfg.timing?.diaryGen?.hourMin||21}" min="0" max="23" step="1"><label>~</label><input type="number" id="cfgDGMax" value="${cfg.timing?.diaryGen?.hourMax||24}" min="1" max="24" step="1"><label>时（旧调度）</label></div>
       <div class="setting-row" style="border-top:1px solid var(--border);padding-top:8px;margin-top:4px;">
         <label>启用批阅用户日记</label>
         <input type="checkbox" id="cfgDEEnaDC" ${(engCfg.enabled&&engCfg.enabled.dreamDiaryComment!==false)?'checked':''} style="width:auto;">
       </div>
       <div class="setting-row"><label>批阅概率(%)</label><input type="number" id="cfgDCProbNew" value="${(engCfg.prob&&engCfg.prob.dreamDiaryComment!=null)?engCfg.prob.dreamDiaryComment:70}" min="0" max="100" step="5"></div>
-      <div class="setting-row"><label>批阅延迟(分)</label><input type="number" id="cfgDCDMin" value="${cfg.diaryCommentDelayMin!=null?cfg.diaryCommentDelayMin:30}" min="1" step="1"><label>~</label><input type="number" id="cfgDCDMax" value="${cfg.diaryCommentDelayMax!=null?cfg.diaryCommentDelayMax:120}" min="1" step="1"></div>
+      <div class="setting-row"><label>批阅延迟(分)</label><input type="number" id="cfgDCDMin" value="${cfg.timing?.diaryComment?.min||30}" min="1" step="1"><label>~</label><input type="number" id="cfgDCDMax" value="${cfg.timing?.diaryComment?.max||120}" min="1" step="1"></div>
     </div>
 
     <div class="setting-group">
@@ -2951,7 +3036,7 @@ function renderSettings(container) {
 
     <div class="setting-group">
       <div class="sg-title">💥 锐评设置</div>
-      <div class="setting-row"><label>反问概率(%)</label><input type="number" id="cfgRCProb" value="${cfg.reviewCounterProb!=null?cfg.reviewCounterProb:20}" min="0" max="100" step="5"><label>评语字卡数</label><input type="number" id="cfgRCardCnt" value="${cfg.reviewCardCount||3}" min="1" max="10" step="1"></div>
+      <div class="setting-row"><label>反问概率(%)</label><input type="number" id="cfgRCProb" value="${cfg.prob?.reviewCounter||20}" min="0" max="100" step="5"><label>评语字卡数</label><input type="number" id="cfgRCardCnt" value="${cfg.reviewCardCount||3}" min="1" max="10" step="1"></div>
       <div class="setting-row">
         <label>评级倾向</label>
         <select id="cfgRMode" style="padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg-warm);font-size:13px;">
@@ -3142,61 +3227,106 @@ function saveSettingsFromForm(container) {
   var userAvImg=container.querySelector('#userAvatarPreview img');
   cfg.userAvatarUrl = userAvImg ? userAvImg.src : '';
   if(unameEl)cfg.userNickname=unameEl.value.trim()||'我';
-  if(amEl)cfg.activeMin=parseFloat(amEl.value)||0.1;
-  if(axEl)cfg.activeMax=parseFloat(axEl.value)||0.4;
-  if(pmEl)cfg.passiveMin=parseFloat(pmEl.value)||0.5;
-  if(pxEl)cfg.passiveMax=parseFloat(pxEl.value)||2.5;
+  
+  // ✅ 使用新的 timing 对象来保存所有时间参数
+  if(!cfg.timing)cfg.timing={};
+  if(amEl||axEl){
+    if(!cfg.timing.activeChat)cfg.timing.activeChat={};
+    if(amEl)cfg.timing.activeChat.min=parseFloat(amEl.value)||30;
+    if(axEl)cfg.timing.activeChat.max=parseFloat(axEl.value)||60;
+  }
+  if(pmEl||pxEl){
+    if(!cfg.timing.passiveReply)cfg.timing.passiveReply={};
+    if(pmEl)cfg.timing.passiveReply.min=parseFloat(pmEl.value)||0.5;
+    if(pxEl)cfg.timing.passiveReply.max=parseFloat(pxEl.value)||2.5;
+  }
+  
   const msgP=[]; container.querySelectorAll('.prob-msg').forEach(i=>msgP.push(parseInt(i.value)||0));
   cfg.msgCountProbs=normalizeProbs(msgP);
   const cardP=[]; container.querySelectorAll('.prob-card').forEach(i=>cardP.push(parseInt(i.value)||0));
   cfg.cardCountProbs=normalizeProbs(cardP);
-  // Dream post/reaction settings
+  
+  // Dream post/reaction/comment settings
   const dpmEl=container.querySelector('#cfgDPostMin'), dpxEl=container.querySelector('#cfgDPostMax');
   const dpcmEl=container.querySelector('#cfgDPCardMin'), dpcxEl=container.querySelector('#cfgDPCardMax');
   const drmEl=container.querySelector('#cfgDRMin'), drxEl=container.querySelector('#cfgDRMax');
   const lpEl=container.querySelector('#cfgLikeProb'), cpEl=container.querySelector('#cfgCommentProb');
-  if(dpmEl)cfg.dreamPostMin=parseFloat(dpmEl.value)||2;
-  if(dpxEl)cfg.dreamPostMax=parseFloat(dpxEl.value)||8;
-  if(dpcmEl)cfg.dreamPostCardMin=parseInt(dpcmEl.value)||1;
-  if(dpcxEl)cfg.dreamPostCardMax=parseInt(dpcxEl.value)||5;
-  if(drmEl)cfg.dreamReactionMin=parseFloat(drmEl.value)||1;
-  if(drxEl)cfg.dreamReactionMax=parseFloat(drxEl.value)||6;
-  if(lpEl)cfg.dreamLikeProb=parseInt(lpEl.value)||80;
-  if(cpEl)cfg.dreamCommentProb=parseInt(cpEl.value)||65;
-  // Comment reply delay
   const cdmEl=container.querySelector('#cfgCDMin'), cdxEl=container.querySelector('#cfgCDMax');
-  if(cdmEl)cfg.dreamCommentDelayMin=parseFloat(cdmEl.value)||2;
-  if(cdxEl)cfg.dreamCommentDelayMax=parseFloat(cdxEl.value)||8;
+  
+  if(!cfg.prob)cfg.prob={};
+  if(dpmEl||dpxEl){
+    if(!cfg.timing.dreamPost)cfg.timing.dreamPost={};
+    if(dpmEl)cfg.timing.dreamPost.min=parseFloat(dpmEl.value)||2;
+    if(dpxEl)cfg.timing.dreamPost.max=parseFloat(dpxEl.value)||8;
+  }
+  if(dpcmEl||dpcxEl){
+    if(!cfg.timing.dreamPostCard)cfg.timing.dreamPostCard={};
+    if(dpcmEl)cfg.timing.dreamPostCard.min=parseInt(dpcmEl.value)||1;
+    if(dpcxEl)cfg.timing.dreamPostCard.max=parseInt(dpcxEl.value)||5;
+  }
+  if(drmEl||drxEl){
+    if(!cfg.timing.dreamReaction)cfg.timing.dreamReaction={};
+    if(drmEl)cfg.timing.dreamReaction.min=parseFloat(drmEl.value)||1;
+    if(drxEl)cfg.timing.dreamReaction.max=parseFloat(drxEl.value)||6;
+  }
+  if(lpEl)cfg.prob.dreamLike=parseInt(lpEl.value)||80;
+  if(cpEl)cfg.prob.dreamComment=parseInt(cpEl.value)||65;
+  
+  // Photo and sticker probabilities
+  const photoEl = container.querySelector('#cfgPhotoProb');
+  if (photoEl) cfg.prob.postPhoto = parseInt(photoEl.value) || 60;
+  const stickerEl = container.querySelector('#cfgStickerFrac');
+  if (stickerEl) cfg.prob.stickerFrac = parseInt(stickerEl.value) || 70;
+  
+  if(cdmEl||cdxEl){
+    if(!cfg.timing.dreamComment)cfg.timing.dreamComment={};
+    if(cdmEl)cfg.timing.dreamComment.min=parseFloat(cdmEl.value)||2;
+    if(cdxEl)cfg.timing.dreamComment.max=parseFloat(cdxEl.value)||8;
+  }
+  
   // Decay sequence
   const decayP=[]; container.querySelectorAll('.prob-decay').forEach(i=>decayP.push(parseInt(i.value)||0));
   const d5El=container.querySelector('#cfgDecay5'); if(d5El)decayP.push(parseInt(d5El.value)||0);
   cfg.dreamReplyDecaySeq=decayP;
   const dOnEl=container.querySelector('#cfgDecayOn'); cfg.dreamReplyDecayOn=dOnEl?dOnEl.checked:true;
+  
   // Diary settings
   const dgmEl=container.querySelector('#cfgDGMin'), dgxEl=container.querySelector('#cfgDGMax');
   const dcpEl=container.querySelector('#cfgDCProb'), dcdmEl=container.querySelector('#cfgDCDMin'), dcdxEl=container.querySelector('#cfgDCDMax');
-  if(dgmEl)cfg.diaryGenHourMin=parseInt(dgmEl.value)||21;
-  if(dgxEl)cfg.diaryGenHourMax=parseInt(dgxEl.value)||24;
-  if(dcpEl)cfg.diaryCommentProb=parseInt(dcpEl.value)||70;
-  if(dcdmEl)cfg.diaryCommentDelayMin=parseInt(dcdmEl.value)||30;
-  if(dcdxEl)cfg.diaryCommentDelayMax=parseInt(dcdxEl.value)||120;
+  if(dgmEl||dgxEl){
+    if(!cfg.timing.diaryGen)cfg.timing.diaryGen={};
+    if(dgmEl)cfg.timing.diaryGen.hourMin=parseInt(dgmEl.value)||21;
+    if(dgxEl)cfg.timing.diaryGen.hourMax=parseInt(dgxEl.value)||24;
+  }
+  if(dcpEl)cfg.prob.diaryComment=parseInt(dcpEl.value)||70;
+  if(dcdmEl||dcdxEl){
+    if(!cfg.timing.diaryComment)cfg.timing.diaryComment={};
+    if(dcdmEl)cfg.timing.diaryComment.min=parseInt(dcdmEl.value)||30;
+    if(dcdxEl)cfg.timing.diaryComment.max=parseInt(dcdxEl.value)||120;
+  }
   // Review settings
   const rcpEl=container.querySelector('#cfgRCProb'), rccEl=container.querySelector('#cfgRCardCnt'), rmdEl=container.querySelector('#cfgRMode');
-  if(rcpEl)cfg.reviewCounterProb=parseInt(rcpEl.value)||20;
+  if(rcpEl)cfg.prob.reviewCounter=parseInt(rcpEl.value)||20;
   if(rccEl)cfg.reviewCardCount=parseInt(rccEl.value)||3;
   if(rmdEl)cfg.reviewMode=rmdEl.value||'random';
   // Doodle probability
   const doodleProbEl=container.querySelector('#cfgDoodleProb');
-  if(doodleProbEl)cfg.doodleProb=parseInt(doodleProbEl.value)||0;
-  // Checkin settings (old, keep for backward compatibility)
+  if(doodleProbEl)cfg.prob.doodle=parseInt(doodleProbEl.value)||0;
+  // Checkin settings
   const ciAutoEl=container.querySelector('#cfgCIAuto');
   if(ciAutoEl)cfg.checkinAutoEnabled=ciAutoEl.checked;
   const ciTSel=container.querySelector('#cfgCITStart'), ciTEel=container.querySelector('#cfgCITEnd');
-  if(ciTSel)cfg.checkinTimeStart=parseInt(ciTSel.value)||9;
-  if(ciTEel)cfg.checkinTimeEnd=parseInt(ciTEel.value)||21;
+  if(ciTSel||ciTEel){
+    if(!cfg.timing.checkin)cfg.timing.checkin={};
+    if(ciTSel)cfg.timing.checkin.timeStart=parseInt(ciTSel.value)||9;
+    if(ciTEel)cfg.timing.checkin.timeEnd=parseInt(ciTEel.value)||21;
+  }
   const ciIMinEl=container.querySelector('#cfgCIIntervalMin'), ciIMaxEl=container.querySelector('#cfgCIIntervalMax');
-  if(ciIMinEl)cfg.checkinIntervalMin=parseInt(ciIMinEl.value)||30;
-  if(ciIMaxEl)cfg.checkinIntervalMax=parseInt(ciIMaxEl.value)||120;
+  if(ciIMinEl||ciIMaxEl){
+    if(!cfg.timing.checkin)cfg.timing.checkin={};
+    if(ciIMinEl)cfg.timing.checkin.intervalMin=parseInt(ciIMinEl.value)||30;
+    if(ciIMaxEl)cfg.timing.checkin.intervalMax=parseInt(ciIMaxEl.value)||120;
+  }
   // Save dream engine settings
   const engCfg = cfg.dreamEngine || {};
   if (!engCfg.enabled) engCfg.enabled = {};
@@ -3443,7 +3573,14 @@ function bindMomentsEvents(container) {
         targetText: charName+'的评论："'+comment.content+'"',
         contextMessages: allMsgs.slice(0,commentGlobalIdx),
         scene: 'moments-comment',
-        loadingText: '解读评论中'
+        loadingText: '解读评论中',
+        favoriteMeta: {
+          sourceType: 'moment-comment',
+          sourceId: mid,
+          sourceSubId: String(commentIdx),
+          sourceLabel: '朋友圈评论',
+          text: comment.content
+        }
       });
     } else if(action==='delete'){
       deleteMoment(mid);
@@ -3468,7 +3605,13 @@ function bindMomentsEvents(container) {
         targetText: moment.content,
         contextMessages: ctxMsgs,
         scene: isMine?'moments':'moments-friend',
-        loadingText: '解读朋友圈中'
+        loadingText: '解读朋友圈中',
+        favoriteMeta: {
+          sourceType: 'moment',
+          sourceId: moment.id,
+          sourceLabel: '朋友圈',
+          text: moment.content
+        }
       });
     }
   });
@@ -3706,8 +3849,8 @@ function executeDreamReaction(mid) {
   delete state.pendingReactionTimers[mid];
 
   const cfg=STORE.config||{};
-  const likeProb=cfg.dreamLikeProb!=null?cfg.dreamLikeProb:80;
-  const commentProb=cfg.dreamCommentProb!=null?cfg.dreamCommentProb:65;
+  const likeProb=(cfg.prob?.dreamLike||80);
+  const commentProb=(cfg.prob?.dreamComment||65);
   const rollLike=Math.random()*100;
   const rollComment=Math.random()*100;
 
@@ -3971,19 +4114,34 @@ function computeEventTimesForDay(dateStr, eventDef) {
 // ---- Backfill Engine ----
 async function runBackfill() {
   const lastActive = STORE.lastActive;
-  if (!lastActive) return;
   const now = Date.now();
+  
+  // ✅ FIX #2.1: 新用户首启动初始化
+  if (!lastActive) {
+    STORE.lastActive = now;
+    console.log('[DreamEngine] 首次启动，初始化时间戳 - 不进行离线回溯');
+    return;
+  }
+  
+  // ✅ FIX #2.2: 限制回溯跨度（最多7天）和事件数（最多100个）
+  const MAX_BACKFILL_DAYS = 7;
+  const MAX_BACKFILL_EVENTS = 100;
+  const minAllowedTime = now - (MAX_BACKFILL_DAYS * 86400000);
+  const startTime = Math.max(lastActive, minAllowedTime);
+  
   const cfg = STORE.config || {};
   const engCfg = cfg.dreamEngine || {};
 
-  const startDate = new Date(lastActive);
+  const startDate = new Date(startTime);
   startDate.setHours(0, 0, 0, 0);
   const endDate = new Date(now);
   const dayMs = 86400000;
   let cursor = new Date(startDate);
   let totalGenerated = 0;
 
-  while (cursor <= endDate) {
+  console.log('[DreamEngine] 开始离线回溯（从 ' + new Date(startTime).toLocaleString('zh-CN') + ' 到 ' + new Date(now).toLocaleString('zh-CN') + '）');
+
+  while (cursor <= endDate && totalGenerated < MAX_BACKFILL_EVENTS) {
     const dateStr = cursor.getFullYear() + '-' + String(cursor.getMonth() + 1).padStart(2, '0') + '-' + String(cursor.getDate()).padStart(2, '0');
 
     for (const eventDef of EVENT_TYPE_LIST) {
@@ -3993,8 +4151,10 @@ async function runBackfill() {
 
       const times = computeEventTimesForDay(dateStr, eventDef);
       for (const slot of times) {
+        if (totalGenerated >= MAX_BACKFILL_EVENTS) break;
+        
         if (isEventCompleted(eventDef.id, dateStr, slot.index)) continue;
-        if (slot.timestamp <= lastActive) continue;
+        if (slot.timestamp <= startTime) continue;
         if (slot.timestamp >= now) continue;
 
         const nonce = getOrCreateDayNonce(dateStr, eventDef.id);
@@ -4008,11 +4168,18 @@ async function runBackfill() {
         }
         clearBackfillContext();
         markEventCompleted(eventDef.id, dateStr, slot.index);
+        
+        // ✅ FIX #2.3: 防止UI卡顿，让出线程
+        await sleep(10);
       }
+      
+      if (totalGenerated >= MAX_BACKFILL_EVENTS) break;
     }
     cursor = new Date(cursor.getTime() + dayMs);
   }
-  if (totalGenerated > 0) console.log('[DreamEngine] 离线回溯完成，一共补了 ' + totalGenerated + ' 条事件');
+  
+  console.log('[DreamEngine] 离线回溯完成，共补充 ' + totalGenerated + ' 条事件');
+  STORE.lastActive = now;
 }
 
 // ---- Real-time Scheduler ----
@@ -4132,8 +4299,9 @@ async function postDreamMoment() {
 function startDreamPostTimer() {
   stopDreamPostTimer();
   const cfg=STORE.config||{};
-  const minMs=(cfg.dreamPostMin!=null?cfg.dreamPostMin:2)*60000;
-  const maxMs=(cfg.dreamPostMax!=null?cfg.dreamPostMax:8)*60000;
+  const timing=cfg.timing||{dreamPost:{min:2,max:8}};
+  const minMs=(timing.dreamPost?.min||2)*60000;
+  const maxMs=(timing.dreamPost?.max||8)*60000;
   function scheduleNext(){
     const delay=randomBetween(minMs,maxMs);
     state.dreamPostTimerId=setTimeout(()=>{
@@ -4202,6 +4370,10 @@ function formatTime(ts) {
 
 // ============ Rendering: Diary (日记) ============
 function renderDiary(container) {
+  if (state.diaryFullscreenId) {
+    renderDiaryFullscreen(container);
+    return;
+  }
   if(!state.diaryMonth){ const now=new Date(); state.diaryMonth=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0'); }
   const todayStr=todayDateString();
   const hasUserDiaryToday=hasDiary(todayStr,'user');
@@ -4256,6 +4428,7 @@ function renderCalendar() {
 }
 
 function showDiaryDetail(dateStr) {
+  state.diarySelectedDate = dateStr;
   const detail=document.getElementById('diaryDetail'); if(!detail)return;
   const diaries=STORE.diaries||[];
   const userDiary=diaries.find(d=>d.date===dateStr&&d.author==='user');
@@ -4288,8 +4461,17 @@ function showDiaryDetail(dateStr) {
   detail.innerHTML=html;
 
   // Bind detail events
+  detail.querySelectorAll('.diary-card-openable').forEach(card=>{
+    card.addEventListener('click',function(e){
+      if(e.target.closest('button,input,textarea,a,.ai-box,.diary-comments'))return;
+      openDiaryFullscreen(this.dataset.did);
+    });
+  });
   if(userDiary){
-    detail.querySelector('.btn-edit-diary')?.addEventListener('click',()=>showEditDiaryModal(userDiary.id));
+    detail.querySelector('.btn-edit-diary')?.addEventListener('click',e=>{
+      e.stopPropagation();
+      openDiaryFullscreen(userDiary.id);
+    });
   }
   if(isToday&&!userDiary){
     detail.querySelector('#btnWriteDiaryDetail')?.addEventListener('click',showWriteDiaryModal);
@@ -4325,7 +4507,13 @@ function showDiaryDetail(dateStr) {
         targetText: buildDiaryTarget(diary),
         contextMessages: [],
         scene: 'diary',
-        loadingText: '解读日记中'
+        loadingText: '解读日记中',
+        favoriteMeta: {
+          sourceType: 'diary',
+          sourceId: diary.id,
+          sourceLabel: '日记',
+          text: buildDiaryTarget(diary)
+        }
       });
     });
   });
@@ -4356,7 +4544,7 @@ function renderDiaryEntry(diary, isUser) {
   const editBtn=isUser?`<button class="btn-edit-diary">✏️ 编辑</button>`:'';
   const aiBtnDiary=!isUser?`<button class="btn-ai-diary" data-did="${diary.id}">📖 想说什么？</button>`:'';
   const aiBoxDiary=!isUser?`<div class="ai-box" data-ai-target="diary" data-did="${diary.id}"></div>`:'';
-  return `<div class="diary-entry">
+  return `<div class="diary-entry diary-card-openable" data-action="openDiaryFullscreen" data-did="${escapeHtml(diary.id)}">
     <div class="de-header"><span class="de-author">${isUser?'📝 '+((STORE.config||{}).userNickname||'我'):(STORE.config||{}).characterName||'梦角'}的日记</span>${editBtn}</div>
     <div class="de-title">${escapeHtml(diary.title||'无题')}</div>
     <div class="de-body">${escapeHtml(diary.content||'')}</div>
@@ -4371,6 +4559,139 @@ function renderDiaryEntry(diary, isUser) {
       </div>
     </div>
   </div>`;
+}
+
+function openDiaryFullscreen(diaryId) {
+  state.diaryFullscreenId = diaryId;
+  var body = document.getElementById('fsBody');
+  if (body) renderDiaryFullscreen(body);
+}
+
+function closeDiaryFullscreen() {
+  var diaries = STORE.diaries || [];
+  var diary = diaries.find(d=>d.id===state.diaryFullscreenId);
+  var dateStr = diary ? diary.date : state.diarySelectedDate;
+  state.diaryFullscreenId = null;
+  var body = document.getElementById('fsBody');
+  if (body && state.fsView === 'diary') {
+    renderDiary(body);
+    if (dateStr) showDiaryDetail(dateStr);
+  }
+}
+
+function renderDiaryFullscreen(container) {
+  const diaries=STORE.diaries||[];
+  const diary=diaries.find(d=>d.id===state.diaryFullscreenId);
+  if(!diary){
+    state.diaryFullscreenId=null;
+    renderDiary(container);
+    return;
+  }
+  const isUser=diary.author==='user';
+  const cfg=STORE.config||{};
+  const authorName=isUser?(cfg.userNickname||'我'):(cfg.characterName||'梦角');
+  const comments=diary.comments||[];
+  const commentsHtml=comments.length>0 ? comments.map(c=>{
+    const name=c.author==='user'?(cfg.userNickname||'我'):(cfg.characterName||'梦角');
+    return `<div class="dc-item"><span class="dc-author">${escapeHtml(name)}：</span>${escapeHtml(c.content)}</div>`;
+  }).join('') : '<div class="mc-empty">暂无批阅</div>';
+  const editorHtml=isUser
+    ? `<input type="text" class="diary-full-title-input" id="diaryFullTitleInput" value="${escapeHtml(diary.title||'')}" maxlength="50">
+       <textarea class="diary-full-content-input" id="diaryFullContentInput">${escapeHtml(diary.content||'')}</textarea>`
+    : `<div class="diary-full-read-title">${escapeHtml(diary.title||'无题')}</div>
+       <div class="diary-full-read-body">${escapeHtml(diary.content||'')}</div>`;
+  const aiHtml=!isUser?`<div class="ai-box" data-ai-target="diary" data-did="${escapeHtml(diary.id)}"></div>`:'';
+  const saveBtn=isUser?`<button class="diary-full-btn primary btn-diary-full-save" type="button">保存</button>`:'';
+  const dreamTools=!isUser?`<button class="diary-full-btn btn-ai-diary" type="button" data-did="${escapeHtml(diary.id)}">📖 想说什么？</button>
+    <button class="diary-full-btn btn-refresh-diary" type="button" data-date="${escapeHtml(diary.date)}">🔄 刷新</button>`:'';
+
+  container.innerHTML=`<div class="diary-fullscreen">
+    <div class="diary-full-head">
+      <button class="diary-full-btn btn-diary-full-back" type="button">‹ 返回</button>
+      <div class="diary-full-titlebar">
+        <div class="diary-full-date">${escapeHtml(diary.date)}</div>
+        <div class="diary-full-name">${escapeHtml(authorName)}的日记</div>
+      </div>
+      <div class="diary-full-actions">${dreamTools}${saveBtn}</div>
+    </div>
+    <div class="diary-full-body">
+      <div class="diary-full-paper">
+        ${editorHtml}
+        <div class="diary-full-meta">更新于 ${new Date(diary.updatedAt||diary.createdAt).toLocaleString('zh-CN')}</div>
+        ${aiHtml}
+      </div>
+      <div class="diary-full-extra">
+        <div class="diary-comments">
+          ${commentsHtml}
+          <div class="dc-input-row">
+            <input type="text" placeholder="写批阅…" maxlength="200">
+            <button class="dc-send" data-did="${escapeHtml(diary.id)}">发送</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+  bindDiaryFullscreenEvents(container, diary);
+}
+
+function bindDiaryFullscreenEvents(container, diary) {
+  container.querySelector('.btn-diary-full-back')?.addEventListener('click',closeDiaryFullscreen);
+  container.querySelector('.btn-diary-full-save')?.addEventListener('click',function(){
+    saveDiaryFullscreenEdit(diary.id);
+  });
+  container.querySelector('.dc-send')?.addEventListener('click',function(){
+    const inp=this.parentElement.querySelector('input');
+    const text=(inp?.value||'').trim();
+    if(!text){alert('请输入批阅内容');return;}
+    if(inp)inp.value='';
+    addDiaryComment(diary.id,'user',text);
+  });
+  container.querySelector('.btn-ai-diary')?.addEventListener('click',function(){
+    if(!isAIInterpretReady()){alert('请先到「设置 → AI 解读」开启功能并填写 API Key');return;}
+    var box=container.querySelector('.ai-box[data-ai-target="diary"]');
+    if(!box)return;
+    runAIInterpretOnBox(box, {
+      targetText: buildDiaryTarget(diary),
+      contextMessages: [],
+      scene: 'diary',
+      loadingText: '解读日记中',
+      favoriteMeta: {
+        sourceType: 'diary',
+        sourceId: diary.id,
+        sourceLabel: '日记',
+        text: buildDiaryTarget(diary)
+      }
+    });
+  });
+  container.querySelector('.btn-refresh-diary')?.addEventListener('click',async function(){
+    var dateStr=this.dataset.date;
+    var diaries=STORE.diaries||[];
+    var idx=diaries.findIndex(function(d){return d.date===dateStr&&d.author==='dream';});
+    if(idx>=0)diaries.splice(idx,1);
+    STORE.diaries=diaries;
+    this.textContent='生成中...';
+    this.disabled=true;
+    var diaryNew=await generateDreamDiary(dateStr);
+    if(diaryNew)state.diaryFullscreenId=diaryNew.id;
+    renderDiaryFullscreen(container);
+  });
+}
+
+function saveDiaryFullscreenEdit(diaryId) {
+  const diaries=STORE.diaries||[];
+  const diary=diaries.find(d=>d.id===diaryId);
+  if(!diary)return;
+  const titleEl=document.getElementById('diaryFullTitleInput');
+  const contentEl=document.getElementById('diaryFullContentInput');
+  const title=(titleEl?.value||'').trim()||'无题';
+  const content=(contentEl?.value||'').trim();
+  if(!content){alert('请输入日记内容');return;}
+  diary.title=title;
+  diary.content=content;
+  diary.updatedAt=Date.now();
+  STORE.diaries=diaries;
+  var body=document.getElementById('fsBody');
+  if(body)renderDiaryFullscreen(body);
 }
 
 function bindDiaryEvents(container) {
@@ -4666,8 +4987,9 @@ async function generateDreamDiary(dateStr) {
 function scheduleDreamDiaryGen() {
   clearTimeout(state.diaryGenTimerId); state.diaryGenTimerId=null;
   const cfg=STORE.config||{};
-  const hourMin=cfg.diaryGenHourMin!=null?cfg.diaryGenHourMin:21;
-  const hourMax=cfg.diaryGenHourMax!=null?cfg.diaryGenHourMax:24;
+  const timing=cfg.timing||{diaryGen:{hourMin:21,hourMax:24}};
+  const hourMin=timing.diaryGen?.hourMin||21;
+  const hourMax=timing.diaryGen?.hourMax||24;
 
   const now=new Date(); const today=todayDateString();
   // If already past end hour and today's dream diary doesn't exist, generate now
@@ -4703,7 +5025,12 @@ function addDiaryComment(diaryId, author, content) {
   if(!Array.isArray(diary.comments))diary.comments=[];
   diary.comments.push({id:'dc_'+Date.now(),author,content,timestamp:Date.now()});
   STORE.diaries=diaries;
-  showDiaryDetail(diary.date);
+  if(state.diaryFullscreenId===diaryId){
+    var body=document.getElementById('fsBody');
+    if(body)renderDiaryFullscreen(body);
+  } else {
+    showDiaryDetail(diary.date);
+  }
   // Dream replies to user comment on user's diary
   if(author==='user'&&diary.author==='user'){
     scheduleDiaryCommentReply(diaryId);
@@ -4712,10 +5039,11 @@ function addDiaryComment(diaryId, author, content) {
 
 function scheduleDiaryCommentReply(diaryId) {
   const cfg=STORE.config||{};
-  const prob=cfg.diaryCommentProb!=null?cfg.diaryCommentProb:70;
+  const prob=(cfg.prob?.diaryComment||70);
   if(Math.random()*100>=prob)return;
-  const minMs=(cfg.diaryCommentDelayMin!=null?cfg.diaryCommentDelayMin:30)*60000;
-  const maxMs=(cfg.diaryCommentDelayMax!=null?cfg.diaryCommentDelayMax:120)*60000;
+  const timing=cfg.timing||{diaryComment:{min:30,max:120}};
+  const minMs=(timing.diaryComment?.min||30)*60000;
+  const maxMs=(timing.diaryComment?.max||120)*60000;
   const delay=randomBetween(minMs,maxMs);
 
   setTimeout(()=>{
@@ -4731,7 +5059,14 @@ function scheduleDiaryCommentReply(diaryId) {
     if(!Array.isArray(diary.comments))diary.comments=[];
     diary.comments.push({id:'dc_'+Date.now(),author:'dream',content,timestamp:Date.now()});
     STORE.diaries=diaries;
-    if(state.fsView==='diary')showDiaryDetail(diary.date);
+    if(state.fsView==='diary'){
+      if(state.diaryFullscreenId===diaryId){
+        var body=document.getElementById('fsBody');
+        if(body)renderDiaryFullscreen(body);
+      } else {
+        showDiaryDetail(diary.date);
+      }
+    }
   },delay);
 }
 
@@ -4906,12 +5241,13 @@ function scheduleNextAutoCheckin() {
 
   const now = new Date();
   const currentMinutes = now.getHours() * 60 + now.getMinutes();
-  const startMinutes = cfg.checkinTimeStart * 60;
-  const endMinutes = cfg.checkinTimeEnd * 60;
+  const timing = cfg.timing || {checkin: {timeStart: 9, timeEnd: 21, intervalMin: 30, intervalMax: 120}};
+  const startMinutes = (timing.checkin?.timeStart || 9) * 60;
+  const endMinutes = (timing.checkin?.timeEnd || 21) * 60;
 
   if (currentMinutes >= startMinutes && currentMinutes < endMinutes) {
     // Inside active window — schedule next checkin
-    const delayMin = randomBetween(cfg.checkinIntervalMin || 30, cfg.checkinIntervalMax || 120);
+    const delayMin = randomBetween(timing.checkin?.intervalMin || 30, timing.checkin?.intervalMax || 120);
     const delayMs = delayMin * 60000;
     state.checkinAutoTimerId = setTimeout(() => {
       const words = STORE.checkinWords || [];
@@ -4935,7 +5271,8 @@ function scheduleNextAutoCheckin() {
   } else {
     // Outside active window — wait until next start time
     let nextStart = new Date(now);
-    nextStart.setHours(cfg.checkinTimeStart, 0, 0, 0);
+    const timing = cfg.timing || {checkin: {timeStart: 9, timeEnd: 21, intervalMin: 30, intervalMax: 120}};
+    nextStart.setHours(timing.checkin?.timeStart || 9, 0, 0, 0);
     if (currentMinutes >= endMinutes) {
       // Past today's window — schedule for tomorrow
       nextStart.setDate(nextStart.getDate() + 1);
@@ -4984,7 +5321,7 @@ function showReviewModal() {
     hideModal();
     // Check counter-question probability
     const cfg=STORE.config||{};
-    const prob=cfg.reviewCounterProb!=null?cfg.reviewCounterProb:20;
+    const prob=(cfg.prob?.reviewCounter||20);
     if(Math.random()*100<prob){
       showCounterQuestion(text);
     } else {
@@ -6144,6 +6481,102 @@ function aiBoxError(box, msg) {
   box.innerHTML = '<div class="ai-error">❌ ' + escapeHtml(msg) + '</div>';
 }
 
+function makeFavoriteKey(sourceType, sourceId, sourceSubId) {
+  return String(sourceType || 'message') + '::' + String(sourceId || '') + '::' + String(sourceSubId || '');
+}
+
+function getFavoriteKey(fav) {
+  if (!fav) return '';
+  if (fav.favoriteKey) return fav.favoriteKey;
+  if (fav.sourceType && fav.sourceId) return makeFavoriteKey(fav.sourceType, fav.sourceId, fav.sourceSubId);
+  if (fav.messageId) return makeFavoriteKey('message', fav.messageId, '');
+  return '';
+}
+
+function getFavoriteSourceLabel(fav) {
+  if (!fav) return '';
+  if (fav.sourceLabel) return fav.sourceLabel;
+  if (fav.sourceType === 'moment') return '朋友圈';
+  if (fav.sourceType === 'moment-comment') return '朋友圈评论';
+  if (fav.sourceType === 'diary') return '日记';
+  if (fav.sourceType === 'review') return '锐评';
+  return '聊天';
+}
+
+function findFavoriteIndexByKey(key) {
+  var favorites = STORE.favorites || [];
+  for (var i = 0; i < favorites.length; i++) {
+    if (getFavoriteKey(favorites[i]) === key) return i;
+  }
+  return -1;
+}
+
+function getAIBoxInterpretation(box) {
+  if (!box || !box.classList.contains('show')) return '';
+  var textEl = box.querySelector('.ai-text');
+  return textEl ? textEl.textContent.trim() : '';
+}
+
+function toggleAIFavorite(meta, box) {
+  if (!meta || !meta.sourceType || !meta.sourceId) return false;
+  var favorites = STORE.favorites || [];
+  var key = makeFavoriteKey(meta.sourceType, meta.sourceId, meta.sourceSubId);
+  var existIdx = findFavoriteIndexByKey(key);
+  if (existIdx >= 0) {
+    favorites.splice(existIdx, 1);
+    STORE.favorites = favorites;
+    return false;
+  }
+  var interp = getAIBoxInterpretation(box) || meta.interpretation || '';
+  favorites.unshift({
+    id: genId(),
+    favoriteKey: key,
+    sourceType: meta.sourceType,
+    sourceId: meta.sourceId,
+    sourceSubId: meta.sourceSubId || '',
+    sourceLabel: meta.sourceLabel || getFavoriteSourceLabel(meta),
+    type: meta.sourceType,
+    text: meta.text || '',
+    interpretation: interp,
+    timestamp: Date.now()
+  });
+  STORE.favorites = favorites;
+  return true;
+}
+
+function addAIFavoriteButton(box, meta) {
+  if (!box || !meta || !meta.sourceType || !meta.sourceId) return;
+  var key = makeFavoriteKey(meta.sourceType, meta.sourceId, meta.sourceSubId);
+  var row = box.querySelector('.ai-fav-row');
+  if (!row) {
+    row = document.createElement('div');
+    row.className = 'ai-fav-row';
+    box.appendChild(row);
+  }
+  var btn = row.querySelector('.ai-fav-btn');
+  if (!btn) {
+    btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'ai-fav-btn';
+    if (meta.sourceType === 'diary') btn.classList.add('btn-fav-diary');
+    if (meta.sourceType === 'moment-comment') btn.setAttribute('data-action', 'toggleAIFavoriteComment');
+    else btn.setAttribute('data-action', 'toggleAIFavorite');
+    row.appendChild(btn);
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      toggleAIFavorite(meta, box);
+      refreshAIFavoriteButton(btn, key);
+    });
+  }
+  refreshAIFavoriteButton(btn, key);
+}
+
+function refreshAIFavoriteButton(btn, key) {
+  var isFaved = findFavoriteIndexByKey(key) >= 0;
+  btn.classList.toggle('faved', isFaved);
+  btn.textContent = isFaved ? '⭐ 已收藏' : '⭐ 收藏解读';
+}
+
 // 触发一次解读，自动管理 .ai-box 的生命周期（loading → streaming → finish/error）
 function runAIInterpretOnBox(box, aiOpts) {
   var textEl = aiBoxStartLoading(box, aiOpts.loadingText);
@@ -6159,6 +6592,7 @@ function runAIInterpretOnBox(box, aiOpts) {
     },
     onDone: function() {
       aiBoxFinish(box);
+      if (aiOpts.favoriteMeta) addAIFavoriteButton(box, aiOpts.favoriteMeta);
       // Add memory/ignore buttons after finish
       // addMemoryActionButtons(box, scene, speaker);  // <-- 注释掉，后续需要时取消注释
     },
@@ -6319,7 +6753,8 @@ function updateMabFavState(idx) {
   var messages = STORE.messages || [];
   var m = messages[idx];
   if (!m) return;
-  var isFaved = (STORE.favorites || []).some(function(f) { return f.messageId === m.id; });
+  var key = makeFavoriteKey('message', m.id, '');
+  var isFaved = (STORE.favorites || []).some(function(f) { return getFavoriteKey(f) === key || f.messageId === m.id; });
   favBtn.classList.toggle('faved', isFaved);
   favBtn.textContent = isFaved ? '⭐ 已收藏' : '⭐ 收藏';
 }
@@ -6369,12 +6804,13 @@ function mabDoFavorite() {
   // 收藏：尽量带上当前已生成的解读结果
   var interp = '';
   var box = document.querySelector('.msg-row[data-msg-idx="' + idx + '"] .ai-box');
-  if (box && box.classList.contains('show')) {
-    var textEl = box.querySelector('.ai-text');
-    if (textEl) interp = textEl.textContent.trim();
-  }
+  interp = getAIBoxInterpretation(box);
   favorites.unshift({
     id: genId(),
+    favoriteKey: makeFavoriteKey('message', m.id, ''),
+    sourceType: 'message',
+    sourceId: m.id,
+    sourceLabel: '聊天',
     messageId: m.id,
     type: 'message',
     text: m.text,
@@ -6425,7 +6861,7 @@ function renderFavorites(container) {
   var name = cfg.characterName || '梦角';
 
   if (favorites.length === 0) {
-    container.innerHTML = '<div class="fav-page"><div class="fav-empty">⭐ 暂无收藏<br><br>在聊天中单击 ' + escapeHtml(name) + ' 的消息<br>即可弹出收藏按钮</div></div>';
+    container.innerHTML = '<div class="fav-page"><div class="fav-empty">⭐ 暂无收藏<br><br>聊天、朋友圈和日记里的 AI 解读<br>都可以收藏到这里</div></div>';
     return;
   }
 
@@ -6435,7 +6871,9 @@ function renderFavorites(container) {
     html += '<div class="fav-group"><div class="fav-group-title">' + g + '</div>';
     groups[g].forEach(function(f) {
       var timeStr = new Date(f.timestamp).toLocaleString('zh-CN', { month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' });
+      var sourceLabel = getFavoriteSourceLabel(f);
       html += '<div class="fav-item">'
+        + (sourceLabel ? '<div class="fav-item-source">' + escapeHtml(sourceLabel) + '</div>' : '')
         + '<div class="fav-item-text">' + escapeHtml(f.text) + '</div>'
         + (f.interpretation ? '<div class="fav-item-interp"><div class="fav-item-interp-label">💭 解读</div>' + escapeHtml(f.interpretation) + '</div>' : '')
         + '<div class="fav-item-time">' + timeStr + '</div>'
