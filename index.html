@@ -481,7 +481,7 @@ input, textarea, select { font-family:inherit; outline:none; }
 .fs-header .btn-back-chat:hover { background:var(--accent-light); }
 .fs-header .fs-title { font-size:21px; font-weight:700; }
 
-.fs-body { flex:1; overflow-y:auto; display:flex; flex-direction:column; }
+.fs-body { flex:1; min-height:0; overflow:hidden; display:flex; flex-direction:column; }
 .fs-body::-webkit-scrollbar { width:3px; }
 .fs-body::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
 
@@ -663,33 +663,62 @@ input, textarea, select { font-family:inherit; outline:none; }
 .btn-avatar-del:hover { background:#ffebee; color:var(--danger); border-color:#ffc9c9; }
 
 /* ============ Moments (朋友圈) ============ */
-.moments-page { display:flex; flex-direction:column; height:100%; }
+.moments-page {
+  display:flex; flex-direction:column; height:100%; min-height:0;
+  overflow-y:auto; overscroll-behavior:contain; background:#f5f0eb;
+}
+.moments-page::-webkit-scrollbar { width:3px; }
+.moments-page::-webkit-scrollbar-thumb { background:var(--border); border-radius:var(--radius-sm); }
 
-/* Gradient header */
-.moments-header {
-  flex-shrink:0; padding:24px 18px 20px; position:relative; overflow:hidden;
-  background:linear-gradient(120deg, #F8A050 0%, #f3b65f 45%, #DDD33D 100%);
-  color:#fff; display:flex; align-items:center; justify-content:space-between;
+/* 朋友圈顶部：保留微信的信息层级，但使用项目现有的橙绿弥散玻璃语言 */
+.moments-cover {
+  position:relative; min-height:258px; flex-shrink:0; overflow:hidden;
+  background:
+    linear-gradient(180deg, rgba(53,43,30,0.08) 0%, rgba(53,43,30,0.04) 42%, rgba(40,32,24,0.58) 100%),
+    radial-gradient(circle at 18% 28%, rgba(248,143,80,0.78), transparent 34%),
+    radial-gradient(circle at 76% 18%, rgba(221,216,61,0.62), transparent 36%),
+    linear-gradient(135deg, #d6c8b2 0%, #f3d9b5 48%, #b6c6a7 100%);
 }
-.moments-header::before {
-  content:''; position:absolute; inset:0;
-  background:radial-gradient(circle at 20% 120%, rgba(255,255,255,0.35), transparent 50%);
-  filter:blur(10px); pointer-events:none;
+.moments-cover::before,
+.moments-cover::after {
+  content:''; position:absolute; border-radius:50%; pointer-events:none; filter:blur(20px);
 }
-.moments-header .mh-left { display:flex; flex-direction:column; gap:4px; position:relative; z-index:1; }
-.moments-header .mh-title { font-size:19px; font-weight:700; }
-.moments-header .mh-sub { font-size:11px; opacity:0.85; }
-.moments-header .mh-avatar {
-  width:54px; height:54px; border-radius:14px; border:2px solid rgba(255,255,255,0.6);
-  background:rgba(255,255,255,0.25); display:flex; align-items:center; justify-content:center;
-  font-size:30px; overflow:hidden; flex-shrink:0; position:relative; z-index:1;
+.moments-cover::before { width:220px; height:220px; top:-86px; right:-30px; background:rgba(255,255,255,0.34); }
+.moments-cover::after { width:280px; height:180px; bottom:-100px; left:18%; background:rgba(248,143,80,0.26); }
+.moments-cover-top { position:absolute; inset:0; padding:14px 16px; display:flex; justify-content:flex-end; align-items:flex-start; z-index:1; }
+.moments-cover-camera {
+  width:38px; height:38px; display:grid; place-items:center; border-radius:50%;
+  color:#fff; background:rgba(255,255,255,0.18); border:1px solid rgba(255,255,255,0.4);
+  backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); box-shadow:0 4px 16px rgba(50,40,30,0.12);
 }
-.moments-header .mh-avatar img { width:100%; height:100%; object-fit:cover; }
+.moments-cover-camera:hover { background:rgba(255,255,255,0.3); transform:translateY(-1px); }
+.moments-profile {
+  position:absolute; left:16px; right:16px; bottom:18px; z-index:2;
+  display:flex; align-items:flex-end; justify-content:flex-end; gap:12px; color:#fff;
+}
+.moments-profile-copy { min-width:0; text-align:right; padding-bottom:4px; text-shadow:0 1px 8px rgba(30,22,16,0.28); }
+.moments-profile-name { font-family:'MengJiaoShouXie',var(--font); font-size:24px; line-height:1.2; letter-spacing:0.05em; }
+.moments-profile-note { margin-top:4px; font-size:11px; opacity:0.88; letter-spacing:0.06em; }
+.moments-profile-avatar {
+  width:74px; height:74px; flex-shrink:0; display:grid; place-items:center; overflow:hidden;
+  border:3px solid rgba(255,255,255,0.9); border-radius:14px; background:rgba(255,255,255,0.42);
+  box-shadow:0 8px 22px rgba(45,34,24,0.2); font-size:32px;
+}
+.moments-profile-avatar img { width:100%; height:100%; object-fit:cover; }
+.moments-quick-actions { display:flex; justify-content:flex-end; padding:10px 12px 6px; flex-shrink:0; }
 
 /* Feed */
-.moments-feed { flex:1; overflow-y:auto; background:#f5f0eb; }
-.moments-feed::-webkit-scrollbar { width:3px; }
-.moments-feed::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+.moments-feed { flex:none; min-height:0; overflow:visible; background:#f5f0eb; }
+
+/* 动态操作图标：统一使用轻量平面线描，保留原有按钮与交互 */
+.moment-item .mi-icon {
+  width:15px; height:15px; flex:0 0 auto; display:inline-block; vertical-align:-3px;
+  fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round;
+}
+.moment-item .mi-act { min-height:30px; padding:4px 5px; border-radius:8px; }
+.moment-item .mi-act:hover { background:var(--accent-light); }
+.moment-item .mi-act.liked { color:#e04040; }
+.moment-item .mi-delete-icon { width:14px; height:14px; }
 
 .moment-item {
   background:var(--card-bg); margin:0 0 8px; padding:14px 16px;
@@ -752,11 +781,11 @@ input, textarea, select { font-family:inherit; outline:none; }
 
 /* Publish button (camera icon) */
 .btn-camera {
-  width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,0.2);
-  color:#fff; font-size:16px; display:flex; align-items:center; justify-content:center;
-  transition:background 0.15s;
+  width:34px; height:34px; border:1px solid var(--border); border-radius:50%; background:var(--card-bg);
+  color:var(--text-secondary); font-size:16px; display:flex; align-items:center; justify-content:center;
+  box-shadow:var(--shadow-sm); transition:background 0.15s, color 0.15s;
 }
-.btn-camera:hover { background:rgba(255,255,255,0.35); }
+.btn-camera:hover { background:var(--accent-light); color:var(--accent); }
 
 /* Publish modal */
 .publish-modal .pm-textarea {
@@ -3407,22 +3436,25 @@ function updateProbSums(container) {
 
 // ============ Rendering: Moments (朋友圈) ============
 function renderMoments(container) {
-  const cfg=STORE.config||{}, moments=STORE.moments||[], liked=STORE.likedMoments||[];
-  const avUrl=cfg.avatarUrl||'';
-  const name=cfg.characterName||'梦角';
-
+  const cfg=STORE.config||{};
+  const name=cfg.userNickname||'我';
+  const av=cfg.userAvatarUrl ? `<img src="${escapeHtml(cfg.userAvatarUrl)}" alt="${escapeHtml(name)}头像" onerror="this.parentElement.textContent='🐟'">` : '🐟';
+  const coverUrl=STORE._read('mcard_momentsCover')||'';
+  const coverStyle=coverUrl ? ` style="background-image:linear-gradient(180deg,rgba(53,43,30,.08),rgba(40,32,24,.58)),url('${escapeHtml(coverUrl)}')"` : '';
   container.innerHTML=`
   <div class="moments-page">
-    <div class="moments-header">
-      <div class="mh-left">
-        <span class="mh-title">朋友圈</span>
-        <span class="mh-sub">${escapeHtml(cfg.userNickname||'我')}的朋友圈</span>
+    <section class="moments-cover" data-od-id="moments-cover" aria-label="朋友圈个人资料"${coverStyle}>
+      <div class="moments-cover-top">
+        <button class="moments-cover-camera" id="btnPublish" title="发表动态" aria-label="发表动态">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h3l1.5-2h7L17 7h3a1.5 1.5 0 0 1 1.5 1.5v9A1.5 1.5 0 0 1 20 19H4a1.5 1.5 0 0 1-1.5-1.5v-9A1.5 1.5 0 0 1 4 7Z"/><circle cx="12" cy="13" r="3.5"/></svg>
+        </button>
       </div>
-      <div style="display:flex;align-items:center;gap:10px;">
-        <div class="mh-avatar" id="mhAvatar">${avUrl?`<img src="${escapeHtml(avUrl)}" onerror="this.parentElement.textContent='🏐'">`:'🏐'}</div>
-        <button class="btn-camera" id="btnPublish" title="发表动态">📷</button>
+      <div class="moments-profile">
+        <div class="moments-profile-copy"><div class="moments-profile-name">${escapeHtml(name)}</div><div class="moments-profile-note">在这里，留下想和你分享的每一刻</div></div>
+        <div class="moments-profile-avatar">${av}</div>
       </div>
-    </div>
+    </section>
+    <input type="file" id="momentsCoverInput" accept="image/*" style="display:none">
     <div class="moments-feed" id="momentsFeed"></div>
   </div>`;
 
@@ -3440,7 +3472,7 @@ function renderFeed() {
   const sorted=[...moments].sort((a,b)=>b.timestamp-a.timestamp);
 
   if(sorted.length===0){
-    feed.innerHTML='<div style="text-align:center;color:var(--text-muted);padding:60px 20px;font-size:13px;">暂无动态，点击右上角 📷 发表第一条</div>';
+    feed.innerHTML='<div style="text-align:center;color:var(--text-muted);padding:60px 20px;font-size:13px;">暂无动态，点击右上角 <svg class="mi-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h3l1.5-2h7L17 7h3a1.5 1.5 0 0 1 1.5 1.5v9A1.5 1.5 0 0 1 20 19H4a1.5 1.5 0 0 1-1.5-1.5v-9A1.5 1.5 0 0 1 4 7Z"/><circle cx="12" cy="13" r="3.5"/></svg> 发表第一条</div>';
     return;
   }
 
@@ -3462,7 +3494,7 @@ function renderFeed() {
       const unique=[...new Set(names)];
       if(unique.length<=3)likerStr=unique.join('、');
       else likerStr=unique.slice(0,2).join('、')+` 等${likeCount}人`;
-      likerStr='❤️ '+likerStr;
+      likerStr='<svg class="mi-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M20.8 8.7c0 5.4-8.8 10.1-8.8 10.1S3.2 14.1 3.2 8.7A4.2 4.2 0 0 1 11 6.3a4.2 4.2 0 0 1 9.8 2.4Z"/></svg> '+likerStr;
     }
 
     // Build comments HTML
@@ -3472,7 +3504,7 @@ function renderFeed() {
         const cName=c.commenter==='user'?(cfg.userNickname||'我'):name;
         var html='<div class="mc-item"><b>'+escapeHtml(cName)+'：</b>'+escapeHtml(c.content)+'</div>';
         if(c.commenter==='dream'){
-          html+='<button class="mi-act mi-ai-btn" data-mid="'+m.id+'" data-cid="comment_'+ci+'" data-action="aiInterpretComment" style="font-size:11px;margin:2px 0 4px;">🤖 解读这条评论</button>';
+          html+='<button class="mi-act mi-ai-btn" data-mid="'+m.id+'" data-cid="comment_'+ci+'" data-action="aiInterpretComment" style="font-size:11px;margin:2px 0 4px;"><svg class="mi-icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="m14.8 9.2-1.2 3.1-3.1 1.2 1.2-3.1z"/></svg> 解读这条评论</button>';
           html+='<div class="ai-box" data-ai-target="moment-comment" data-mid="'+m.id+'" data-cid="comment_'+ci+'"></div>';
         }
         return html;
@@ -3491,10 +3523,10 @@ function renderFeed() {
         <div class="mi-time">${timeStr}</div>
         <div class="mi-actions">
           <button class="mi-act mi-like-btn ${isLiked?'liked':''}" data-mid="${m.id}" data-action="like">
-            <span>${isLiked?'❤️':'🤍'}</span> <span class="like-count">${likeCount||'赞'}</span>
+            <svg class="mi-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M20.8 8.7c0 5.4-8.8 10.1-8.8 10.1S3.2 14.1 3.2 8.7A4.2 4.2 0 0 1 11 6.3a4.2 4.2 0 0 1 9.8 2.4Z"/></svg> <span class="like-count">${likeCount||'赞'}</span>
           </button>
-          <button class="mi-act mi-comment-btn" data-mid="${m.id}" data-action="comment">💬 评论</button>
-          ${!isUser?`<button class="mi-act mi-ai-btn" data-mid="${m.id}" data-action="aiInterpret">🤖 解读这条朋友圈</button>`:''}
+          <button class="mi-act mi-comment-btn" data-mid="${m.id}" data-action="comment"><svg class="mi-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M5 5.5A2.5 2.5 0 0 1 7.5 3h9A2.5 2.5 0 0 1 19 5.5v7A2.5 2.5 0 0 1 16.5 15H11l-4.5 3v-3h-1A2.5 2.5 0 0 1 3 12.5v-7Z"/><path d="M8 8h8M8 11h4"/></svg> 评论</button>
+          ${!isUser?`<button class="mi-act mi-ai-btn" data-mid="${m.id}" data-action="aiInterpret"><svg class="mi-icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="m14.8 9.2-1.2 3.1-3.1 1.2 1.2-3.1z"/></svg> 解读这条朋友圈</button>`:''}
         </div>
         ${!isUser?`<div class="ai-box" data-ai-target="moment-post" data-mid="${m.id}"></div>`:''}
         ${likerStr?`<div class="mi-likers">${likerStr}</div>`:''}
@@ -3502,11 +3534,11 @@ function renderFeed() {
           ${commentsHtml}
           <div class="mc-input-row">
             <input type="text" class="mc-input" placeholder="写评论…" maxlength="200">
-            <button class="mc-send" data-mid="${m.id}" data-action="sendComment">发送</button>
+            <button class="mc-send" data-mid="${m.id}" data-action="sendComment"><svg class="mi-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M21 3 10 14"/><path d="m21 3-4 18-5-7-7-4 16-7Z"/></svg><span>发送</span></button>
           </div>
         </div>
       </div>
-      ${isUser2?`<button class="mi-del-btn" data-mid="${m.id}" data-action="delete" title="删除">🗑️</button>`:''}
+      ${isUser2?`<button class="mi-del-btn" data-mid="${m.id}" data-action="delete" title="删除"><svg class="mi-icon mi-delete-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M5 7h14M10 11v6M14 11v6M8 7l1-3h6l1 3M6 7l1 14h10l1-14"/></svg></button>`:''}
     </div>`;
   }).join('');
 }
@@ -3516,7 +3548,25 @@ function bindMomentsEvents(container) {
   const pubBtn=container.querySelector('#btnPublish');
   if(pubBtn)pubBtn.addEventListener('click',showPublishModal);
 
-  // Delegated listeners: bind only ONCE per container lifetime
+    const cover=container.querySelector('.moments-cover');
+    const coverInput=container.querySelector('#momentsCoverInput');
+    if(cover&&coverInput){
+      cover.addEventListener('click',function(e){
+        if(e.target.closest('#btnPublish'))return;
+        coverInput.click();
+      });
+      coverInput.addEventListener('change',function(){
+        const file=this.files&&this.files[0];
+        if(!file)return;
+        compressImage(file,1600,0.82).then(function(dataUrl){
+          STORE._write('mcard_momentsCover',dataUrl);
+          cover.style.backgroundImage='linear-gradient(180deg,rgba(53,43,30,.08),rgba(40,32,24,.58)),url("'+dataUrl+'")';
+          this.value='';
+        }.bind(this)).catch(function(){ alert('背景图片读取失败，请重试'); });
+      });
+    }
+
+    // Delegated listeners: bind only ONCE per container lifetime
   if(container._momentsBound)return;
   container._momentsBound=true;
 
