@@ -3440,7 +3440,7 @@ function renderMoments(container) {
   const name=cfg.userNickname||'我';
   const av=cfg.userAvatarUrl ? `<img src="${escapeHtml(cfg.userAvatarUrl)}" alt="${escapeHtml(name)}头像" onerror="this.parentElement.textContent='🐟'">` : '🐟';
   const coverUrl=STORE._read('mcard_momentsCover')||'';
-  const coverStyle=coverUrl ? ` style="background-image:linear-gradient(180deg,rgba(53,43,30,.08),rgba(40,32,24,.58)),url('${escapeHtml(coverUrl)}')"` : '';
+  const coverStyle=coverUrl ? ` style="background-image:linear-gradient(180deg,rgba(53,43,30,.08),rgba(40,32,24,.58)),url('${escapeHtml(coverUrl)}');background-size:cover;background-position:center;background-repeat:no-repeat"` : '';
   container.innerHTML=`
   <div class="moments-page">
     <section class="moments-cover" data-od-id="moments-cover" aria-label="朋友圈个人资料"${coverStyle}>
@@ -3558,9 +3558,12 @@ function bindMomentsEvents(container) {
       coverInput.addEventListener('change',function(){
         const file=this.files&&this.files[0];
         if(!file)return;
-        compressImage(file,1600,0.82).then(function(dataUrl){
+        cropMomentsCover(file, cover.clientWidth || 430, cover.clientHeight || 258).then(function(dataUrl){
           STORE._write('mcard_momentsCover',dataUrl);
           cover.style.backgroundImage='linear-gradient(180deg,rgba(53,43,30,.08),rgba(40,32,24,.58)),url("'+dataUrl+'")';
+          cover.style.backgroundSize='cover';
+          cover.style.backgroundPosition='center';
+          cover.style.backgroundRepeat='no-repeat';
           this.value='';
         }.bind(this)).catch(function(){ alert('背景图片读取失败，请重试'); });
       });
@@ -6276,8 +6279,40 @@ async function init() {
 }
 document.addEventListener('DOMContentLoaded',init);
 
+// 将图片裁剪为朋友圈封面比例，居中取景后再保存，避免只显示左上角
+function cropMomentsCover(file, targetWidth, targetHeight) {
+  targetWidth = targetWidth || 430;
+  targetHeight = targetHeight || 258;
+  return new Promise(function(resolve, reject) {
+    var reader = new FileReader();
+    reader.onload = function() {
+      var img = new Image();
+      img.onload = function() {
+        var sourceRatio = img.width / img.height;
+        var targetRatio = targetWidth / targetHeight;
+        var sw, sh, sx, sy;
+        if (sourceRatio > targetRatio) {
+          sh = img.height; sw = Math.round(sh * targetRatio); sx = Math.round((img.width - sw) / 2); sy = 0;
+        } else {
+          sw = img.width; sh = Math.round(sw / targetRatio); sx = 0; sy = Math.round((img.height - sh) / 2);
+        }
+        var canvas = document.createElement('canvas');
+        var scale = Math.min(3, Math.max(1, 1200 / targetWidth));
+        canvas.width = Math.round(targetWidth * scale); canvas.height = Math.round(targetHeight * scale);
+        var ctx = canvas.getContext('2d');
+        ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(img, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL('image/jpeg', 0.84));
+      };
+      img.onerror = function() { reject(new Error('图片加载失败')); };
+      img.src = reader.result;
+    };
+    reader.onerror = function() { reject(new Error('文件读取失败')); };
+    reader.readAsDataURL(file);
+  });
+}
+
 // ============ Image Compression ============
-// 将图片文件压缩为 base64 dataURL（长边限制 maxSize，JPEG 质量 quality）
 function compressImage(file, maxSize, quality) {
   maxSize = maxSize || 1000;
   quality = quality || 0.82;
