@@ -3,6 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#f88f50">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="pwa-icon-192.png">
 <title>梦角字卡聊天</title>
 <style>
 /* ============ Custom Font ============ */
@@ -2168,6 +2173,7 @@ const state = {
   dreamEventTimers: {},       // "eventId_dateStr_index" → timeoutId
   settingsSaveTimerId: null,
   settingsEngineTimerId: null,
+  backfillPromise: null,
 };
 
 var _pmImages = []; // temporary photo array for moments publish modal
@@ -4313,6 +4319,25 @@ async function runBackfill() {
   STORE.lastActive = now;
 }
 
+function startBackgroundBackfill() {
+  if (state.backfillPromise) return state.backfillPromise;
+  function finishBackfill() {
+    renderMessages();
+    updateRedDots();
+    scheduleTodayEvents();
+  }
+  state.backfillPromise = runBackfill().then(function() {
+    finishBackfill();
+  }, function(error) {
+    console.warn('Background backfill error:', error);
+    STORE.lastActive = Date.now();
+    finishBackfill();
+  }).then(function() {
+    state.backfillPromise = null;
+  });
+  return state.backfillPromise;
+}
+
 // ---- Real-time Scheduler ----
 function stopAllDreamEventTimers() {
   Object.values(state.dreamEventTimers).forEach(tid => clearTimeout(tid));
@@ -6346,15 +6371,6 @@ async function init() {
   try {
     bindViewportEvents();
     bindEvents();
-    // ---- Dream Engine: backfill offline events ----
-    const lastActive = STORE.lastActive;
-    if (lastActive) {
-      const area = document.getElementById('messagesArea');
-      if (area) area.innerHTML = '<div class="msg-empty" style="animation:pulse-text 1.5s ease-in-out infinite;">⏳ 正在同步梦角动态...</div>';
-      await runBackfill();
-    }
-    STORE.lastActive = Date.now();
-
     renderHeader(); renderMessages();
     updateRedDots();
     // Check for recalls that happened during offline period
@@ -6376,8 +6392,11 @@ async function init() {
     scheduleActive();
     restorePendingReactions();
     recoverPendingCommentReplies();
-    // Replace legacy timers with engine scheduler
-    scheduleTodayEvents();
+    if (STORE.lastActive) startBackgroundBackfill();
+    else {
+      STORE.lastActive = Date.now();
+      scheduleTodayEvents();
+    }
     // Show period reminder if within 3 days
     updatePeriodReminder();
   } catch(e) {
@@ -6386,6 +6405,14 @@ async function init() {
   }
 }
 document.addEventListener('DOMContentLoaded',init);
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('sw.js').catch(function(error) {
+      console.warn('Service worker registration failed:', error);
+    });
+  });
+}
 
 // 将图片裁剪为朋友圈封面比例，居中取景后再保存，避免只显示左上角
 function cropMomentsCover(file, targetWidth, targetHeight) {
